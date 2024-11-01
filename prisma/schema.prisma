@@ -1,22 +1,104 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// This is your Prisma schema file
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-    id        Int      @id @default(autoincrement())
-    email     String   @unique
-    password  String
-    createdAt DateTime @default(now())
+  UserId                        String                @id @default(uuid()) @map("_id")
+  Username                      String                // Example change
+  FirstName                     String
+  MiddleName                    String?
+  LastName                      String
+  Role                          Role                 @default(USER)
+  PasswordHash                  String?               // Example change
+  Disabled                      Boolean
+  Deleted                       Boolean                @default(false) // Optional or required
+  CreatedOn                     DateTime?
+  ModifiedOn                    DateTime              @default(now()) @updatedAt
+  DeletedOn                     DateTime?
+  CreatedById                   String?
+  ModifiedById                  String?
+  DeletedById                   String?
+  Email                         String?               @unique
+  GoogleId                      String?               @unique // Google OAuth users
+  Phone                         String?
+  Gender                        String?
+  CountryCode                   String?
+  City                          String?               // Example change
+  Country                       String?               // Example change
+  State                         String?               // Example change
+  Zip                           String?               // Example change
+  ImageUrl                      String?               // Example change
+
+  comments                      Comment[]  // One-to-many relationship with Comment model
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+
+
+model Product {
+  ProductId                     String                @id @default(uuid()) @map("_id")
+  Name                          String                // Example change
+  About                         String
+  Disabled                      Boolean               @default(false)
+  Deleted                       Boolean               @default(false) // Optional or required
+  CreatedOn                     DateTime?
+  ModifiedOn                    DateTime              @default(now()) @updatedAt
+  DeletedOn                     DateTime?
+  CreatedById                   String?
+  ModifiedById                  String?
+  DeletedById                   String?
+  ImageUrl                      String?               // Example change
+  CategoryId    String?     // Temporarily nullable to allow migration
+  Category      Category?   @relation(fields: [CategoryId], references: [CategoryId])             
+  Size                          Size
+  Color                         String
+  Cost                          Float                 // Changed from Decimal
+  Available                     Int
+  Tags                          String?
+  Comments                      Comment[]  // One-to-many relationship with Comment model
+  AverageRating                 Float?     // Store the average rating for the product                     
+
+}
+
+model Category {
+  CategoryId  String    @id @default(uuid()) @map("_id")
+  Name        String    // Remove @db.VarChar
+  Deleted                       Boolean               @default(false) // Optional or required
+  Products    Product[] // One-to-many relationship with products
+}
+
+
+model Comment {
+  CommentId      String     @id @default(uuid()) @map("_id")
+  Content        String     // Remove @db.Text
+  Rating         Int        // Rating given by the user (e.g., 1 to 5)
+  CreatedOn      DateTime   @default(now()) // Time when the comment was created
+  ModifiedOn      DateTime   @updatedAt // Automatically updated time for the comment
+  ProductId      String     // Foreign key to the Product
+  Product        Product    @relation(fields: [ProductId], references: [ProductId])
+  UserId         String?    // Foreign key to a User if necessary
+  User           User?      @relation(fields: [UserId], references: [UserId])
+}
+
+
+enum Size {
+  S
+  M
+  L
+  XL
+  SIZE_2XL
+  SIZE_3XL
+  SIZE_4XL
+  SIZE_5XL
 }
