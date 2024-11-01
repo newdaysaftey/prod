@@ -1,25 +1,25 @@
 // controllers/signup.controller.ts
 import { NextRequest } from "next/server";
 import { BaseController } from "@/app/api/controllers/base.controller";
-import { SignupService } from "./signup.service";
+import { SigninService } from "./signin.service";
 
-interface SignupRequestBody {
+interface SigninRequestBody {
   email: string;
   password: string;
 }
 
-export class SignupController extends BaseController {
+export class SigninController extends BaseController {
   [x: string]: any;
-  private service: SignupService;
+  private service: SigninService;
 
   constructor() {
     super();
-    this.service = new SignupService();
+    this.service = new SigninService();
   }
 
-  async signup(request: NextRequest) {
+  async signin(request: NextRequest) {
     try {
-      const body: SignupRequestBody = await this.parseBody(request);
+      const body: SigninRequestBody = await this.parseBody(request);
       const { email, password } = body;
 
       if (!email || !password) {
@@ -28,8 +28,8 @@ export class SignupController extends BaseController {
           400
         );
       }
-      const user = await this.service.createUser({ email, password });
-      return this.sendSuccess(user, "User created successfully");
+      const user = await this.service.findUser({ email, password });
+      return this.sendSuccess(user, "User signed in successfully");
     } catch (error) {
       return this.sendError(error as Error);
     }

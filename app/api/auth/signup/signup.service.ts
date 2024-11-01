@@ -1,6 +1,7 @@
 // services/signup.service.ts
-import { BaseService } from "../../services/base.service";
+import { BaseService } from "@/app/api/services/base.service";
 import bcrypt from "bcrypt";
+import prisma from "@/lib/prisma";
 
 interface SignupData {
   email: string;
@@ -10,14 +11,13 @@ interface SignupData {
 export class SignupService extends BaseService {
   async createUser(data: SignupData) {
     const hashedPassword = await bcrypt.hash(data.password, 10);
+    const user = await prisma.user.create({
+      data: {
+        email: data.email,
+        password: hashedPassword,
+      },
+    });
 
-    // Replace the line below with actual database logic to save the user
-    const user = {
-      id: Date.now(),
-      email: data.email,
-      password: hashedPassword,
-    };
-
-    return user;
+    return user.email;
   }
 }
