@@ -23,10 +23,8 @@ export class SignupController extends BaseController {
 
   async signup(body: SignupRequestBody) {
     try {
-      console.log("Request body:", body);
       const { Email, Password, Username, FirstName, LastName, Role } =
         body as SignupRequestBody;
-      console.log(body.Email);
       if (!Email || !Password) {
         return this.sendError(
           new Error("Email and password are required"),

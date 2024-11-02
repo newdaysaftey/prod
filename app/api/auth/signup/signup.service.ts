@@ -25,6 +25,8 @@ export class SignupService extends BaseService {
         FirstName: data.FirstName,
         LastName: data.LastName,
         Disabled: false,
+        CreatedOn: new Date(),
+        ModifiedOn: new Date(),
       },
     });
 

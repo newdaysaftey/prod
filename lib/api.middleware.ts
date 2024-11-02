@@ -3,6 +3,15 @@ import { z } from "zod";
 import prisma from "@/lib/prisma";
 export const dynamic = "dynamic";
 
+interface SignupRequestBody {
+  Email: string;
+  Password: string;
+  Username: string;
+  FirstName: string;
+  LastName: string;
+  Role: string;
+}
+
 // Validation schemas
 const signupSchema = z.object({
   Email: z.string().email("Valid email is required."),
@@ -18,12 +27,10 @@ const loginSchema = z.object({
 });
 
 // Auth middlewares
-export async function validateSignupRequest(body: any) {
+export async function validateSignupRequest(body: SignupRequestBody) {
   try {
-    console.log(body.body);
     // Validate the request body
     const validatedData = signupSchema.parse(body);
-    // console.log(validatedData);
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({

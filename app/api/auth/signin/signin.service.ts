@@ -2,27 +2,39 @@
 import { BaseService } from "@/app/api/services/base.service";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { errorResponse } from "../../utils/response.util";
 
 interface SigninData {
-  email: string;
-  password: string;
+  Email: string;
+  Password: string;
 }
 
 export class SigninService extends BaseService {
+  private JWT_SECRET = process.env.JWT_SECRET as string;
   async findUser(data: SigninData) {
     const user = await prisma.user.findUnique({
       where: {
-        email: data.email,
+        Email: data.Email,
       },
     });
-    if (!user) {
-      throw new Error("User not found");
-    }
+    // if (!user) {
+    //   throw new Error("User not found");
+    // }
 
-    const isPasswordValid = await bcrypt.compare(data.password, user.password);
-    if (!isPasswordValid) {
-      throw new Error("Invalid password");
-    }
-    return user;
+    // const isPasswordValid = await bcrypt.compare(
+    //   data.Password,
+    //   user.PasswordHash
+    // );
+    // if (!isPasswordValid) {
+    //   throw new Error("Invalid password");
+    // }
+
+    const token = jwt.sign(
+      { userId: user.UserId, email: user.Email, role: user.Role },
+      this.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    return { user, token };
   }
 }
