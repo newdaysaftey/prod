@@ -1,12 +1,5 @@
-// controllers/signup.controller.ts
-import { NextRequest, NextResponse } from "next/server";
 import { BaseController } from "@/app/api/controllers/base.controller";
 import { SigninService } from "./signin.service";
-import {
-  createResponse,
-  successResponse,
-  errorResponse,
-} from "@/app/api/utils/response.util";
 
 interface SigninRequestBody {
   Email: string;
@@ -28,25 +21,20 @@ export class SigninController extends BaseController {
 
       const user = await this.service.findUser({ Email, Password });
       if (!user?.token) {
-        return NextResponse.json(errorResponse("Authentication failed"));
+        throw new Error("Authentication failed");
       }
 
-      const resp = NextResponse.json(
-        successResponse("Signin successful", { user: user.user }),
-        {
-          status: 200,
-          headers: {
-            "Set-Cookie": `authToken=${
-              user.token
-            }; HttpOnly; Path=/; Max-Age=3600000${
-              process.env.NODE_ENV === "production" ? "; Secure" : ""
-            }`,
-          },
-        }
+      const response = this.sendSuccess(user.user, "Signin successful");
+      response.headers.set(
+        "Set-Cookie",
+        `authToken=${user.token}; HttpOnly; Path=/; Max-Age=3600000${
+          process.env.NODE_ENV === "production" ? "; Secure" : ""
+        }`
       );
-      return resp;
+
+      return response;
     } catch (error) {
-      return NextResponse.json(errorResponse("Internal server error"));
+      return this.sendError(error as Error);
     }
   }
 }

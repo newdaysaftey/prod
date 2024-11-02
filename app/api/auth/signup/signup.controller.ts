@@ -1,5 +1,3 @@
-// controllers/signup.controller.ts
-import { NextRequest } from "next/server";
 import { BaseController } from "@/app/api/controllers/base.controller";
 import { SignupService } from "./signup.service";
 

@@ -3,7 +3,6 @@ import { BaseService } from "@/app/api/services/base.service";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { errorResponse } from "../../utils/response.util";
 
 interface SigninData {
   Email: string;
@@ -18,17 +17,17 @@ export class SigninService extends BaseService {
         Email: data.Email,
       },
     });
-    // if (!user) {
-    //   throw new Error("User not found");
-    // }
+    if (!user) {
+      throw new Error("User not found, please signup");
+    }
 
-    // const isPasswordValid = await bcrypt.compare(
-    //   data.Password,
-    //   user.PasswordHash
-    // );
-    // if (!isPasswordValid) {
-    //   throw new Error("Invalid password");
-    // }
+    const isPasswordValid = await bcrypt.compare(
+      data.Password,
+      user.PasswordHash
+    );
+    if (!isPasswordValid) {
+      throw new Error("Invalid password");
+    }
 
     const token = jwt.sign(
       { userId: user.UserId, email: user.Email, role: user.Role },
