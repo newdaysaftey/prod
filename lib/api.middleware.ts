@@ -39,7 +39,7 @@ export async function validateSignupRequest(body: SignupRequestBody) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "User already exists with this email." },
+        { error: true, message: "user already exists", data: null },
         { status: 400 }
       );
     }
@@ -48,40 +48,21 @@ export async function validateSignupRequest(body: SignupRequestBody) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Validation errors occurred.", details: error.errors },
+        {
+          error: true,
+          message: "Validation errors occurred.",
+          data: error.errors,
+        },
         { status: 400 }
       );
     }
     return NextResponse.json(
-      { error: "An error occurred during validation." },
+      {
+        error: true,
+        message: "An error occurred during validation.",
+        data: null,
+      },
       { status: 500 }
     );
   }
 }
-
-export async function validateLoginRequest(request: NextRequest) {
-  try {
-    const body = await request.json();
-
-    // Validate the request body
-    loginSchema.parse(body);
-
-    return null; // No errors
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: "Validation errors occurred.", details: error.errors },
-        { status: 400 }
-      );
-    }
-    return NextResponse.json(
-      { error: "An error occurred during validation." },
-      { status: 500 }
-    );
-  }
-}
-
-// You can add more middleware functions here as needed
-// For example:
-// export async function validateProfileUpdateRequest(request: NextRequest) { ... }
-// export async function validatePasswordResetRequest(request: NextRequest) { ... }

@@ -9,34 +9,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  UserId                        String                @id @default(uuid()) @map("_id")
-  Username                      String                // Example change
-  FirstName                     String
-  MiddleName                    String?
-  LastName                      String
-  Role                          Role                 @default(USER)
-  PasswordHash                  String?               // Example change
-  Disabled                      Boolean
-  Deleted                       Boolean                @default(false) // Optional or required
-  CreatedOn                     DateTime?
-  ModifiedOn                    DateTime              @default(now()) @updatedAt
-  DeletedOn                     DateTime?
-  CreatedById                   String?
-  ModifiedById                  String?
-  DeletedById                   String?
-  Email                         String?               @unique
-  GoogleId                      String?               @unique // Google OAuth users
-  Phone                         String?
-  Gender                        String?
-  CountryCode                   String?
-  City                          String?               // Example change
-  Country                       String?               // Example change
-  State                         String?               // Example change
-  Zip                           String?               // Example change
-  ImageUrl                      String?               // Example change
+type Address {
+  id         String   @default(uuid())
+  Street     String
+  City       String
+  State      String
+  Country    String
+  Pincode    String
+  IsDefault  Boolean  @default(false)
+}
 
-  comments                      Comment[]  // One-to-many relationship with Comment model
+type CartItem {
+  ProductId    String
+  ColorId      String
+  SizeId       String
+  Quantity     Int
+  PriceAtTime  Float
+}
+
+type OrderItem {
+  ProductId       String
+  ColorId         String
+  SizeId          String
+  Quantity        Int
+  PriceAtTime     Float
+  ProductSnapshot Json
+}
+
+model User {
+  UserId        String      @id @default(uuid()) @map("_id")
+  Email         String      @unique
+  Username      String
+  FirstName     String
+  MiddleName    String?
+  LastName      String
+  Role          Role        @default(USER)
+  PasswordHash  String?
+  Disabled      Boolean     @default(false)
+  Deleted       Boolean     @default(false)
+  CreatedOn     DateTime    @default(now())
+  ModifiedOn    DateTime    @updatedAt
+  DeletedOn     DateTime?
+  CreatedById   String?
+  ModifiedById  String?
+  DeletedById   String?
+  GoogleId      String?     @unique
+  Phone         String?
+  Gender        String?
+  CountryCode   String?
+  ImageUrl      String?
+  Addresses     Address[]   // New field
+  LastLogin     DateTime?   // New field
+  orders        Order[]     // New field
+  cart          Cart?       // New field
+  wishlist      Wishlist?   // New field
 }
 
 enum Role {
@@ -44,61 +70,108 @@ enum Role {
   ADMIN
 }
 
+model Category {
+  CategoryId    String    @id @default(uuid()) @map("_id")
+  Name          String
+  Deleted       Boolean   @default(false)
+  Products      Product[]
+  CreatedOn     DateTime  @default(now())
+  ModifiedOn    DateTime  @updatedAt
+}
 
 
 model Product {
-  ProductId                     String                @id @default(uuid()) @map("_id")
-  Name                          String                // Example change
-  About                         String
-  Disabled                      Boolean               @default(false)
-  Deleted                       Boolean               @default(false) // Optional or required
-  CreatedOn                     DateTime?
-  ModifiedOn                    DateTime              @default(now()) @updatedAt
-  DeletedOn                     DateTime?
-  CreatedById                   String?
-  ModifiedById                  String?
-  DeletedById                   String?
-  ImageUrl                      String?               // Example change
-  CategoryId    String?     // Temporarily nullable to allow migration
-  Category      Category?   @relation(fields: [CategoryId], references: [CategoryId])             
-  Size                          Size
-  Color                         String
-  Cost                          Float                 // Changed from Decimal
-  Available                     Int
-  Tags                          String?
-  Comments                      Comment[]  // One-to-many relationship with Comment model
-  AverageRating                 Float?     // Store the average rating for the product                     
-
+  ProductId     String      @id @default(uuid()) @map("_id")
+  Name          String
+  About         String
+  Cost          Float
+  Size          String?      // Added Size field
+  Color         String?      // Added Color field
+  Available     Int?         // Added Available field
+  Tags          String?     // Added Tags field
+  AverageRating Float?      // Added AverageRating field
+  CategoryId    String      // Foreign key for Category
+  Category      Category    @relation(fields: [CategoryId], references: [CategoryId])
+  Disabled      Boolean     @default(false)
+  Deleted       Boolean     @default(false)
+  CreatedOn     DateTime    @default(now())
+  ModifiedOn    DateTime    @updatedAt
+  DeletedOn     DateTime?
+  CreatedById   String?
+  ModifiedById  String?
+  DeletedById   String?
+  ImageUrl      String?
+  IsActive      Boolean     @default(true)
+  Colors        Color[]
+  wishlists     Wishlist[]  @relation(fields: [wishlistIds], references: [WishlistId])
+  wishlistIds   String[]
 }
 
-model Category {
-  CategoryId  String    @id @default(uuid()) @map("_id")
-  Name        String    // Remove @db.VarChar
-  Deleted                       Boolean               @default(false) // Optional or required
-  Products    Product[] // One-to-many relationship with products
+// Size model to handle size information for each color of a product
+model Size {
+  SizeId          String   @id @default(uuid()) @map("_id")
+  Size            String
+  Stock           Int
+  PriceAdjustment Float
+  IsAvailable     Boolean  @default(true)
+  Color           Color    @relation(fields: [ColorId], references: [ColorId])
+  ColorId         String
 }
 
-
-model Comment {
-  CommentId      String     @id @default(uuid()) @map("_id")
-  Content        String     // Remove @db.Text
-  Rating         Int        // Rating given by the user (e.g., 1 to 5)
-  CreatedOn      DateTime   @default(now()) // Time when the comment was created
-  ModifiedOn      DateTime   @updatedAt // Automatically updated time for the comment
-  ProductId      String     // Foreign key to the Product
-  Product        Product    @relation(fields: [ProductId], references: [ProductId])
-  UserId         String?    // Foreign key to a User if necessary
-  User           User?      @relation(fields: [UserId], references: [UserId])
+// Color model to handle color information for each product
+model Color {
+  ColorId      String     @id @default(uuid()) @map("_id")
+  ColorName    String
+  ColorCode    String
+  Images       String[]
+  Product      Product    @relation(fields: [ProductId], references: [ProductId])
+  ProductId    String
+  Sizes        Size[]
 }
 
+model Cart {
+  CartId       String      @id @default(uuid()) @map("_id")
+  UserId       String      @unique
+  User         User        @relation(fields: [UserId], references: [UserId])
+  Items        CartItem[]
+  CreatedOn    DateTime    @default(now())
+  ModifiedOn   DateTime    @updatedAt
+}
 
-enum Size {
-  S
-  M
-  L
-  XL
-  SIZE_2XL
-  SIZE_3XL
-  SIZE_4XL
-  SIZE_5XL
+model Order {
+  OrderId          String       @id @default(uuid()) @map("_id")
+  UserId           String
+  User             User         @relation(fields: [UserId], references: [UserId])
+  ShippingAddress  Address
+  Status           OrderStatus  @default(PENDING)
+  TotalAmount      Float
+  PaymentStatus    PaymentStatus
+  PaymentMethod    String
+  Items            OrderItem[]
+  OrderDate        DateTime     @default(now())
+  DeliveryDate     DateTime?
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Wishlist {
+  WishlistId   String    @id @default(uuid()) @map("_id")
+  UserId       String    @unique
+  User         User      @relation(fields: [UserId], references: [UserId])
+  Products     Product[] @relation(fields: [ProductIds], references: [ProductId])
+  ProductIds   String[]
+  ModifiedOn   DateTime  @updatedAt
 }

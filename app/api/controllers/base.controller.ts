@@ -11,13 +11,13 @@ export class BaseController {
     return NextResponse.json(response);
   }
 
-  protected sendError(error: string | Error, status = 400): NextResponse {
+  protected sendError(error: string | Error): NextResponse {
     const errorResponse: ApiError = {
       error: true,
       message: error instanceof Error ? error.message : error,
       data: {},
     };
-    return NextResponse.json(errorResponse, { status });
+    return NextResponse.json(errorResponse);
   }
 
   protected async parseBody<T>(request: NextRequest): Promise<T> {
