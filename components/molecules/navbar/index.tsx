@@ -8,7 +8,7 @@ import { InputText } from "primereact/inputtext";
 const Navbar = () => {
   const dropDownValues = [{ name: "sleeves" }, { name: "hats" }];
   return (
-    <div className="bg-background h-[72px] flex  items-center justify-evenly">
+    <div className="bg-background h-[72px] flex  items-center justify-evenly md:justify-start md:pl-2 md:justify-between md:pr-2">
       <div className="relative">
         <Image
           src={"/images/icon.png"}
@@ -17,7 +17,7 @@ const Navbar = () => {
           width={117}
         ></Image>
       </div>
-      <div className="flex items-center justify-between gap-2 text-secondary  ">
+      <div className="flex items-center justify-between gap-2 text-secondary md:hidden ">
         <i
           className="pi pi-map-marker items-center "
           style={{ fontSize: "32px" }}
@@ -32,7 +32,7 @@ const Navbar = () => {
         options={dropDownValues}
         optionLabel="name"
         placeholder="Categories"
-        className="text-white flex items-center gap-[5px] p-dropdown"
+        className="text-white flex items-center gap-[5px] p-dropdown md:hidden"
         panelStyle={{
           backgroundColor: "white",
           color: "grey",
@@ -42,7 +42,7 @@ const Navbar = () => {
           borderRadius: "10px",
         }}
       ></Dropdown>
-      <div className="rounded-[10px] px-2 py-2 w-[45%]">
+      <div className="rounded-[10px] px-2 py-2 w-[45%] md:hidden">
         <IconField className="text-white bg-[white] gap-[5px] px-2 py-2   rounded-[10px]">
           <InputText
             placeholder="Search"
@@ -51,15 +51,24 @@ const Navbar = () => {
           <InputIcon className="pi pi-search text-[grey]"> </InputIcon>
         </IconField>
       </div>
-      <div className="flex text-white flex-col">
+      <div className="flex text-white flex-col md:hidden">
         <p className="text-[12px] font-[400] ">Sign in / Register</p>
         <p className="text-[16px] font-[600]">Orders & Account</p>
       </div>
 
-      <i
-        className=" pi pi-shopping-cart text-white"
-        style={{ fontSize: "32px" }}
-      ></i>
+      <div className="md:hidden">
+        <i
+          className=" pi pi-shopping-cart  text-white  "
+          style={{ fontSize: "32px" }}
+        ></i>
+      </div>
+
+      <div className="sm:visible md:visible lg:hidden">
+        <i
+          className=" pi pi-bars  text-white  "
+          style={{ fontSize: "32px" }}
+        ></i>
+      </div>
     </div>
   );
 };
