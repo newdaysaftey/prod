@@ -45,11 +45,11 @@ model User {
   LastName      String
   Role          Role        @default(USER)
   PasswordHash  String?
-  Disabled      Boolean     @default(false)
-  Deleted       Boolean     @default(false)
-  CreatedOn     DateTime    @default(now())
-  ModifiedOn    DateTime    @updatedAt
-  DeletedOn     DateTime?
+  IsActive      Boolean     @default(false)
+  IsDeleted       Boolean     @default(false)
+  CreatedAt     DateTime    @default(now())
+  UpdatedAt    DateTime    @updatedAt
+  DeletedAt     DateTime?
   CreatedById   String?
   ModifiedById  String?
   DeletedById   String?
@@ -60,9 +60,9 @@ model User {
   ImageUrl      String?
   Addresses     Address[]   // New field
   LastLogin     DateTime?   // New field
-  orders        Order[]     // New field
-  cart          Cart?       // New field
-  wishlist      Wishlist?   // New field
+  Orders        Order[]     // New field
+  Cart          Cart?       // New field
+  Wishlist      Wishlist?   // New field
 }
 
 enum Role {
@@ -73,7 +73,7 @@ enum Role {
 model Category {
   CategoryId    String    @id @default(uuid()) @map("_id")
   Name          String
-  Deleted       Boolean   @default(false)
+  IsDeleted       Boolean   @default(false)
   Products      Product[]
   CreatedOn     DateTime  @default(now())
   ModifiedOn    DateTime  @updatedAt
@@ -83,8 +83,8 @@ model Category {
 model Product {
   ProductId     String      @id @default(uuid()) @map("_id")
   Name          String
-  About         String
-  Cost          Float
+  Description   String
+  Base_price    Float
   Size          String?      // Added Size field
   Color         String?      // Added Color field
   Available     Int?         // Added Available field
@@ -92,19 +92,18 @@ model Product {
   AverageRating Float?      // Added AverageRating field
   CategoryId    String      // Foreign key for Category
   Category      Category    @relation(fields: [CategoryId], references: [CategoryId])
-  Disabled      Boolean     @default(false)
-  Deleted       Boolean     @default(false)
-  CreatedOn     DateTime    @default(now())
-  ModifiedOn    DateTime    @updatedAt
-  DeletedOn     DateTime?
+  IsDeleted       Boolean     @default(false)
+  CreatedAt     DateTime    @default(now())
+  ModifiedAt    DateTime    @updatedAt
+  DeletedAt     DateTime?
   CreatedById   String?
   ModifiedById  String?
   DeletedById   String?
   ImageUrl      String?
   IsActive      Boolean     @default(true)
   Colors        Color[]
-  wishlists     Wishlist[]  @relation(fields: [wishlistIds], references: [WishlistId])
-  wishlistIds   String[]
+  Wishlists     Wishlist[]  @relation(fields: [WishlistIds], references: [WishlistId])
+  WishlistIds   String[]
 }
 
 // Size model to handle size information for each color of a product

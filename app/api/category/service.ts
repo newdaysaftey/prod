@@ -21,7 +21,7 @@ export class CategoryService extends BaseService {
   async getCategory() {
     const category = await prisma.category.findMany({
       where: {
-        Deleted: false,
+        IsDeleted: false,
       },
       select: {
         CategoryId: true,

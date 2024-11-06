@@ -4,9 +4,9 @@ import prisma from "@/lib/prisma";
 
 interface ProductData {
   Name: string;
-  About: string;
+  Description: string;
   ImageUrl: string;
-  Cost: any;
+  Base_price: any;
   CategoryId: string;
 }
 
@@ -34,8 +34,8 @@ export class ProductService extends BaseService {
     const product = await prisma.product.create({
       data: {
         Name: data.Name,
-        About: data.About,
-        Cost: data.Cost,
+        Description: data.Description,
+        Base_price: data.Base_price,
         ImageUrl: data.ImageUrl,
         Category: {
           connect: { CategoryId: data.CategoryId }, // Connects existing category
@@ -109,13 +109,14 @@ export class ProductService extends BaseService {
   async getProduct() {
     const products = await prisma.product.findMany({
       where: {
-        Deleted: false,
+        IsDeleted: false,
+        IsActive: true,
       },
       select: {
         ProductId: true,
         Name: true,
-        About: true,
-        Cost: true,
+        Description: true,
+        Base_price: true,
         Category: {
           select: {
             CategoryId: true,
@@ -141,8 +142,8 @@ export class ProductService extends BaseService {
       acc[categoryId].Products.push({
         ProductId: product.ProductId,
         Name: product.Name,
-        About: product.About,
-        Cost: product.Cost,
+        About: product.Description,
+        Cost: product.Base_price,
         Colors: product.Colors,
       });
       return acc;

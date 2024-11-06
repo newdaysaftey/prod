@@ -18,9 +18,9 @@ interface ColorBody {
 interface ProductBody {
   step: number;
   Name: string;
-  About: string;
+  Description: string;
   ImageUrl: string;
-  Cost: any;
+  Base_price: any;
   CategoryId: string;
   ProductId: string;
   Colors: ColorBody[];
@@ -40,9 +40,9 @@ export class ProductController extends BaseController {
       const {
         step,
         Name,
-        About,
+        Description,
         ImageUrl,
-        Cost,
+        Base_price,
         CategoryId,
         ProductId,
         Colors,
@@ -50,9 +50,9 @@ export class ProductController extends BaseController {
       if (step === 1) {
         const category = await this.service.createProduct({
           Name,
-          About,
+          Description,
           ImageUrl,
-          Cost,
+          Base_price,
           CategoryId,
         });
         return this.sendSuccess(category, "Product created successfully");

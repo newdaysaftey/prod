@@ -37,7 +37,7 @@ export class SigninService extends BaseService {
     }
 
     const token = jwt.sign(
-      { userId: user.UserId, email: user.Email, role: user.Role },
+      { UserId: user.UserId, Email: user.Email, Role: user.Role },
       this.JWT_SECRET,
       { expiresIn: "1h" }
     );
