@@ -1,0 +1,220 @@
+// services/signup.service.ts
+import { BaseService } from "@/app/api/services/base.service";
+import prisma from "@/lib/prisma";
+
+interface CartItemData {
+  ProductId: string;
+  ColorId: string;
+  SizeId: string;
+  Quantity: number;
+  PriceAtTime: number;
+}
+
+interface CartData {
+  UserId: string;
+  Items: CartItemData[];
+}
+
+interface cartItemsWithDetails {
+  subtotal: number;
+  ProductId: any;
+  ColorId: any;
+  SizeId: any;
+  PriceAtTime: number;
+  Quantity: number;
+}
+
+export class CartService extends BaseService {
+  async addtoCart(data: CartData) {
+    const existingCart = await prisma.cart.findUnique({
+      where: { UserId: data.UserId },
+    });
+
+    for (const item of data.Items) {
+      // Verify product exists and is active
+      const product = await prisma.product.findFirst({
+        where: {
+          ProductId: item.ProductId,
+          IsActive: true,
+          IsDeleted: false,
+        },
+        include: {
+          Colors: {
+            include: {
+              Sizes: true,
+            },
+          },
+        },
+      });
+
+      if (!product) {
+        throw new Error(`Product ${item.ProductId} not found or inactive`);
+      }
+
+      // Verify color exists for the product
+      const color = product.Colors.find((c) => c.ColorId === item.ColorId);
+      if (!color) {
+        throw new Error(
+          `Color ${item.ColorId} not found for product ${item.ProductId}`
+        );
+      }
+
+      // Verify size exists for the color and has sufficient stock
+      const size = color.Sizes.find((s) => s.SizeId === item.SizeId);
+      if (!size) {
+        throw new Error(
+          `Size ${item.SizeId} not found for color ${item.ColorId}`
+        );
+      }
+
+      if (!size.IsAvailable || size.Stock < item.Quantity) {
+        throw new Error(
+          `Insufficient stock for product ${item.ProductId} in selected color and size`
+        );
+      }
+
+      // Calculate correct price
+      const finalPrice = product.Base_price + size.PriceAdjustment;
+      item.PriceAtTime = finalPrice;
+    }
+
+    const cart = await prisma.cart.upsert({
+      where: {
+        UserId: data.UserId,
+      },
+      update: {
+        Items: data.Items,
+      },
+      create: {
+        UserId: data.UserId,
+        Items: data.Items,
+      },
+      include: {
+        User: {
+          select: {
+            Username: true,
+            Email: true,
+          },
+        },
+      },
+    });
+    return cart;
+  }
+
+  async getCart(UserId: string) {
+    const cart = await prisma.cart.findUnique({
+      where: {
+        UserId: UserId,
+      },
+      select: {
+        Items: true,
+        UserId: true,
+        CartId: true,
+      },
+    });
+    if (!cart) {
+      return null;
+    }
+
+    const cartItemsWithDetails: cartItemsWithDetails[] = await Promise.all(
+      cart.Items.map(async (item) => {
+        // Get product details
+        const product = await prisma.product.findUnique({
+          where: {
+            ProductId: item.ProductId,
+            IsDeleted: false,
+            IsActive: true,
+          },
+          select: {
+            ProductId: true,
+            Name: true,
+            Base_price: true,
+            CategoryId: true,
+            ImageUrl: true,
+          },
+        });
+
+        if (!product) {
+          throw new Error(
+            `Product ${item.ProductId} not found or is no longer available`
+          );
+        }
+
+        // Get color details with its sizes
+        const color = await prisma.color.findUnique({
+          where: {
+            ColorId: item.ColorId,
+          },
+          select: {
+            ColorId: true,
+            ColorCode: true,
+            ColorName: true,
+            Images: true,
+          },
+        });
+
+        if (!color) {
+          throw new Error(`Color ${item.ColorId} not found`);
+        }
+
+        // Get specific size details
+        const size = await prisma.size.findUnique({
+          where: {
+            SizeId: item.SizeId,
+          },
+          select: {
+            SizeId: true,
+            Size: true,
+            Stock: true,
+            PriceAdjustment: true,
+          },
+        });
+
+        if (!size) {
+          throw new Error(`Size ${item.SizeId} not found`);
+        }
+
+        // Calculate subtotal for this item
+        const subtotal = item.PriceAtTime * item.Quantity;
+
+        return {
+          ...item,
+          product,
+          color,
+          size,
+          subtotal,
+        };
+      })
+    );
+
+    const totalAmount = cartItemsWithDetails.reduce(
+      (sum, item) => sum + item.subtotal,
+      0
+    );
+    return {
+      ...cart,
+      Items: cartItemsWithDetails,
+      totalAmount,
+    };
+    // return {
+    //   ...cart,
+    //   Items: cartItemsWithDetails.map((item) => ({
+    //     ...item,
+    //     product: {
+    //       ...item.product,
+    //       currentPrice: item.product.Base_price + item.size.PriceAdjustment,
+    //       stockAvailable: item.size.Stock,
+    //       isAvailable: item.size.IsAvailable,
+    //     },
+    //     color: {
+    //       ...item.color,
+    //       availableSizes: item.color.Sizes.filter(
+    //         (s: { IsAvailable: any; Stock: number }) =>
+    //           s.IsAvailable && s.Stock > 0
+    //       ),
+    //     },
+    //   })),
+    //   totalAmount,
+    // };
+  }
+}

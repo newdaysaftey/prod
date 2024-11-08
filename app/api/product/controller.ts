@@ -22,6 +22,8 @@ interface ProductBody {
   ImageUrl: string;
   Base_price: any;
   CategoryId: string;
+  ColorId: string;
+  SizeId: string;
   ProductId: string;
   Colors: ColorBody[];
 }
@@ -45,6 +47,8 @@ export class ProductController extends BaseController {
         Base_price,
         CategoryId,
         ProductId,
+        ColorId,
+        SizeId,
         Colors,
       } = body as ProductBody;
       if (step === 1) {
@@ -54,20 +58,20 @@ export class ProductController extends BaseController {
           ImageUrl,
           Base_price,
           CategoryId,
-        });
-        return this.sendSuccess(category, "Product created successfully");
-      } else if (step === 2) {
-        const color = await this.service.addColortoProduct({
           ProductId,
-          Colors,
         });
-        return this.sendSuccess(color, "added color to the product");
-      } else if (step === 3) {
+        return this.sendSuccess(
+          category,
+          "Product created/updated successfully"
+        );
+      } else if (step === 2) {
         const sizes = await this.service.addColorWithSizes({
           ProductId,
           Colors,
+          ColorId,
+          SizeId,
         });
-        return this.sendSuccess(sizes, "added sizes to the product");
+        return this.sendSuccess(sizes, "added colors & sizes to the product");
       }
       return this.sendError("step is required");
     } catch (error) {
@@ -79,6 +83,15 @@ export class ProductController extends BaseController {
     try {
       const products = await this.service.getProduct();
       return this.sendSuccess(products, "Products fetched successfully");
+    } catch (error) {
+      return this.sendError(error as Error);
+    }
+  }
+
+  async getProductById(ProductId: string) {
+    try {
+      const products = await this.service.getProductById(ProductId);
+      return this.sendSuccess(products, "Product fetched successfully");
     } catch (error) {
       return this.sendError(error as Error);
     }
