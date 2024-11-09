@@ -1,11 +1,20 @@
-// services/signup.service.ts
 import { BaseService } from "@/app/api/services/base.service";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+import { v2 as cloudinary } from "cloudinary";
+import { randomUUID } from "crypto";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 interface ProductData {
   Name: string;
   Description: string;
-  ImageUrl: string;
+  ImageFile: File;
   Base_price: any;
   CategoryId: string;
   ProductId: string;
@@ -36,128 +45,252 @@ interface PaginationParams {
   page?: number;
   limit?: number;
   categoryId?: string;
-}
-
-interface PaginatedResponse {
-  data: any[];
-  metadata: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    itemsPerPage: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-  };
+  search?: string;
 }
 
 export class ProductService extends BaseService {
-  async createProduct(data: ProductData) {
-    const product = await prisma.product.upsert({
-      where: {
-        ProductId: data.ProductId,
-      },
-      update: {
-        Name: data.Name,
-        Description: data.Description,
-        Base_price: data.Base_price,
-        ImageUrl: data.ImageUrl,
-        Category: {
-          connect: { CategoryId: data.CategoryId }, // Connects existing category
+  private async uploadToCloudinary(
+    buffer: Buffer,
+    folder: string
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: `products/${folder}`,
+          resource_type: "auto",
         },
-      },
-      create: {
-        Name: data.Name,
-        Description: data.Description,
-        Base_price: data.Base_price,
-        ImageUrl: data.ImageUrl,
-        Category: {
-          connect: { CategoryId: data.CategoryId }, // Connects existing category
-        },
-      },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result!.secure_url);
+        }
+      );
+
+      uploadStream.end(buffer);
     });
-    return product;
   }
 
-  async addColorWithSizes(data: AddColorData) {
-    if (data.ColorId || data.ProductId) {
-      const createColors = await Promise.all(
-        data.Colors.map(async (color) => {
-          const createdColor = await prisma.color.upsert({
-            where: {
-              ColorId: data.ColorId,
-            },
-            update: {
-              ColorName: color.ColorName,
-              ColorCode: color.ColorCode,
-              Images: color.Images,
-              Product: {
-                connect: { ProductId: data.ProductId },
-              },
-            },
-            create: {
-              ColorName: color.ColorName,
-              ColorCode: color.ColorCode,
-              Images: color.Images,
-              Product: {
-                connect: { ProductId: data.ProductId },
-              },
+  async createProduct(data: ProductData) {
+    try {
+      // Generate ProductId if not provided
+      const productId = data.ProductId || randomUUID();
+
+      // First, create/update the product without the image
+      const product = await prisma.product.upsert({
+        where: {
+          ProductId: productId,
+        },
+        update: {
+          Name: data.Name,
+          Description: data.Description,
+          Base_price: data.Base_price,
+          Category: {
+            connect: { CategoryId: data.CategoryId },
+          },
+          ModifiedAt: new Date(), // Add this if you want to track updates
+        },
+        create: {
+          ProductId: productId,
+          Name: data.Name,
+          Description: data.Description,
+          Base_price: data.Base_price,
+          Category: {
+            connect: { CategoryId: data.CategoryId },
+          },
+        },
+      });
+
+      // Then handle image upload if provided
+      if (data.ImageFile) {
+        try {
+          // Convert File to Buffer
+          const arrayBuffer = await data.ImageFile.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+
+          // If there's an existing image, delete it from Cloudinary
+          if (product.ImageUrl) {
+            try {
+              // Extract public_id from the existing URL
+              const publicId = product.ImageUrl.split("/")
+                .slice(-2)
+                .join("/")
+                .split(".")[0];
+              await cloudinary.uploader.destroy(
+                `products/${productId}/${publicId}`
+              );
+            } catch (error) {
+              console.error("Error deleting old image:", error);
+            }
+          }
+
+          // Upload new image to Cloudinary with the product ID in the folder structure
+          const imageUrl = await this.uploadToCloudinary(
+            buffer,
+            `${productId}`
+          );
+
+          // Update the product with the new image URL
+          const updatedProduct = await prisma.product.update({
+            where: { ProductId: productId },
+            data: {
+              ImageUrl: imageUrl,
+              ModifiedAt: new Date(),
             },
           });
 
-          const createdSizes = await Promise.all(
-            color.Sizes.map((size) =>
-              prisma.size.upsert({
-                where: {
-                  SizeId: data.SizeId,
-                },
-                update: {
-                  Size: size.size,
-                  Stock: size.stock,
-                  PriceAdjustment: size.priceAdjustment,
-                  ColorId: createdColor.ColorId,
-                },
-                create: {
-                  Size: size.size,
-                  Stock: size.stock,
-                  PriceAdjustment: size.priceAdjustment,
-                  ColorId: createdColor.ColorId,
-                },
-              })
-            )
-          );
+          return updatedProduct;
+        } catch (error) {
+          console.error("Image upload failed:", error);
+          // Return the product even if image upload fails
+          return product;
+        }
+      }
 
-          return {
-            Color: createdColor,
-            Sizes: createdSizes,
-          };
-        })
-      );
-      return createColors;
-    } else {
-      return "Error in creating/updating the color's and size's";
+      return product;
+    } catch (error) {
+      console.error("Product creation/update failed:", error);
+      throw error;
     }
-
-    // return createColors;
   }
 
-  async getProduct(params: PaginationParams = {}): Promise<PaginatedResponse> {
+  async addColorWithSizes(data: AddColorData) {
+    if (!data.ProductId) {
+      throw new Error("ProductId is required");
+    }
+
+    const createColors = await Promise.all(
+      data.Colors.map(async (color) => {
+        const uploadedImages: string[] = [];
+        const existingColor = await prisma.color.findUnique({
+          where: { ColorId: data.ColorId },
+          select: { Images: true },
+        });
+
+        if (color.Images && color.Images.length > 0) {
+          for (const imageUrl of color.Images) {
+            try {
+              if (imageUrl.startsWith("data:")) {
+                // If updating, delete old images from Cloudinary
+                if (existingColor && existingColor.Images.length > 0) {
+                  for (const oldImage of existingColor.Images) {
+                    try {
+                      const publicId = oldImage
+                        .split("/")
+                        .slice(-2)
+                        .join("/")
+                        .split(".")[0];
+                      await cloudinary.uploader.destroy(
+                        `products/${data.ProductId}/colors/${publicId}`
+                      );
+                    } catch (error) {
+                      console.error("Error deleting old color image:", error);
+                    }
+                  }
+                }
+
+                // Handle base64 image data
+                const base64Data = imageUrl.split(",")[1];
+                const buffer = Buffer.from(base64Data, "base64");
+
+                const uploadedUrl = await this.uploadToCloudinary(
+                  buffer,
+                  `${data.ProductId}/colors/${color.ColorName}`
+                );
+                uploadedImages.push(uploadedUrl);
+              } else {
+                // Keep existing URLs
+                uploadedImages.push(imageUrl);
+              }
+            } catch (error) {
+              console.error(
+                `Failed to upload image for color ${color.ColorName}:`,
+                error
+              );
+              continue;
+            }
+          }
+        }
+
+        const colorId = data.ColorId || randomUUID();
+        const createdColor = await prisma.color.upsert({
+          where: {
+            ColorId: colorId,
+          },
+          update: {
+            ColorName: color.ColorName,
+            ColorCode: color.ColorCode,
+            Images: uploadedImages.length > 0 ? uploadedImages : undefined,
+            Product: {
+              connect: { ProductId: data.ProductId },
+            },
+            // : new Date(),
+          },
+          create: {
+            ColorId: colorId,
+            ColorName: color.ColorName,
+            ColorCode: color.ColorCode,
+            Images: uploadedImages,
+            Product: {
+              connect: { ProductId: data.ProductId },
+            },
+          },
+        });
+
+        const createdSizes = await Promise.all(
+          color.Sizes.map(async (size) => {
+            const sizeId = data.SizeId || randomUUID();
+            return prisma.size.upsert({
+              where: {
+                SizeId: sizeId,
+              },
+              update: {
+                Size: size.size,
+                Stock: size.stock,
+                PriceAdjustment: size.priceAdjustment,
+                ColorId: createdColor.ColorId,
+                // UpdatedAt: new Date(),
+              },
+              create: {
+                SizeId: sizeId,
+                Size: size.size,
+                Stock: size.stock,
+                PriceAdjustment: size.priceAdjustment,
+                ColorId: createdColor.ColorId,
+              },
+            });
+          })
+        );
+
+        return {
+          Color: createdColor,
+          Sizes: createdSizes,
+        };
+      })
+    );
+
+    return createColors;
+  }
+
+  async getProduct(params: PaginationParams = {}): Promise<any> {
     const page = params.page || 1;
     const limit = params.limit || 10;
     const skip = (page - 1) * limit;
 
-    // Base where clause
     const whereClause = {
       IsDeleted: false,
       IsActive: true,
       ...(params.categoryId && { CategoryId: params.categoryId }),
+      ...(params.search && {
+        Tags: {
+          contains: params.search,
+          mode: "insensitive" as Prisma.QueryMode, // Correct type for case-insensitive search
+        },
+      }),
     };
 
-    // Get total count for pagination
     const totalItems = await prisma.product.count({
       where: whereClause,
     });
 
-    // Get paginated products
     const products = await prisma.product.findMany({
       where: whereClause,
       skip,
@@ -173,6 +306,7 @@ export class ProductService extends BaseService {
             Name: true,
           },
         },
+        Tags: true,
         Colors: {
           select: {
             ColorId: true,
@@ -192,11 +326,10 @@ export class ProductService extends BaseService {
         },
       },
       orderBy: {
-        CreatedAt: "desc", // Most recent first
+        CreatedAt: "desc",
       },
     });
 
-    // Group by category
     const groupedByCategory = products.reduce((acc, product) => {
       const categoryId = product.Category.CategoryId;
       if (!acc[categoryId]) {
@@ -210,6 +343,7 @@ export class ProductService extends BaseService {
         Name: product.Name,
         Description: product.Description,
         Base_price: product.Base_price,
+        Tags: product.Tags,
         Colors: product.Colors.map((color) => ({
           ...color,
           Sizes: color.Sizes.filter(
@@ -220,11 +354,9 @@ export class ProductService extends BaseService {
       return acc;
     }, {} as Record<string, any>);
 
-    // Calculate pagination metadata
     const totalPages = Math.ceil(totalItems / limit);
 
-    // Prepare paginated response
-    const paginatedResponse: PaginatedResponse = {
+    return {
       data: Object.values(groupedByCategory),
       metadata: {
         currentPage: page,
@@ -235,14 +367,12 @@ export class ProductService extends BaseService {
         hasPreviousPage: page > 1,
       },
     };
-
-    return paginatedResponse;
   }
 
   async getProductById(ProductId: string) {
-    const product = await prisma.product.findUnique({
+    return prisma.product.findUnique({
       where: {
-        ProductId: ProductId,
+        ProductId,
         IsDeleted: false,
         IsActive: true,
       },
@@ -266,9 +396,8 @@ export class ProductService extends BaseService {
             Sizes: true,
           },
         },
+        Tags: true,
       },
     });
-
-    return product;
   }
 }
