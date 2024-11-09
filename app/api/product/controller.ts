@@ -1,5 +1,6 @@
 import { BaseController } from "@/app/api/controllers/base.controller";
 import { ProductService } from "./service";
+import { NextRequest } from "next/server";
 
 interface SizeInput {
   size: string;
@@ -79,9 +80,24 @@ export class ProductController extends BaseController {
     }
   }
 
-  async getProduct() {
+  async getProduct(request: NextRequest) {
     try {
-      const products = await this.service.getProduct();
+      const searchParams = request.nextUrl.searchParams;
+      const page = parseInt(searchParams.get("page") || "1");
+      const limit = parseInt(searchParams.get("limit") || "10");
+      const categoryId = searchParams.get("categoryId") || undefined;
+
+      // Validate pagination parameters
+      if (page < 1 || limit < 1 || limit > 100) {
+        return this.sendError("Invalid pagination parameters");
+      }
+
+      const products = await this.service.getProduct({
+        page,
+        limit,
+        categoryId,
+      });
+      // const products = await this.service.getProduct();
       return this.sendSuccess(products, "Products fetched successfully");
     } catch (error) {
       return this.sendError(error as Error);

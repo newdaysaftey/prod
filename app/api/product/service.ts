@@ -32,6 +32,24 @@ interface AddColorData {
   Colors: ColorData[];
 }
 
+interface PaginationParams {
+  page?: number;
+  limit?: number;
+  categoryId?: string;
+}
+
+interface PaginatedResponse {
+  data: any[];
+  metadata: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+}
+
 export class ProductService extends BaseService {
   async createProduct(data: ProductData) {
     const product = await prisma.product.upsert({
@@ -122,12 +140,28 @@ export class ProductService extends BaseService {
     // return createColors;
   }
 
-  async getProduct() {
+  async getProduct(params: PaginationParams = {}): Promise<PaginatedResponse> {
+    const page = params.page || 1;
+    const limit = params.limit || 10;
+    const skip = (page - 1) * limit;
+
+    // Base where clause
+    const whereClause = {
+      IsDeleted: false,
+      IsActive: true,
+      ...(params.categoryId && { CategoryId: params.categoryId }),
+    };
+
+    // Get total count for pagination
+    const totalItems = await prisma.product.count({
+      where: whereClause,
+    });
+
+    // Get paginated products
     const products = await prisma.product.findMany({
-      where: {
-        IsDeleted: false,
-        IsActive: true,
-      },
+      where: whereClause,
+      skip,
+      take: limit,
       select: {
         ProductId: true,
         Name: true,
@@ -145,12 +179,24 @@ export class ProductService extends BaseService {
             ColorName: true,
             ColorCode: true,
             Images: true,
-            Sizes: true,
+            Sizes: {
+              select: {
+                SizeId: true,
+                Size: true,
+                Stock: true,
+                PriceAdjustment: true,
+                IsAvailable: true,
+              },
+            },
           },
         },
       },
+      orderBy: {
+        CreatedAt: "desc", // Most recent first
+      },
     });
 
+    // Group by category
     const groupedByCategory = products.reduce((acc, product) => {
       const categoryId = product.Category.CategoryId;
       if (!acc[categoryId]) {
@@ -164,15 +210,33 @@ export class ProductService extends BaseService {
         Name: product.Name,
         Description: product.Description,
         Base_price: product.Base_price,
-        Colors: product.Colors,
+        Colors: product.Colors.map((color) => ({
+          ...color,
+          Sizes: color.Sizes.filter(
+            (size) => size.IsAvailable && size.Stock > 0
+          ),
+        })),
       });
       return acc;
     }, {} as Record<string, any>);
 
-    // Convert the grouped object to an array
-    return Object.values(groupedByCategory);
+    // Calculate pagination metadata
+    const totalPages = Math.ceil(totalItems / limit);
 
-    // return products;
+    // Prepare paginated response
+    const paginatedResponse: PaginatedResponse = {
+      data: Object.values(groupedByCategory),
+      metadata: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+        itemsPerPage: limit,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
+
+    return paginatedResponse;
   }
 
   async getProductById(ProductId: string) {
