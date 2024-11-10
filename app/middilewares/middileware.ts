@@ -8,7 +8,7 @@ type AuthResult = { success: true; User: JWTPayload } | NextResponse;
 export async function verifyToken(request: NextRequest): Promise<AuthResult> {
   try {
     // Get token from cookies instead of headers
-    const token = request.cookies.get("token")?.value;
+    const token = request.cookies.get("authToken")?.value;
 
     if (!token) {
       return NextResponse.json(

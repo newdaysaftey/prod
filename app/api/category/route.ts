@@ -55,10 +55,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      return await controller.createCategory({
-        ...body,
-        userId: authResult.User.Id, // Pass authenticated user ID if needed
-      });
+      return await controller.createCategory(body);
     } catch (error) {
       return handleError(error);
     }
@@ -72,18 +69,7 @@ export async function GET(request: NextRequest) {
       // Optional: Add query parameter handling if needed
       const response = await controller.getCategory();
 
-      if (!response) {
-        return NextResponse.json(
-          { success: false, error: true, message: "Categories not found" },
-          { status: 404 }
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        error: false,
-        data: response,
-      });
+      return response;
     } catch (error) {
       return handleError(error);
     }
