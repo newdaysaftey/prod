@@ -44,7 +44,6 @@ export default function SignUpPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-xl shadow-xl p-8">
         <div className="flex flex-col items-center mb-8">
-          <UserPlus className="h-12 w-12 text-blue-600 mb-2" />
           <h1 className="text-2xl font-bold text-gray-900">Create Account</h1>
           <p className="text-gray-600 text-sm">Join us today!</p>
         </div>
