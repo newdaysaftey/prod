@@ -1,5 +1,3 @@
-// middleware/auth.middleware.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { JWTPayload, UserRole } from "@/app/types/global";
@@ -9,27 +7,15 @@ type AuthResult = { success: true; User: JWTPayload } | NextResponse;
 
 export async function verifyToken(request: NextRequest): Promise<AuthResult> {
   try {
-    const authHeader = request.headers.get("authorization");
+    // Get token from cookies instead of headers
+    const token = request.cookies.get("token")?.value;
 
-    if (!authHeader) {
+    if (!token) {
       return NextResponse.json(
         {
           success: false,
           error: true,
           message: "Access denied. No token provided.",
-        },
-        { status: 401 }
-      );
-    }
-
-    const [bearer, token] = authHeader.split(" ");
-
-    if (bearer !== "Bearer" || !token) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: true,
-          message: "Invalid authorization format.",
         },
         { status: 401 }
       );
