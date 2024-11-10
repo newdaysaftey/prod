@@ -1,5 +1,5 @@
 import { BaseController } from "@/app/api/controllers/base.controller";
-import { SignupService } from "./signup.service";
+import { SignupService } from "./service";
 
 interface SignupRequestBody {
   Email: string;
