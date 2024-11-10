@@ -6,34 +6,6 @@ import { useMemo, useState } from "react";
 import { getAdminProducts } from "@/lib/FE/api";
 import Link from "next/link";
 
-// Dummy data for demonstration
-const products = [
-  {
-    id: 1,
-    name: "Classic White T-Shirt",
-    price: 29.99,
-    stock: 150,
-    variants: 3,
-    status: "In Stock",
-  },
-  {
-    id: 2,
-    name: "Denim Blue Jeans",
-    price: 79.99,
-    stock: 80,
-    variants: 5,
-    status: "Low Stock",
-  },
-  {
-    id: 3,
-    name: "Leather Jacket",
-    price: 199.99,
-    stock: 25,
-    variants: 2,
-    status: "In Stock",
-  },
-];
-
 export function ProductList() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -51,9 +23,8 @@ export function ProductList() {
     );
   if (error) return <p>Error: {error.message}</p>;
 
-  const viewData = data?.data?.data;
+  const viewData = data?.data?.data.flatMap((e: any) => e.Products);
   console.log(viewData);
-  // }, [data]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br p-4 sm:p-8">
@@ -127,7 +98,7 @@ export function ProductList() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                {products.map((product) => (
+                {viewData.map((product: any) => (
                   <motion.tr
                     key={product.id}
                     initial={{ opacity: 0 }}
@@ -136,11 +107,11 @@ export function ProductList() {
                     className="group"
                   >
                     <td className="px-6 py-4">
-                      <span className="font-medium">{product.name}</span>
+                      <span className="font-medium">{product.Name}</span>
                     </td>
-                    <td className="px-6 py-4">${product.price.toFixed(2)}</td>
-                    <td className="px-6 py-4">{product.stock}</td>
-                    <td className="px-6 py-4">{product.variants}</td>
+                    <td className="px-6 py-4">${product.Base_price}</td>
+                    <td className="px-6 py-4"> </td>
+                    <td className="px-6 py-4">{product.Colors.length}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
@@ -159,7 +130,7 @@ export function ProductList() {
                           whileTap={{ scale: 0.9 }}
                         >
                           <Link
-                            href={`/admin/products/${product.id}`}
+                            href={`/admin/products/${product.ProductId}`}
                             className="p-2 text-slate-400 hover:text-indigo-500 transition-colors"
                           >
                             <Eye className="h-5 w-5" />
@@ -170,7 +141,7 @@ export function ProductList() {
                           whileTap={{ scale: 0.9 }}
                         >
                           <Link
-                            href={`/admin/products/${product.id}/edit`}
+                            href={`/admin/products/${product.ProductId}/edit`}
                             className="p-2 text-slate-400 hover:text-indigo-500 transition-colors"
                           >
                             <Edit className="h-5 w-5" />

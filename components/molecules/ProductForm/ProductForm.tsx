@@ -3,18 +3,102 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Package, ArrowLeft, Save } from "lucide-react";
 import { ColorVariant } from "./ColorVariant";
+import { z } from "zod";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-export function ProductForm() {
+// Zod schema for product form validation
+const productSchema = z.object({
+  Name: z.string().min(1, "Product name is required"),
+  Description: z.string().min(1, "Description is required"),
+  Base_price: z.number().min(0.01, "Base price must be greater than 0"),
+  Available: z.number().min(0, "Quantity must be non-negative"),
+  Tags: z.string(),
+  AverageRating: z.number().min(0).max(5).optional(),
+  CategoryId: z.string().uuid("Invalid category ID"),
+  ProductId: z.string().optional(),
+  step: z.number(),
+  discount: z.number().min(0).max(100).optional(),
+});
+
+type ProductFormData = z.infer<typeof productSchema>;
+
+// API functions
+const fetchProduct = async (productId: string) => {
+  const response = await fetch(
+    `http://localhost:3000/api/product/${productId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+      },
+    }
+  );
+  if (!response.ok) throw new Error("Failed to fetch product");
+  return response.json();
+};
+
+const saveProduct = async (data: ProductFormData) => {
+  const response = await fetch("http://localhost:3000/api/product/", {
+    method: data.ProductId ? "PUT" : "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error("Failed to save product");
+  return response.json();
+};
+
+export function ProductForm({ productId }: { productId?: string }) {
   const [step, setStep] = useState(1);
   const [colorVariants, setColorVariants] = useState([0]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (step === 1) {
-      setStep(2);
-    } else {
-      console.log("Form submitted");
-    }
+  // Form setup with react-hook-form and zod validation
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    setValue,
+  } = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      step: 1,
+      AverageRating: 0,
+      discount: 0,
+    },
+  });
+
+  // Query for fetching product data if editing
+  const { data: productData, isLoading } = useQuery({
+    queryKey: ["product", productId],
+    queryFn: () => fetchProduct(productId!),
+    enabled: !!productId,
+    onSuccess: (data: any) => {
+      reset(data);
+    },
+  });
+
+  // Mutation for saving product
+  const mutation = useMutation({
+    mutationFn: saveProduct,
+    onSuccess: (data) => {
+      if (step === 1) {
+        setStep(2);
+      } else {
+        console.log("Product saved successfully:", data);
+        // Handle success (e.g., show notification, redirect)
+      }
+    },
+  });
+
+  const onSubmit = (data: ProductFormData) => {
+    mutation.mutate({
+      ...data,
+      step,
+    });
   };
 
   const addColorVariant = () => {
@@ -24,6 +108,10 @@ export function ProductForm() {
   const removeColorVariant = (index: number) => {
     setColorVariants((prev) => prev.filter((_, i) => i !== index));
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4 sm:p-8">
@@ -37,10 +125,11 @@ export function ProductForm() {
             <div>
               <h1 className="text-3xl font-bold mb-2 flex items-center gap-3">
                 <Package className="h-8 w-8 text-indigo-500" />
-                Add New Product
+                {productId ? "Edit Product" : "Add New Product"}
               </h1>
               <p className="text-slate-500 dark:text-slate-400">
-                Complete the form below to add a new product to your store
+                Complete the form below to {productId ? "update" : "add"} a
+                product to your store
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -65,7 +154,7 @@ export function ProductForm() {
           </div>
         </motion.div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <AnimatePresence mode="wait">
             {step === 1 ? (
               <motion.div
@@ -81,11 +170,15 @@ export function ProductForm() {
                     Product Name
                   </label>
                   <input
-                    type="text"
+                    {...register("Name")}
                     className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
                     placeholder="Enter product name"
-                    required
                   />
+                  {errors.Name && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.Name.message}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -93,10 +186,15 @@ export function ProductForm() {
                     Description
                   </label>
                   <textarea
+                    {...register("Description")}
                     className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all min-h-[120px]"
                     placeholder="Enter product description"
-                    required
                   />
+                  {errors.Description && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.Description.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-3">
@@ -107,10 +205,15 @@ export function ProductForm() {
                     <input
                       type="number"
                       step="0.01"
+                      {...register("Base_price", { valueAsNumber: true })}
                       className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
                       placeholder="0.00"
-                      required
                     />
+                    {errors.Base_price && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.Base_price.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -121,9 +224,15 @@ export function ProductForm() {
                       type="number"
                       min="0"
                       max="100"
+                      {...register("discount", { valueAsNumber: true })}
                       className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
                       placeholder="0"
                     />
+                    {errors.discount && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.discount.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -133,11 +242,32 @@ export function ProductForm() {
                     <input
                       type="number"
                       min="0"
+                      {...register("Available", { valueAsNumber: true })}
                       className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
                       placeholder="0"
-                      required
                     />
+                    {errors.Available && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.Available.message}
+                      </p>
+                    )}
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Category ID
+                  </label>
+                  <input
+                    {...register("CategoryId")}
+                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
+                    placeholder="Enter category ID"
+                  />
+                  {errors.CategoryId && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.CategoryId.message}
+                    </p>
+                  )}
                 </div>
 
                 <motion.button
@@ -145,8 +275,11 @@ export function ProductForm() {
                   whileTap={{ scale: 0.99 }}
                   type="submit"
                   className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                  disabled={mutation.isPending}
                 >
-                  Continue to Color Variants
+                  {mutation.isPending
+                    ? "Saving..."
+                    : "Continue to Color Variants"}
                   <motion.span
                     animate={{ x: [0, 4, 0] }}
                     transition={{ repeat: Infinity, duration: 1.5 }}
@@ -198,9 +331,10 @@ export function ProductForm() {
                     whileTap={{ scale: 0.99 }}
                     type="submit"
                     className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                    disabled={mutation.isPending}
                   >
                     <Save className="h-4 w-4" />
-                    Save Product
+                    {mutation.isPending ? "Saving..." : "Save Product"}
                   </motion.button>
                 </div>
               </motion.div>

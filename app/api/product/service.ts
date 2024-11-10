@@ -261,6 +261,7 @@ export class ProductService extends BaseService {
         Name: true,
         Description: true,
         Base_price: true,
+
         Category: {
           select: {
             CategoryId: true,

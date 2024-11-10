@@ -5,10 +5,10 @@ import { ProductList } from "@/components/molecules/listView";
 const First = () => {
   return (
     <>
-      {/* <Navbar></Navbar> */}
-      {/* <Hero></Hero> */}
-      {/* <ProductForm></ProductForm> */}
-      <ProductList></ProductList>
+      <Navbar></Navbar>
+      <Hero></Hero>
+      <ProductForm></ProductForm>
+      {/* <ProductList></ProductList> */}
     </>
   );
 };

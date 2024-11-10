@@ -34,3 +34,8 @@ export const getAdminProducts = async (
   );
   return response.data;
 };
+
+export const getAdminProduct = async (id: string) => {
+  const response = await api.get(`/product/${id}`);
+  return response.data;
+};
