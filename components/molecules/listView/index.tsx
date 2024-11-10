@@ -1,5 +1,9 @@
+"use client";
 import { motion } from "framer-motion";
 import { Package, Plus, Search, Eye, Edit } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { getAdminProducts } from "@/lib/FE/api";
 import Link from "next/link";
 
 // Dummy data for demonstration
@@ -31,8 +35,28 @@ const products = [
 ];
 
 export function ProductList() {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["products", page, limit],
+    queryFn: () => getAdminProducts(limit, page, ""),
+  });
+
+  if (isLoading)
+    return (
+      <p className="min-h-screen bg-gradient-to-br max-w-7xl mx-auto">
+        Loading...
+      </p>
+    );
+  if (error) return <p>Error: {error.message}</p>;
+
+  const viewData = data?.data?.data;
+  console.log(viewData);
+  // }, [data]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4 sm:p-8">
+    <div className="min-h-screen bg-gradient-to-br p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ y: -20, opacity: 0 }}

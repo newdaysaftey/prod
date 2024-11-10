@@ -2,6 +2,7 @@
 import { BaseService } from "@/app/api/services/base.service";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { Role } from "@/lib/enum";
 
 interface SignupData {
@@ -16,18 +17,21 @@ interface SignupData {
 export class SignupService extends BaseService {
   async createUser(data: SignupData) {
     const hashedPassword = await bcrypt.hash(data.Password, 10);
+
+    const userData: Prisma.UserCreateInput = {
+      Email: data.Email,
+      PasswordHash: hashedPassword,
+      Role: (data.Role as Role) || "USER",
+      Username: data.Username,
+      FirstName: data.FirstName,
+      LastName: data.LastName,
+      CreatedOn: new Date(),
+      ModifiedOn: new Date(),
+      Deleted: false,
+      Disabled: false,
+    };
     const user = await prisma.user.create({
-      data: {
-        Email: data.Email,
-        PasswordHash: hashedPassword,
-        Role: (data.Role as Role) || "USER",
-        Username: data.Username,
-        FirstName: data.FirstName,
-        LastName: data.LastName,
-        IsActive: true,
-        CreatedAt: new Date(),
-        UpdatedAt: new Date(),
-      },
+      data: userData,
     });
 
     return user.Email;
