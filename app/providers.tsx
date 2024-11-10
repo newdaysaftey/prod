@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { PrimeReactProvider, PrimeReactContext } from "primereact/api";
+import { Toaster } from "sonner";
 
 import { useState } from "react";
 
@@ -22,6 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <PrimeReactProvider>{children}</PrimeReactProvider>
       <ReactQueryDevtools initialIsOpen={false} />
+      <Toaster />
     </QueryClientProvider>
   );
 }

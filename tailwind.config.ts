@@ -14,14 +14,10 @@ const config: Config = {
         md: { max: "767px" },
       },
       colors: {
-        background: "var(--background)",
-        primary: {
-          DEFAULT: "(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
+        background: "rgba(19, 62, 135, 1)",
+        lightBlue: "rgba(96, 139, 193, 1)",
         secondary: {
-          DEFAULT: "var(--secondary)",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "rgba(203, 220, 235, 1)",
         },
       },
       fontSize: {
