@@ -12,7 +12,7 @@ interface SigninData {
 export class SigninService extends BaseService {
   private JWT_SECRET = process.env.JWT_SECRET as string;
   async findUser(data: SigninData) {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         Email: data.Email,
       },
@@ -37,7 +37,7 @@ export class SigninService extends BaseService {
     }
 
     const token = jwt.sign(
-      { userId: user.UserId, email: user.Email, role: user.Role },
+      { UserId: user.UserId, Email: user.Email, Role: user.Role },
       this.JWT_SECRET,
       { expiresIn: "1h" }
     );

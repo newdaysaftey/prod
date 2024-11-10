@@ -1,5 +1,6 @@
 import { BaseController } from "@/app/api/controllers/base.controller";
 import { ProductService } from "./service";
+import { NextRequest } from "next/server";
 
 interface SizeInput {
   size: string;
@@ -18,10 +19,12 @@ interface ColorBody {
 interface ProductBody {
   step: number;
   Name: string;
-  About: string;
+  Description: string;
   ImageUrl: string;
-  Cost: any;
+  Base_price: any;
   CategoryId: string;
+  ColorId: string;
+  SizeId: string;
   ProductId: string;
   Colors: ColorBody[];
 }
@@ -40,34 +43,36 @@ export class ProductController extends BaseController {
       const {
         step,
         Name,
-        About,
+        Description,
         ImageUrl,
-        Cost,
+        Base_price,
         CategoryId,
         ProductId,
+        ColorId,
+        SizeId,
         Colors,
       } = body as ProductBody;
       if (step === 1) {
         const category = await this.service.createProduct({
           Name,
-          About,
+          Description,
           ImageUrl,
-          Cost,
+          Base_price,
           CategoryId,
-        });
-        return this.sendSuccess(category, "Product created successfully");
-      } else if (step === 2) {
-        const color = await this.service.addColortoProduct({
           ProductId,
-          Colors,
         });
-        return this.sendSuccess(color, "added color to the product");
-      } else if (step === 3) {
+        return this.sendSuccess(
+          category,
+          "Product created/updated successfully"
+        );
+      } else if (step === 2) {
         const sizes = await this.service.addColorWithSizes({
           ProductId,
           Colors,
+          ColorId,
+          SizeId,
         });
-        return this.sendSuccess(sizes, "added sizes to the product");
+        return this.sendSuccess(sizes, "added colors & sizes to the product");
       }
       return this.sendError("step is required");
     } catch (error) {
@@ -75,10 +80,36 @@ export class ProductController extends BaseController {
     }
   }
 
-  async getProduct() {
+  async getProduct(request: NextRequest) {
     try {
-      const products = await this.service.getProduct();
+      const searchParams = request.nextUrl.searchParams;
+      const page = parseInt(searchParams.get("page") || "1");
+      const limit = parseInt(searchParams.get("limit") || "10");
+      const categoryId = searchParams.get("categoryId") || undefined;
+      const search = searchParams.get("search") || undefined;
+
+      // Validate pagination parameters
+      if (page < 1 || limit < 1 || limit > 100) {
+        return this.sendError("Invalid pagination parameters");
+      }
+
+      const products = await this.service.getProduct({
+        page,
+        limit,
+        categoryId,
+        search,
+      });
+      // const products = await this.service.getProduct();
       return this.sendSuccess(products, "Products fetched successfully");
+    } catch (error) {
+      return this.sendError(error as Error);
+    }
+  }
+
+  async getProductById(ProductId: string) {
+    try {
+      const products = await this.service.getProductById(ProductId);
+      return this.sendSuccess(products, "Product fetched successfully");
     } catch (error) {
       return this.sendError(error as Error);
     }

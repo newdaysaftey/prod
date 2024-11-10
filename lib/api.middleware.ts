@@ -33,7 +33,7 @@ export async function validateSignupRequest(body: SignupRequestBody) {
     const validatedData = signupSchema.parse(body);
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findFirst({
       where: { Email: validatedData.Email },
     });
 

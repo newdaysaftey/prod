@@ -25,9 +25,9 @@ export class SigninController extends BaseController {
       }
 
       const response = this.sendSuccess(user.user, "Signin successful");
-      response.headers.set(
-        "Set-Cookie",
-        `authToken=${user.token}; HttpOnly; Path=/; Max-Age=3600000${
+      response.cookies.set(
+        "authToken",
+        `${user.token}; HttpOnly; Path=/; Max-Age=3600000${
           process.env.NODE_ENV === "production" ? "; Secure" : ""
         }`
       );

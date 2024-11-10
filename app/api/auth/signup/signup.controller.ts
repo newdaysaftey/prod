@@ -24,10 +24,7 @@ export class SignupController extends BaseController {
       const { Email, Password, Username, FirstName, LastName, Role } =
         body as SignupRequestBody;
       if (!Email || !Password) {
-        return this.sendError(
-          new Error("Email and password are required"),
-          400
-        );
+        return this.sendError(new Error("Email and password are required"));
       }
       const user = await this.service.createUser({
         Email,
