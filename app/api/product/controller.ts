@@ -20,7 +20,7 @@ interface ProductBody {
   step: number;
   Name: string;
   Description: string;
-  ImageFile: File;
+  ImageUrl: string;
   Base_price: any;
   CategoryId: string;
   ColorId: string;
@@ -30,6 +30,7 @@ interface ProductBody {
 }
 
 export class ProductController extends BaseController {
+  [x: string]: any;
   private service: ProductService;
 
   constructor() {
@@ -43,43 +44,37 @@ export class ProductController extends BaseController {
         step,
         Name,
         Description,
-        ImageFile,
+        ImageUrl,
         Base_price,
         CategoryId,
         ProductId,
         ColorId,
         SizeId,
         Colors,
-      } = body;
-
+      } = body as ProductBody;
       if (step === 1) {
-        const productData = {
+        const category = await this.service.createProduct({
           Name,
           Description,
-          ImageFile,
+          ImageUrl,
           Base_price,
           CategoryId,
           ProductId,
-        };
-
-        const product = await this.service.createProduct(productData);
+        });
         return this.sendSuccess(
-          product,
+          category,
           "Product created/updated successfully"
         );
       } else if (step === 2) {
-        const colorData = {
+        const sizes = await this.service.addColorWithSizes({
           ProductId,
           Colors,
           ColorId,
           SizeId,
-        };
-
-        const sizes = await this.service.addColorWithSizes(colorData);
-        return this.sendSuccess(sizes, "Added colors & sizes to the product");
+        });
+        return this.sendSuccess(sizes, "added colors & sizes to the product");
       }
-
-      return this.sendError("Step is required");
+      return this.sendError("step is required");
     } catch (error) {
       return this.sendError(error as Error);
     }
@@ -93,6 +88,7 @@ export class ProductController extends BaseController {
       const categoryId = searchParams.get("categoryId") || undefined;
       const search = searchParams.get("search") || undefined;
 
+      // Validate pagination parameters
       if (page < 1 || limit < 1 || limit > 100) {
         return this.sendError("Invalid pagination parameters");
       }
@@ -103,7 +99,7 @@ export class ProductController extends BaseController {
         categoryId,
         search,
       });
-
+      // const products = await this.service.getProduct();
       return this.sendSuccess(products, "Products fetched successfully");
     } catch (error) {
       return this.sendError(error as Error);
