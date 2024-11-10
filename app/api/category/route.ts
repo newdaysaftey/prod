@@ -13,7 +13,6 @@ const handleError = (error: unknown) => {
     error instanceof Error ? error.message : "Error processing request";
   return NextResponse.json(
     {
-      success: false,
       error: true,
       message,
       ...(process.env.NODE_ENV === "development" && { details: error }),
@@ -50,7 +49,7 @@ export async function POST(request: NextRequest) {
       // Optional: Validate body here if needed
       if (!body || Object.keys(body).length === 0) {
         return NextResponse.json(
-          { success: false, error: true, message: "Request body is required" },
+          { error: true, message: "Request body is required" },
           { status: 400 }
         );
       }
