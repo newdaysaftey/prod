@@ -13,38 +13,35 @@ const productSchema = z.object({
   Name: z.string().min(1, "Product name is required"),
   Description: z.string().min(1, "Description is required"),
   Base_price: z.number().min(0.01, "Base price must be greater than 0"),
-  Available: z.number().min(0, "Quantity must be non-negative"),
-  Tags: z.string(),
+  Available: z.number().min(0, "Quantity must be non-negative").optional(),
+  Tags: z.string().optional(),
   AverageRating: z.number().min(0).max(5).optional(),
   CategoryId: z.string().uuid("Invalid category ID"),
-  ProductId: z.string().optional(),
-  step: z.number(),
+  ProductId: z.string().optional().default(""),
+  step: z.number().optional(),
   discount: z.number().min(0).max(100).optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
 
 // API functions
-const fetchProduct = async (productId: string) => {
-  const response = await fetch(
-    `http://localhost:3000/api/product/${productId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
-      },
-    }
-  );
-  if (!response.ok) throw new Error("Failed to fetch product");
-  return response.json();
-};
+// const fetchProduct = async (productId: string) => {
+//   const response = await fetch(
+//     `http://localhost:3000/api/product/${productId}`,
+//     {
+//       headers: {
+//         Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+//       },
+//     }
+//   );
+//   if (!response.ok) throw new Error("Failed to fetch product");
+//   return response.json();
+// };
 
 const saveProduct = async (data: ProductFormData) => {
+  console.log(data);
   const response = await fetch("http://localhost:3000/api/product/", {
-    method: data.ProductId ? "PUT" : "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
-    },
+    method: "POST",
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to save product");
@@ -69,32 +66,43 @@ export function ProductForm({ productId }: { productId?: string }) {
       AverageRating: 0,
       discount: 0,
     },
+    mode: "all",
   });
 
   // Query for fetching product data if editing
-  const { data: productData, isLoading } = useQuery({
-    queryKey: ["product", productId],
-    queryFn: () => fetchProduct(productId!),
-    enabled: !!productId,
-    onSuccess: (data: any) => {
-      reset(data);
-    },
-  });
+  // const { data: productData, isLoading } = useQuery({
+  //   queryKey: ["product", productId],
+  //   queryFn: () => fetchProduct(productId!),
+  //   enabled: !!productId,
+  // });
 
   // Mutation for saving product
+  // const mutation = useMutation({
+  //   mutationFn: saveProduct,
+  //   onSuccess: (data) => {
+  //     if (step === 1) {
+  //       setStep(2);
+  //     } else {
+  //       console.log("Product saved successfully:", data);
+  //       // Handle success (e.g., show notification, redirect)
+  //     }
+  //   },
+  // });
+
   const mutation = useMutation({
     mutationFn: saveProduct,
     onSuccess: (data) => {
-      if (step === 1) {
-        setStep(2);
-      } else {
-        console.log("Product saved successfully:", data);
-        // Handle success (e.g., show notification, redirect)
-      }
+      console.log("Product saved successfully:", data);
+      setStep(2);
+      // Handle success (e.g., show notification, redirect)
+    },
+    onError: (error) => {
+      console.error("Error saving product:", error);
+
+      // Handle error (e.g., show error message)
     },
   });
-
-  const onSubmit = (data: ProductFormData) => {
+  const onSubmit1 = (data: ProductFormData) => {
     mutation.mutate({
       ...data,
       step,
@@ -108,10 +116,6 @@ export function ProductForm({ productId }: { productId?: string }) {
   const removeColorVariant = (index: number) => {
     setColorVariants((prev) => prev.filter((_, i) => i !== index));
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4 sm:p-8">
@@ -154,7 +158,7 @@ export function ProductForm({ productId }: { productId?: string }) {
           </div>
         </motion.div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form>
           <AnimatePresence mode="wait">
             {step === 1 ? (
               <motion.div
@@ -273,9 +277,12 @@ export function ProductForm({ productId }: { productId?: string }) {
                 <motion.button
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
-                  type="submit"
+                  type="button"
                   className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                   disabled={mutation.isPending}
+                  onClick={() => {
+                    handleSubmit(onSubmit1)();
+                  }}
                 >
                   {mutation.isPending
                     ? "Saving..."
