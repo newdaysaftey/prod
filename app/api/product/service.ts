@@ -14,6 +14,7 @@ interface ProductData {
 
 interface SizeInput {
   sizeId: string;
+  isDeleted?: boolean;
   size: string;
   stock: number;
   priceAdjustment: number;
@@ -22,6 +23,7 @@ interface SizeInput {
 
 interface ColorData {
   ColorId: string;
+  isDeleted?: boolean;
   ColorName: string;
   ColorCode: string;
   Images: string[];
@@ -97,6 +99,7 @@ export class ProductService extends BaseService {
             Product: {
               connect: { ProductId: data.ProductId },
             },
+            isDeleted: color.isDeleted,
           },
           create: {
             ColorName: color.ColorName,
@@ -105,6 +108,7 @@ export class ProductService extends BaseService {
             Product: {
               connect: { ProductId: data.ProductId },
             },
+            // isDeleted: color.isDeleted,
           },
         });
 
@@ -119,12 +123,14 @@ export class ProductService extends BaseService {
                 Stock: size.stock,
                 PriceAdjustment: size.priceAdjustment,
                 ColorId: createdColor.ColorId,
+                isDeleted: size.isDeleted,
               },
               create: {
                 Size: size.size,
                 Stock: size.stock,
                 PriceAdjustment: size.priceAdjustment,
                 ColorId: createdColor.ColorId,
+                // isDeleted: size.isDeleted
               },
             })
           )
@@ -186,6 +192,9 @@ export class ProductService extends BaseService {
           },
         },
         Colors: {
+          where: {
+            isDeleted: false,
+          },
           select: {
             ColorId: true,
             ColorName: true,
@@ -198,6 +207,7 @@ export class ProductService extends BaseService {
                 Stock: true,
                 PriceAdjustment: true,
                 IsAvailable: true,
+                isDeleted: true,
               },
             },
           },

@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 
 interface SizeInput {
   sizeId: string;
+  isDeleted?: boolean;
   size: string;
   stock: number;
   priceAdjustment: number;
@@ -12,6 +13,7 @@ interface SizeInput {
 
 interface ColorBody {
   ColorId: string;
+  isDeleted?: boolean;
   ColorName: string;
   ColorCode: string;
   Images: string[];
@@ -25,8 +27,6 @@ interface ProductBody {
   ImageUrl: string;
   Base_price: any;
   CategoryId: string;
-  ColorId: string;
-  SizeId: string;
   ProductId: string;
   Colors: ColorBody[];
 }
@@ -50,8 +50,6 @@ export class ProductController extends BaseController {
         Base_price,
         CategoryId,
         ProductId,
-        ColorId,
-        SizeId,
         Colors,
       } = body as ProductBody;
       if (step === 1) {

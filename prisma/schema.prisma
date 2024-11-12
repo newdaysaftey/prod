@@ -115,6 +115,7 @@ model Size {
   IsAvailable     Boolean  @default(true)
   Color           Color    @relation(fields: [ColorId], references: [ColorId])
   ColorId         String
+  isDeleted       Boolean   @default(false)
 }
 
 // Color model to handle color information for each product
@@ -126,6 +127,7 @@ model Color {
   Product      Product    @relation(fields: [ProductId], references: [ProductId])
   ProductId    String
   Sizes        Size[]
+  isDeleted    Boolean   @default(false)
 }
 
 model Cart {
