@@ -11,12 +11,13 @@ datasource db {
 
 type Address {
   id         String   @default(uuid())
-  Street     String
-  City       String
-  State      String
-  Country    String
-  Pincode    String
-  IsDefault  Boolean  @default(false)
+  street     String
+  city       String
+  state      String
+  country    String
+  pincode    String
+  isDefault  Boolean  @default(false)
+  isDeleted   Boolean @default(false)
 }
 
 type CartItem {
@@ -58,7 +59,7 @@ model User {
   Gender        String?
   CountryCode   String?
   ImageUrl      String?
-  Addresses     Address[]   
+  addresses     Address[]   
   LastLogin     DateTime?   
   Orders        Order[]     
   Items         CartItem[]     

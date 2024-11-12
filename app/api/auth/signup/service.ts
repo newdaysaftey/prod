@@ -4,6 +4,13 @@ import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
 import { Role } from "@/lib/enum";
 
+interface AddressesData {
+  street: string;
+  city: string;
+  state: string;
+  country: string;
+  pincode: string;
+}
 interface SignupData {
   Email: string;
   Password: string;
@@ -11,6 +18,7 @@ interface SignupData {
   FirstName: string;
   LastName: string;
   Role: string;
+  addresses: AddressesData[];
 }
 
 export class SignupService extends BaseService {
@@ -27,6 +35,7 @@ export class SignupService extends BaseService {
         IsActive: true,
         CreatedAt: new Date(),
         UpdatedAt: new Date(),
+        addresses: data.addresses,
       },
     });
 
