@@ -24,20 +24,6 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-// API functions
-// const fetchProduct = async (productId: string) => {
-//   const response = await fetch(
-//     `http://localhost:3000/api/product/${productId}`,
-//     {
-//       headers: {
-//         Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
-//       },
-//     }
-//   );
-//   if (!response.ok) throw new Error("Failed to fetch product");
-//   return response.json();
-// };
-
 const saveProduct = async (data: ProductFormData) => {
   console.log(data);
   const response = await fetch("http://localhost:3000/api/product/", {
@@ -69,39 +55,20 @@ export function ProductForm({ productId }: { productId?: string }) {
     mode: "all",
   });
 
-  // Query for fetching product data if editing
-  // const { data: productData, isLoading } = useQuery({
-  //   queryKey: ["product", productId],
-  //   queryFn: () => fetchProduct(productId!),
-  //   enabled: !!productId,
-  // });
-
   // Mutation for saving product
-  // const mutation = useMutation({
-  //   mutationFn: saveProduct,
-  //   onSuccess: (data) => {
-  //     if (step === 1) {
-  //       setStep(2);
-  //     } else {
-  //       console.log("Product saved successfully:", data);
-  //       // Handle success (e.g., show notification, redirect)
-  //     }
-  //   },
-  // });
-
   const mutation = useMutation({
     mutationFn: saveProduct,
     onSuccess: (data) => {
-      console.log("Product saved successfully:", data);
-      setStep(2);
-      // Handle success (e.g., show notification, redirect)
-    },
-    onError: (error) => {
-      console.error("Error saving product:", error);
-
-      // Handle error (e.g., show error message)
+      if (step === 1) {
+        setStep(2);
+        console.log(data);
+      } else {
+        console.log("Product saved successfully:", data);
+        // Handle success (e.g., show notification, redirect)
+      }
     },
   });
+
   const onSubmit1 = (data: ProductFormData) => {
     mutation.mutate({
       ...data,
