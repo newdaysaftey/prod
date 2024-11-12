@@ -3,6 +3,7 @@ import { ProductService } from "./service";
 import { NextRequest } from "next/server";
 
 interface SizeInput {
+  sizeId: string;
   size: string;
   stock: number;
   priceAdjustment: number;
@@ -10,6 +11,7 @@ interface SizeInput {
 }
 
 interface ColorBody {
+  ColorId: string;
   ColorName: string;
   ColorCode: string;
   Images: string[];
@@ -69,8 +71,8 @@ export class ProductController extends BaseController {
         const sizes = await this.service.addColorWithSizes({
           ProductId,
           Colors,
-          ColorId,
-          SizeId,
+          // ColorId,
+          // SizeId,
         });
         return this.sendSuccess(sizes, "added colors & sizes to the product");
       }

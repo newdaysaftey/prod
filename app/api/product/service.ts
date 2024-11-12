@@ -13,6 +13,7 @@ interface ProductData {
 }
 
 interface SizeInput {
+  sizeId: string;
   size: string;
   stock: number;
   priceAdjustment: number;
@@ -20,6 +21,7 @@ interface SizeInput {
 }
 
 interface ColorData {
+  ColorId: string;
   ColorName: string;
   ColorCode: string;
   Images: string[];
@@ -28,8 +30,8 @@ interface ColorData {
 
 interface AddColorData {
   ProductId: string;
-  ColorId: string;
-  SizeId: string;
+  // ColorId: string;
+  // SizeId: string;
   Colors: ColorData[];
 }
 
@@ -81,63 +83,64 @@ export class ProductService extends BaseService {
   }
 
   async addColorWithSizes(data: AddColorData) {
-    if (data.ColorId || data.ProductId) {
-      const createColors = await Promise.all(
-        data.Colors.map(async (color) => {
-          const createdColor = await prisma.color.upsert({
-            where: {
-              ColorId: data.ColorId,
+    // if (data.ColorId || data.ProductId) {
+    const createColors = await Promise.all(
+      data.Colors.map(async (color) => {
+        const createdColor = await prisma.color.upsert({
+          where: {
+            ColorId: color.ColorId,
+          },
+          update: {
+            ColorName: color.ColorName,
+            ColorCode: color.ColorCode,
+            Images: color.Images,
+            Product: {
+              connect: { ProductId: data.ProductId },
             },
-            update: {
-              ColorName: color.ColorName,
-              ColorCode: color.ColorCode,
-              Images: color.Images,
-              Product: {
-                connect: { ProductId: data.ProductId },
-              },
+          },
+          create: {
+            ColorName: color.ColorName,
+            ColorCode: color.ColorCode,
+            Images: color.Images,
+            Product: {
+              connect: { ProductId: data.ProductId },
             },
-            create: {
-              ColorName: color.ColorName,
-              ColorCode: color.ColorCode,
-              Images: color.Images,
-              Product: {
-                connect: { ProductId: data.ProductId },
-              },
-            },
-          });
+          },
+        });
 
-          const createdSizes = await Promise.all(
-            color.Sizes.map((size) =>
-              prisma.size.upsert({
-                where: {
-                  SizeId: data.SizeId,
-                },
-                update: {
-                  Size: size.size,
-                  Stock: size.stock,
-                  PriceAdjustment: size.priceAdjustment,
-                  ColorId: createdColor.ColorId,
-                },
-                create: {
-                  Size: size.size,
-                  Stock: size.stock,
-                  PriceAdjustment: size.priceAdjustment,
-                  ColorId: createdColor.ColorId,
-                },
-              })
-            )
-          );
+        const createdSizes = await Promise.all(
+          color.Sizes.map((size) =>
+            prisma.size.upsert({
+              where: {
+                SizeId: size.sizeId,
+              },
+              update: {
+                Size: size.size,
+                Stock: size.stock,
+                PriceAdjustment: size.priceAdjustment,
+                ColorId: createdColor.ColorId,
+              },
+              create: {
+                Size: size.size,
+                Stock: size.stock,
+                PriceAdjustment: size.priceAdjustment,
+                ColorId: createdColor.ColorId,
+              },
+            })
+          )
+        );
 
-          return {
-            Color: createdColor,
-            Sizes: createdSizes,
-          };
-        })
-      );
-      return createColors;
-    } else {
-      return "Error in creating/updating the color's and size's";
-    }
+        return {
+          Color: createdColor,
+          Sizes: createdSizes,
+        };
+      })
+    );
+    return createColors;
+    // }
+    // else {
+    //   return "Error in creating/updating the color's and size's";
+    // }
 
     // return createColors;
   }
