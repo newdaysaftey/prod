@@ -46,9 +46,9 @@ model User {
   Role          Role        @default(USER)
   PasswordHash  String?
   IsActive      Boolean     @default(false)
-  IsDeleted       Boolean     @default(false)
+  IsDeleted     Boolean     @default(false)
   CreatedAt     DateTime    @default(now())
-  UpdatedAt    DateTime    @updatedAt
+  UpdatedAt     DateTime    @updatedAt
   DeletedAt     DateTime?
   CreatedById   String?
   ModifiedById  String?
@@ -58,11 +58,10 @@ model User {
   Gender        String?
   CountryCode   String?
   ImageUrl      String?
-  Addresses     Address[]   // New field
-  LastLogin     DateTime?   // New field
-  Orders        Order[]     // New field
-  Cart          Cart?       // New field
-  Wishlist      Wishlist?   // New field
+  Addresses     Address[]   
+  LastLogin     DateTime?   
+  Orders        Order[]     
+  Items         CartItem[]     
 }
 
 enum Role {
@@ -102,8 +101,6 @@ model Product {
   ImageUrl      String?
   IsActive      Boolean     @default(true)
   Colors        Color[]
-  Wishlists     Wishlist[]  @relation(fields: [WishlistIds], references: [WishlistId])
-  WishlistIds   String[]
 }
 
 // Size model to handle size information for each color of a product
@@ -130,14 +127,6 @@ model Color {
   isDeleted    Boolean   @default(false)
 }
 
-model Cart {
-  CartId       String      @id @default(uuid()) @map("_id")
-  UserId       String      @unique
-  User         User        @relation(fields: [UserId], references: [UserId])
-  Items        CartItem[]
-  CreatedOn    DateTime    @default(now())
-  ModifiedOn   DateTime    @updatedAt
-}
 
 model Order {
   OrderId          String       @id @default(uuid()) @map("_id")
@@ -166,13 +155,4 @@ enum PaymentStatus {
   PAID
   FAILED
   REFUNDED
-}
-
-model Wishlist {
-  WishlistId   String    @id @default(uuid()) @map("_id")
-  UserId       String    @unique
-  User         User      @relation(fields: [UserId], references: [UserId])
-  Products     Product[] @relation(fields: [ProductIds], references: [ProductId])
-  ProductIds   String[]
-  ModifiedOn   DateTime  @updatedAt
 }

@@ -14,9 +14,10 @@ export async function POST(request: NextRequest) {
 
     return controller.uploadImage(ImageFile);
   } catch (error) {
-    return Response.json(
-      { error: "Failed to process request" },
-      { status: 500 }
-    );
+    return Response.json({
+      error: true,
+      message: "Failed to process request",
+      data: error,
+    });
   }
 }
