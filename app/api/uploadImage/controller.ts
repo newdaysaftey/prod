@@ -27,6 +27,7 @@ export class ImageController extends BaseController {
       });
       return this.sendSuccess(image, "image uploaded successfully");
     } catch (error) {
+      console.log(error);
       return this.sendError(error as Error);
     }
   }

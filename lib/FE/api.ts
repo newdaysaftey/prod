@@ -39,3 +39,15 @@ export const getAdminProduct = async (id: string) => {
   const response = await api.get(`/product/${id}`);
   return response.data;
 };
+export const handleImageUpload = async (file: File): Promise<string | null> => {
+  try {
+    const formData = new FormData();
+    formData.append("ImageFile", file);
+    const response = await api.post("/uploadImage", formData);
+
+    return response.data.imageUrl;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    return null;
+  }
+};
