@@ -1,4 +1,4 @@
-// services/signup.service.ts
+//
 import { BaseService } from "@/app/api/services/base.service";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
@@ -42,29 +42,5 @@ export class SigninService extends BaseService {
       { expiresIn: "1h" }
     );
     return { user, token };
-  }
-
-  async getProfile(UserId: string) {
-    const user = await prisma.user.findUnique({
-      where: {
-        UserId: UserId,
-      },
-      select: {
-        UserId: true,
-        Email: true,
-        Role: true,
-        Username: true,
-        FirstName: true,
-        MiddleName: true,
-        LastName: true,
-        Phone: true,
-        Gender: true,
-        CountryCode: true,
-        ImageUrl: true,
-        Addresses: true,
-      },
-    });
-
-    return user;
   }
 }

@@ -1,4 +1,4 @@
-// services/signup.service.ts
+//
 import { BaseService } from "@/app/api/services/base.service";
 import prisma from "@/lib/prisma";
 
@@ -12,11 +12,11 @@ interface CartItemData {
 
 interface CartData {
   UserId: string;
-  Items: CartItemData[];
+  cartItems: CartItemData[];
 }
 
 interface cartItemsWithDetails {
-  subtotal: number;
+  subTotal: number;
   ProductId: any;
   ColorId: any;
   SizeId: any;
@@ -31,7 +31,7 @@ export class CartService extends BaseService {
     // Create a new array to store unique items
     const uniqueItems: CartItemData[] = [];
 
-    for (const item of data.Items) {
+    for (const item of data.cartItems) {
       // Check if the item already exists in the cart (based on ProductId, ColorId, and SizeId)
       const existingItem = uniqueItems.find(
         (uniqueItem) =>
@@ -106,11 +106,11 @@ export class CartService extends BaseService {
         UserId: data.UserId,
       },
       data: {
-        Items: uniqueItems,
+        cartItems: uniqueItems,
       },
       select: {
         UserId: true,
-        Items: true,
+        cartItems: true,
       },
     });
 
@@ -123,7 +123,7 @@ export class CartService extends BaseService {
         UserId: UserId,
       },
       select: {
-        Items: true,
+        cartItems: true,
         UserId: true,
       },
     });
@@ -132,7 +132,7 @@ export class CartService extends BaseService {
     }
 
     const cartItemsWithDetails: cartItemsWithDetails[] = await Promise.all(
-      cart.Items.map(async (item) => {
+      cart.cartItems.map(async (item) => {
         // Get product details
         const product = await prisma.product.findUnique({
           where: {
@@ -161,7 +161,7 @@ export class CartService extends BaseService {
             ColorId: item.ColorId,
           },
           select: {
-            ColorId: true,
+            // ColorId: true,
             ColorCode: true,
             ColorName: true,
             Images: true,
@@ -178,7 +178,7 @@ export class CartService extends BaseService {
             SizeId: item.SizeId,
           },
           select: {
-            SizeId: true,
+            // SizeId: true,
             Size: true,
             Stock: true,
             PriceAdjustment: true,
@@ -190,25 +190,25 @@ export class CartService extends BaseService {
         }
 
         // Calculate subtotal for this item
-        const subtotal = item.PriceAtTime * item.Quantity;
+        const subTotal = item.PriceAtTime * item.Quantity;
 
         return {
           ...item,
-          product,
-          color,
-          size,
-          subtotal,
+          Product: product,
+          Color: color,
+          Size: size,
+          subTotal,
         };
       })
     );
 
     const totalAmount = cartItemsWithDetails.reduce(
-      (sum, item) => sum + item.subtotal,
+      (sum, item) => sum + item.subTotal,
       0
     );
     return {
       ...cart,
-      Items: cartItemsWithDetails,
+      cartItems: cartItemsWithDetails,
       totalAmount,
     };
     // return {

@@ -1,4 +1,4 @@
-// services/signup.service.ts
+//
 import { BaseService } from "@/app/api/services/base.service";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
@@ -39,8 +39,24 @@ export class SignupService extends BaseService {
     };
     const user = await prisma.user.create({
       data: userData,
+      select: {
+        UserId: true,
+        Email: true,
+      },
+    });
+    let _addresses: AddressesData[] = data.addresses;
+
+    const address = await prisma.address.createMany({
+      data: _addresses.map((address) => ({
+        userId: user.UserId,
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        country: address.country,
+        pincode: address.pincode,
+      })),
     });
 
-    return user.Email;
+    return { user, address };
   }
 }

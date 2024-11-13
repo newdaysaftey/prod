@@ -11,7 +11,7 @@ interface CartItemBody {
 
 interface CartBody {
   UserId: string;
-  Items: CartItemBody[];
+  cartItems: CartItemBody[];
 }
 
 export class CartController extends BaseController {
@@ -25,13 +25,13 @@ export class CartController extends BaseController {
 
   async addtoCart(UserId: string, body: CartBody) {
     try {
-      const { Items } = body as CartBody;
-      if (!Items) {
+      const { cartItems } = body as CartBody;
+      if (!cartItems) {
         return this.sendError(new Error("Items is required"));
       }
       const category = await this.service.addtoCart({
         UserId,
-        Items,
+        cartItems,
       });
       return this.sendSuccess(category, "Cart created successfully");
     } catch (error) {

@@ -40,13 +40,4 @@ export class SigninController extends BaseController {
       return this.sendError(error as Error);
     }
   }
-
-  async getProfile(UserId: string) {
-    try {
-      const user = await this.service.getProfile(UserId);
-      return this.sendSuccess(user, "user details fetched successfully");
-    } catch (error) {
-      return this.sendError(error as Error);
-    }
-  }
 }
