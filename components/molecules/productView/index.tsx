@@ -33,7 +33,7 @@ export function ProductView({ product }: any) {
             </div>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
-                href={`/products/${product.ProductId}/edit`}
+                href={`/admin/products/${product.ProductId}/edit`}
                 className="inline-flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
               >
                 <Edit className="h-5 w-5" />
@@ -87,7 +87,7 @@ export function ProductView({ product }: any) {
             transition={{ delay: 0.2 }}
             className="space-y-8"
           >
-            {product?.Colors?.map((variant, index) => (
+            {product?.Colors?.map((variant: any, index: number) => (
               <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-semibold">
@@ -111,7 +111,7 @@ export function ProductView({ product }: any) {
                     </dt>
                     <dd className="mt-2">
                       <div className="flex flex-wrap gap-2">
-                        {variant.Sizes.map((size) => (
+                        {variant.Sizes.map((size: any) => (
                           <span
                             key={size}
                             className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 font-medium"
@@ -128,19 +128,23 @@ export function ProductView({ product }: any) {
                     </dt>
                     <dd className="mt-2">
                       <div className="grid grid-cols-2 gap-4">
-                        {variant.Images.map((image, imageIndex) => (
-                          <div
-                            key={imageIndex}
-                            className="relative aspect-square"
-                          >
-                            <Image
-                              src={image}
-                              alt={`${variant.color} variant ${imageIndex + 1}`}
-                              fill
-                              className="rounded-lg object-cover"
-                            />
-                          </div>
-                        ))}
+                        {variant.Images.map(
+                          (image: any, imageIndex: number) => (
+                            <div
+                              key={imageIndex}
+                              className="relative aspect-square"
+                            >
+                              <Image
+                                src={image}
+                                alt={`${variant.color} variant ${
+                                  imageIndex + 1
+                                }`}
+                                fill
+                                className="rounded-lg object-cover"
+                              />
+                            </div>
+                          )
+                        )}
                       </div>
                     </dd>
                   </div>

@@ -14,11 +14,11 @@ interface ColorVariantProps {
     ColorCode: string;
     Images: string[];
     Sizes: {
-      size: string;
-      stock: number;
-      priceAdjustment: number;
+      Size: string;
+      Stock: number;
+      PriceAdjustment: number;
       isDeleted: boolean;
-      sizeId?: string;
+      SizeId?: string;
     }[];
   };
   onRemove: () => void;
@@ -34,6 +34,7 @@ function ColorVariant({
   register,
   errors,
 }: ColorVariantProps) {
+  console.log(variant);
   const handleMultipleImageUpload = async (
     files: File[]
   ): Promise<string[]> => {
@@ -53,28 +54,30 @@ function ColorVariant({
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
   const [images, setImages] = useState<string[]>([]);
-  const [selectedColor, setSelectedColor] = useState("#000000");
-  const [colorName, setColorName] = useState("");
+  const [selectedColor, setSelectedColor] = useState(
+    variant?.ColorCode || "#000000"
+  );
+  const [colorName, setColorName] = useState(variant?.ColorName || "");
 
   const [selectedSizes, setSelectedSizes] = useState<
     {
-      size: string;
-      sizeId: string;
-      stock: number;
-      priceAdjustment: number;
+      Size: string;
+      SizeId?: string;
+      Stock: number;
+      PriceAdjustment: number;
       isDeleted: boolean;
     }[]
-  >([]);
+  >(variant.Sizes);
 
   const toggleSize = (size: string) => {
     // Check if the size is already in the selectedSizes array
-    const existingSize = selectedSizes.find((s) => s.size === size);
+    const existingSize = selectedSizes.find((s) => s.Size === size);
 
     if (existingSize) {
       // If the size is already in the array, update its properties
       setSelectedSizes((prevSizes) =>
         prevSizes.map((s) =>
-          s.size === size
+          s.Size === size
             ? {
                 ...s,
                 stock: 0,
@@ -88,21 +91,27 @@ function ColorVariant({
       // If the size is not in the array, add a new object
       setSelectedSizes((prevSizes) => [
         ...prevSizes,
-        { size, stock: 0, priceAdjustment: 0, isDeleted: false, sizeId: "" },
+        {
+          Size: size,
+          Stock: 0,
+          PriceAdjustment: 0,
+          isDeleted: false,
+          SizeId: "",
+        },
       ]);
     }
     console.log(selectedSizes);
   };
   const handleStockChange = (size: string, value: number) => {
     setSelectedSizes((prevSizes) =>
-      prevSizes.map((s) => (s.size === size ? { ...s, stock: value } : s))
+      prevSizes.map((s) => (s.Size === size ? { ...s, stock: value } : s))
     );
   };
 
   const handlePriceAdjustmentChange = (size: string, value: number) => {
     setSelectedSizes((prevSizes) =>
       prevSizes.map((s) =>
-        s.size === size ? { ...s, priceAdjustment: value } : s
+        s.Size === size ? { ...s, priceAdjustment: value } : s
       )
     );
   };
@@ -128,6 +137,7 @@ function ColorVariant({
               type="text"
               className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
               placeholder="e.g., Royal Blue"
+              value={colorName}
               onChange={(e) => setColorName(e.target.value)}
             />
           </div>
@@ -158,7 +168,7 @@ function ColorVariant({
         </label>
         <div className="flex flex-wrap gap-2">
           {SIZES.map((size) => {
-            const selectedSize = selectedSizes.find((s) => s.size === size);
+            const selectedSize = selectedSizes.find((s) => s.Size === size);
 
             return (
               <div className="w-[100%] items-center   flex gap-2">

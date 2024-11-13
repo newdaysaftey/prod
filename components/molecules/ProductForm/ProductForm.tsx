@@ -1,21 +1,24 @@
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Package, ArrowLeft, Save } from "lucide-react";
-import { ColorVariant } from "./ColorVariant";
+import { Package } from "lucide-react";
 import { z } from "zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Step1 from "./step1";
 import Step2 from "./step2";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 // Zod schema for product form validation
 const productSchema = z.object({
-  Name: z.string().min(1, "Product name is required"),
-  Description: z.string().min(1, "Description is required"),
-  Base_price: z.number().min(0.01, "Base price must be greater than 0"),
+  Name: z.string().min(1, "Product name is required").optional(),
+  Description: z.string().min(1, "Description is required").optional(),
+  Base_price: z
+    .number()
+    .min(0.01, "Base price must be greater than 0")
+    .optional(),
   Available: z.number().min(0, "Quantity must be non-negative").optional(),
   Tags: z.string().optional(),
   AverageRating: z.number().min(0).max(5).optional(),
@@ -34,15 +37,15 @@ const saveProduct = async (data: ProductFormData) => {
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to save product");
-  console.log(response.json());
-  return response.json();
+  console.log(response);
+  return await response.json();
 };
 
-export function ProductForm() {
-  const [step, setStep] = useState(2);
+export function ProductForm({ initialValues }: any) {
+  const router = useRouter();
+  const [step, setStep] = useState(1);
   const [colorVariants, setColorVariants] = useState([0]);
   const [productId, setProductId] = useState("");
-
   // Form setup with react-hook-form and zod validation
   const {
     register,
@@ -54,6 +57,7 @@ export function ProductForm() {
     resolver: zodResolver(productSchema),
     defaultValues: {
       step: 1,
+      ProductId: initialValues?.ProductId || "",
       AverageRating: 0,
       discount: 0,
     },
@@ -76,6 +80,9 @@ export function ProductForm() {
         console.log("Product saved successfully:", data);
         // Handle success (e.g., show notification, redirect)
       }
+    },
+    onError: (error) => {
+      console.log(error);
     },
   });
 
@@ -127,7 +134,11 @@ export function ProductForm() {
           </div>
         </motion.div>
 
-        <form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           <AnimatePresence mode="wait">
             {step === 1 ? (
               <Step1
@@ -136,9 +147,14 @@ export function ProductForm() {
                 mutation={mutation}
                 handleSubmit={handleSubmit}
                 onSubmit1={onSubmit1}
+                initialValues={initialValues || {}}
               ></Step1>
             ) : (
-              <Step2 productId={"70b3613c-e41d-4dcc-8773-3a76a8314a8a"}></Step2>
+              <Step2
+                productId={productId}
+                initialValues={initialValues || {}}
+                router={router}
+              ></Step2>
             )}
           </AnimatePresence>
         </form>

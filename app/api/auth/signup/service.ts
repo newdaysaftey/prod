@@ -25,10 +25,9 @@ export class SignupService extends BaseService {
       Username: data.Username,
       FirstName: data.FirstName,
       LastName: data.LastName,
-      CreatedOn: new Date(),
-      ModifiedOn: new Date(),
-      Deleted: false,
-      Disabled: false,
+      CreatedAt: new Date(),
+      IsDeleted: false,
+      IsActive: false,
     };
     const user = await prisma.user.create({
       data: userData,

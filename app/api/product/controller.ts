@@ -3,14 +3,16 @@ import { ProductService } from "./service";
 import { NextRequest } from "next/server";
 
 interface SizeInput {
-  size: string;
-  stock: number;
-  priceAdjustment: number;
+  Size: string;
+  Stock: number;
+  SizeId: string;
+  PriceAdjustment: number;
   sku: string;
 }
 
 interface ColorBody {
   ColorName: string;
+  ColorId: string;
   ColorCode: string;
   Images: string[];
   Sizes: SizeInput[];
@@ -23,8 +25,6 @@ interface ProductBody {
   ImageUrl: string;
   Base_price: any;
   CategoryId: string;
-  ColorId: string;
-  SizeId: string;
   ProductId: string;
   Colors: ColorBody[];
 }
@@ -48,8 +48,6 @@ export class ProductController extends BaseController {
         Base_price,
         CategoryId,
         ProductId,
-        ColorId,
-        SizeId,
         Colors,
       } = body as ProductBody;
       if (step === 1) {
@@ -66,11 +64,10 @@ export class ProductController extends BaseController {
           "Product created/updated successfully"
         );
       } else if (step === 2) {
+        console.log(body);
         const sizes = await this.service.addColorWithSizes({
           ProductId,
           Colors,
-          ColorId,
-          SizeId,
         });
         return this.sendSuccess(sizes, "added colors & sizes to the product");
       }

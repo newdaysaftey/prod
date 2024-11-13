@@ -13,13 +13,15 @@ interface ProductData {
 }
 
 interface SizeInput {
-  size: string;
-  stock: number;
-  priceAdjustment: number;
+  Size: string;
+  Stock: number;
+  SizeId: string;
+  PriceAdjustment: number;
   sku: string;
 }
 
 interface ColorData {
+  ColorId: string;
   ColorName: string;
   ColorCode: string;
   Images: string[];
@@ -28,8 +30,6 @@ interface ColorData {
 
 interface AddColorData {
   ProductId: string;
-  ColorId: string;
-  SizeId: string;
   Colors: ColorData[];
 }
 
@@ -81,12 +81,12 @@ export class ProductService extends BaseService {
   }
 
   async addColorWithSizes(data: AddColorData) {
-    if (data.ColorId || data.ProductId) {
+    if (data.ProductId) {
       const createColors = await Promise.all(
         data.Colors.map(async (color) => {
           const createdColor = await prisma.color.upsert({
             where: {
-              ColorId: data.ColorId,
+              ColorId: color.ColorId,
             },
             update: {
               ColorName: color.ColorName,
@@ -110,18 +110,18 @@ export class ProductService extends BaseService {
             color.Sizes.map((size) =>
               prisma.size.upsert({
                 where: {
-                  SizeId: data.SizeId,
+                  SizeId: size.SizeId,
                 },
                 update: {
-                  Size: size.size,
-                  Stock: size.stock,
-                  PriceAdjustment: size.priceAdjustment,
+                  Size: size.Size,
+                  Stock: size.Stock,
+                  PriceAdjustment: size.PriceAdjustment,
                   ColorId: createdColor.ColorId,
                 },
                 create: {
-                  Size: size.size,
-                  Stock: size.stock,
-                  PriceAdjustment: size.priceAdjustment,
+                  Size: size.Size,
+                  Stock: size.Stock,
+                  PriceAdjustment: size.PriceAdjustment,
                   ColorId: createdColor.ColorId,
                 },
               })

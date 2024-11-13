@@ -5,6 +5,7 @@ const Step1 = ({
   mutation,
   handleSubmit,
   onSubmit1,
+  initialValues,
 }: any) => {
   return (
     <motion.div
@@ -21,6 +22,7 @@ const Step1 = ({
           {...register("Name")}
           className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
           placeholder="Enter product name"
+          defaultValue={initialValues?.Name}
         />
         {errors.Name && (
           <p className="text-red-500 text-sm mt-1">{errors.Name.message}</p>
@@ -33,6 +35,7 @@ const Step1 = ({
           {...register("Description")}
           className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all min-h-[120px]"
           placeholder="Enter product description"
+          defaultValue={initialValues?.Description}
         />
         {errors.Description && (
           <p className="text-red-500 text-sm mt-1">
@@ -50,6 +53,7 @@ const Step1 = ({
             {...register("Base_price", { valueAsNumber: true })}
             className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
             placeholder="0.00"
+            defaultValue={initialValues.Base_price}
           />
           {errors.Base_price && (
             <p className="text-red-500 text-sm mt-1">
@@ -67,6 +71,7 @@ const Step1 = ({
             {...register("discount", { valueAsNumber: true })}
             className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
             placeholder="0"
+            defaultValue={initialValues.discount}
           />
           {errors.discount && (
             <p className="text-red-500 text-sm mt-1">
@@ -85,6 +90,7 @@ const Step1 = ({
             {...register("Available", { valueAsNumber: true })}
             className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
             placeholder="0"
+            defaultValue={initialValues?.Available}
           />
           {errors.Available && (
             <p className="text-red-500 text-sm mt-1">
@@ -100,6 +106,7 @@ const Step1 = ({
           {...register("CategoryId")}
           className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
           placeholder="Enter category ID"
+          defaultValue={initialValues?.Category?.CategoryId}
         />
         {errors.CategoryId && (
           <p className="text-red-500 text-sm mt-1">

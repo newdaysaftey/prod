@@ -6,7 +6,8 @@ import { z } from "zod";
 import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Plus, Package, ArrowLeft, Save } from "lucide-react";
+import { Plus, Save } from "lucide-react";
+import { toast } from "sonner";
 
 // Zod schema for product form validation
 const productSchema = z.object({
@@ -25,11 +26,11 @@ const productSchema = z.object({
         Sizes: z.array(
           z
             .object({
-              size: z.string().min(1, "Size is required"),
-              stock: z.number().min(0, "Stock must be non-negative"),
-              sizeId: z.string().default(""),
+              Size: z.string().min(1, "Size is required"),
+              Stock: z.number().min(0, "Stock must be non-negative"),
+              SizeId: z.string().default(""),
               isDeleted: z.boolean().optional(),
-              priceAdjustment: z
+              PriceAdjustment: z
                 .number()
                 .min(0, "Price adjustment must be non-negative"),
             })
@@ -51,22 +52,32 @@ const saveProduct = async (data: ProductFormData) => {
   return response.json();
 };
 
-function Step2({ productId }: { productId: string }) {
+function Step2({
+  productId,
+  initialValues,
+  router,
+}: {
+  productId: string;
+  initialValues: any;
+  router: any;
+}) {
   const [colorVariants, setColorVariants] = useState<
     {
+      ColorId: string;
       ColorName: string;
       ColorCode: string;
       Images: string[];
       Sizes: {
-        size: string;
-        sizeId: string;
-        stock: number;
-        priceAdjustment: number;
+        Size: string;
+        SizeId: string;
+        Stock: number;
+        PriceAdjustment: number;
         isDeleted: boolean;
       }[];
     }[]
-  >([]);
+  >(initialValues?.Colors || []);
 
+  console.log(colorVariants);
   const {
     register,
     handleSubmit,
@@ -80,6 +91,11 @@ function Step2({ productId }: { productId: string }) {
     mutationFn: saveProduct,
     onSuccess: (data) => {
       console.log("Product saved successfully:", data);
+
+      if (!data.error) {
+        toast.info("form submitted");
+        router.push("/admin/products");
+      }
       // Handle success (e.g., show notification, redirect)
     },
   });
@@ -104,10 +120,15 @@ function Step2({ productId }: { productId: string }) {
   const removeColorVariant = (index: number) => {
     setColorVariants((prev) => prev.filter((_, i) => i !== index));
   };
-  useEffect(() => {
-    console.log(colorVariants);
-  }, [colorVariants]);
 
+  useEffect(() => {
+    // Set the initial values of the form
+    colorVariants.forEach((variant, index) => {
+      setValue(`Colors.${index}.ColorName`, variant.ColorName);
+      setValue(`Colors.${index}.ColorCode`, variant.ColorCode);
+      setValue(`Colors.${index}.Sizes`, variant.Sizes);
+    });
+  }, [colorVariants, setValue]);
   return (
     <form>
       {colorVariants.map((variant, index) => (
