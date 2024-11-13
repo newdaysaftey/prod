@@ -11,12 +11,13 @@ datasource db {
 
 type Address {
   id        String  @default(uuid())
-  Street    String
-  City      String
-  State     String
-  Country   String
-  Pincode   String
-  IsDefault Boolean @default(false)
+  street    String
+  city      String
+  state     String
+  country   String
+  pincode   String
+  isDefault Boolean @default(false)
+  isDeleted Boolean @default(false)
 }
 
 type CartItem {
@@ -37,32 +38,31 @@ type OrderItem {
 }
 
 model User {
-  UserId       String    @id @default(uuid()) @map("_id")
-  Email        String    @unique
+  UserId       String     @id @default(uuid()) @map("_id")
+  Email        String     @unique
   Username     String
   FirstName    String
   MiddleName   String?
   LastName     String
-  Role         Role      @default(USER)
+  Role         Role       @default(USER)
   PasswordHash String?
-  IsActive     Boolean   @default(false)
-  IsDeleted    Boolean   @default(false)
-  CreatedAt    DateTime  @default(now())
-  UpdatedAt    DateTime  @updatedAt
+  IsActive     Boolean    @default(false)
+  IsDeleted    Boolean    @default(false)
+  CreatedAt    DateTime   @default(now())
+  UpdatedAt    DateTime   @updatedAt
   DeletedAt    DateTime?
   CreatedById  String?
   ModifiedById String?
   DeletedById  String?
-  GoogleId     String?   @unique
+  GoogleId     String?    @unique
   Phone        String?
   Gender       String?
   CountryCode  String?
   ImageUrl     String?
-  Addresses    Address[] // New field
-  LastLogin    DateTime? // New field
-  Orders       Order[] // New field
-  Cart         Cart? // New field
-  Wishlist     Wishlist? // New field
+  addresses    Address[]
+  LastLogin    DateTime?
+  Orders       Order[]
+  Items        CartItem[]
 }
 
 enum Role {
@@ -80,7 +80,7 @@ model Category {
 }
 
 model Product {
-  ProductId     String     @id @default(uuid()) @map("_id")
+  ProductId     String    @id @default(uuid()) @map("_id")
   Name          String
   Description   String
   Base_price    Float
@@ -90,19 +90,17 @@ model Product {
   Tags          String? // Added Tags field
   AverageRating Float? // Added AverageRating field
   CategoryId    String // Foreign key for Category
-  Category      Category   @relation(fields: [CategoryId], references: [CategoryId])
-  IsDeleted     Boolean    @default(false)
-  CreatedAt     DateTime   @default(now())
-  ModifiedAt    DateTime   @updatedAt
+  Category      Category  @relation(fields: [CategoryId], references: [CategoryId])
+  IsDeleted     Boolean   @default(false)
+  CreatedAt     DateTime  @default(now())
+  ModifiedAt    DateTime  @updatedAt
   DeletedAt     DateTime?
   CreatedById   String?
   ModifiedById  String?
   DeletedById   String?
   ImageUrl      String?
-  IsActive      Boolean    @default(true)
+  IsActive      Boolean   @default(true)
   Colors        Color[]
-  Wishlists     Wishlist[] @relation(fields: [WishlistIds], references: [WishlistId])
-  WishlistIds   String[]
 }
 
 // Size model to handle size information for each color of a product
@@ -114,6 +112,7 @@ model Size {
   IsAvailable     Boolean @default(true)
   Color           Color   @relation(fields: [ColorId], references: [ColorId])
   ColorId         String
+  isDeleted       Boolean @default(false)
 }
 
 // Color model to handle color information for each product
@@ -125,15 +124,7 @@ model Color {
   Product   Product  @relation(fields: [ProductId], references: [ProductId])
   ProductId String
   Sizes     Size[]
-}
-
-model Cart {
-  CartId     String     @id @default(uuid()) @map("_id")
-  UserId     String     @unique
-  User       User       @relation(fields: [UserId], references: [UserId])
-  Items      CartItem[]
-  CreatedOn  DateTime   @default(now())
-  ModifiedOn DateTime   @updatedAt
+  isDeleted Boolean  @default(false)
 }
 
 model Order {
@@ -163,13 +154,4 @@ enum PaymentStatus {
   PAID
   FAILED
   REFUNDED
-}
-
-model Wishlist {
-  WishlistId String    @id @default(uuid()) @map("_id")
-  UserId     String    @unique
-  User       User      @relation(fields: [UserId], references: [UserId])
-  Products   Product[] @relation(fields: [ProductIds], references: [ProductId])
-  ProductIds String[]
-  ModifiedOn DateTime  @updatedAt
 }

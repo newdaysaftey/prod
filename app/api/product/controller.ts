@@ -6,13 +6,15 @@ interface SizeInput {
   Size: string;
   Stock: number;
   SizeId: string;
+  isDeleted?: boolean;
   PriceAdjustment: number;
   sku: string;
 }
 
 interface ColorBody {
-  ColorName: string;
   ColorId: string;
+  isDeleted?: boolean;
+  ColorName: string;
   ColorCode: string;
   Images: string[];
   Sizes: SizeInput[];

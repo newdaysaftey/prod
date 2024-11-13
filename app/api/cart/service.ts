@@ -26,90 +26,105 @@ interface cartItemsWithDetails {
 
 export class CartService extends BaseService {
   async addtoCart(data: CartData) {
-    const existingCart = await prisma.cart.findUnique({
-      where: { UserId: data.UserId },
-    });
+    let totalPrice = 0;
+
+    // Create a new array to store unique items
+    const uniqueItems: CartItemData[] = [];
 
     for (const item of data.Items) {
-      // Verify product exists and is active
-      const product = await prisma.product.findFirst({
-        where: {
-          ProductId: item.ProductId,
-          IsActive: true,
-          IsDeleted: false,
-        },
-        include: {
-          Colors: {
-            include: {
-              Sizes: true,
+      // Check if the item already exists in the cart (based on ProductId, ColorId, and SizeId)
+      const existingItem = uniqueItems.find(
+        (uniqueItem) =>
+          uniqueItem.ProductId === item.ProductId &&
+          uniqueItem.ColorId === item.ColorId &&
+          uniqueItem.SizeId === item.SizeId
+      );
+
+      // If the item already exists, we should update the quantity
+      if (existingItem) {
+        existingItem.Quantity += item.Quantity;
+      } else {
+        // Otherwise, process the item and add it to the uniqueItems array
+        // Verify product exists and is active
+        const product = await prisma.product.findFirst({
+          where: {
+            ProductId: item.ProductId,
+            IsActive: true,
+            IsDeleted: false,
+          },
+          include: {
+            Colors: {
+              include: {
+                Sizes: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      if (!product) {
-        throw new Error(`Product ${item.ProductId} not found or inactive`);
+        if (!product) {
+          throw new Error(`Product ${item.ProductId} not found or inactive`);
+        }
+
+        // Verify color exists for the product
+        const color = product.Colors.find((c) => c.ColorId === item.ColorId);
+        if (!color) {
+          throw new Error(
+            `Color ${item.ColorId} not found for product ${item.ProductId}`
+          );
+        }
+
+        // Verify size exists for the color and has sufficient stock
+        const size = color.Sizes.find((s) => s.SizeId === item.SizeId);
+        if (!size) {
+          throw new Error(
+            `Size ${item.SizeId} not found for color ${item.ColorId}`
+          );
+        }
+
+        if (!size.IsAvailable || size.Stock < item.Quantity) {
+          throw new Error(
+            `Insufficient stock for product ${item.ProductId} in selected color and size`
+          );
+        }
+
+        // Calculate the correct price
+        const finalPrice = product.Base_price + size.PriceAdjustment;
+        item.PriceAtTime = finalPrice;
+
+        // Add the item to the uniqueItems array
+        uniqueItems.push(item);
       }
-
-      // Verify color exists for the product
-      const color = product.Colors.find((c) => c.ColorId === item.ColorId);
-      if (!color) {
-        throw new Error(
-          `Color ${item.ColorId} not found for product ${item.ProductId}`
-        );
-      }
-
-      // Verify size exists for the color and has sufficient stock
-      const size = color.Sizes.find((s) => s.SizeId === item.SizeId);
-      if (!size) {
-        throw new Error(
-          `Size ${item.SizeId} not found for color ${item.ColorId}`
-        );
-      }
-
-      if (!size.IsAvailable || size.Stock < item.Quantity) {
-        throw new Error(
-          `Insufficient stock for product ${item.ProductId} in selected color and size`
-        );
-      }
-
-      // Calculate correct price
-      const finalPrice = product.Base_price + size.PriceAdjustment;
-      item.PriceAtTime = finalPrice;
     }
 
-    const cart = await prisma.cart.upsert({
+    for (const item of uniqueItems) {
+      totalPrice += item.PriceAtTime * item.Quantity;
+    }
+
+    // Now update the user's cart in the database with the uniqueItems array
+    const cart = await prisma.user.update({
       where: {
         UserId: data.UserId,
       },
-      update: {
-        Items: data.Items,
+      data: {
+        Items: uniqueItems,
       },
-      create: {
-        UserId: data.UserId,
-        Items: data.Items,
-      },
-      include: {
-        User: {
-          select: {
-            Username: true,
-            Email: true,
-          },
-        },
+      select: {
+        UserId: true,
+        Items: true,
       },
     });
-    return cart;
+
+    return { ...cart, totalPrice };
   }
 
   async getCart(UserId: string) {
-    const cart = await prisma.cart.findUnique({
+    const cart = await prisma.user.findUnique({
       where: {
         UserId: UserId,
       },
       select: {
         Items: true,
         UserId: true,
-        CartId: true,
       },
     });
     if (!cart) {
