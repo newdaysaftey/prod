@@ -1,15 +1,7 @@
 import { BaseController } from "@/app/api/controllers/base.controller";
 import { ProductService } from "./service";
 import { NextRequest } from "next/server";
-
-interface SizeInput {
-  Size: string;
-  Stock: number;
-  SizeId: string;
-  isDeleted?: boolean;
-  PriceAdjustment: number;
-  sku: string;
-}
+import { Size } from "@prisma/client";
 
 interface ColorBody {
   ColorId: string;
@@ -17,7 +9,7 @@ interface ColorBody {
   ColorName: string;
   ColorCode: string;
   Images: string[];
-  Sizes: SizeInput[];
+  Sizes: Size[];
 }
 
 interface ProductBody {

@@ -1,7 +1,7 @@
 //
 import { BaseService } from "@/app/api/services/base.service";
 import prisma from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, Size } from "@prisma/client";
 
 interface ProductData {
   Name: string;
@@ -12,22 +12,13 @@ interface ProductData {
   ProductId: string;
 }
 
-interface SizeInput {
-  Size: string;
-  Stock: number;
-  SizeId: string;
-  PriceAdjustment: number;
-  sku: string;
-  isDeleted?: boolean;
-}
-
 interface ColorData {
   ColorId: string;
   isDeleted?: boolean;
   ColorName: string;
   ColorCode: string;
   Images: string[];
-  Sizes: SizeInput[];
+  Sizes: Size[];
 }
 
 interface AddColorData {

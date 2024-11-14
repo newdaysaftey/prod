@@ -18,6 +18,10 @@ interface OderData {
 
 export class OrderService extends BaseService {
   async createOrder(UserId: string, data: OderData) {
+    let totalAmount = data.totalAmount | 0;
+    for (let item of data.items) {
+      totalAmount += item.PriceAtTime * item.Quantity;
+    }
     let shippingAddressId = data.shippingAddressId || "";
     let billingAddressId = data.billingAddressId || "";
     if (data.shippingAddress && !data.shippingAddressId) {
@@ -52,21 +56,6 @@ export class OrderService extends BaseService {
         },
       });
       billingAddressId = address.id;
-    }
-
-    let totalAmount = data.totalAmount | 0;
-    for (let item of data.items) {
-      totalAmount += item.PriceAtTime * item.Quantity;
-      await prisma.size.update({
-        where: {
-          SizeId: item.SizeId,
-        },
-        data: {
-          Stock: {
-            decrement: item.Quantity,
-          },
-        },
-      });
     }
 
     const order = await prisma.order.create({
