@@ -2,11 +2,11 @@ import { BaseController } from "@/app/api/controllers/base.controller";
 import { CartService } from "./service";
 
 interface CartItemBody {
-  ProductId: string;
-  ColorId: string;
-  SizeId: string;
-  Quantity: number;
-  PriceAtTime: number;
+  productId: string;
+  colorId: string;
+  sizeId: string;
+  quantity: number;
+  priceAtTime: number;
 }
 
 interface CartBody {

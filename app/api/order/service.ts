@@ -56,14 +56,14 @@ export class OrderService extends BaseService {
 
     let totalAmount = data.totalAmount | 0;
     for (let item of data.items) {
-      totalAmount += item.PriceAtTime * item.Quantity;
+      totalAmount += item.priceAtTime * item.quantity;
       await prisma.size.update({
         where: {
-          SizeId: item.SizeId,
+          SizeId: item.sizeId,
         },
         data: {
           Stock: {
-            decrement: item.Quantity,
+            decrement: item.quantity,
           },
         },
       });
@@ -76,12 +76,28 @@ export class OrderService extends BaseService {
         totalAmount: totalAmount,
         paymentStatus: data.paymentStatus,
         paymentMethod: data.paymentMethod,
-        items: data.items,
         shippingAddressId: shippingAddressId,
         billingAddressId: billingAddressId,
+        deliveryDate: data.deliveryDate, // Assuming you want to store delivery date
+        orderItems: {
+          create: data.items.map((item) => ({
+            productId: item.productId, // Connect to Product model
+            sizeId: item.sizeId, // Connect to Size model
+            colorId: item.colorId, // Connect to Color model
+            quantity: item.quantity,
+            priceAtTime: item.priceAtTime,
+          })),
+        },
       },
       include: {
         shippingAddress: true,
+        orderItems: {
+          include: {
+            Product: true, // Include related Product details
+            Size: true, // Include related Size details
+            Color: true, // Include related Color details
+          },
+        },
       },
     });
 
@@ -92,6 +108,41 @@ export class OrderService extends BaseService {
     const order = await prisma.order.findMany({
       where: {
         userId: UserId,
+      },
+      include: {
+        orderItems: {
+          include: {
+            Product: {
+              select: {
+                ProductId: true,
+                Name: true,
+                Description: true,
+                Base_price: true,
+                ImageUrl: true,
+                AverageRating: true,
+              },
+            },
+            Color: {
+              select: {
+                ColorId: true,
+                ColorName: true,
+                ColorCode: true,
+                Images: true,
+                ProductId: true,
+              },
+            },
+            Size: {
+              select: {
+                SizeId: true,
+                Size: true,
+                Stock: true,
+                PriceAdjustment: true,
+                ColorId: true,
+                IsAvailable: true,
+              },
+            },
+          },
+        },
       },
     });
 
