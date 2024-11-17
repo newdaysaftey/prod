@@ -52,7 +52,7 @@ function ColorVariant({
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
-  const [images, setImages] = useState<string[]>(variant?.Images || []);
+  const [images, setImages] = useState<string[]>(variant.Images || []);
   const [selectedColor, setSelectedColor] = useState(
     variant?.ColorCode || "#000000"
   );
@@ -250,7 +250,7 @@ function ColorVariant({
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => removeImage(index)}
+                    onClick={(e) => {e.preventDefault();removeImage(index)}}
                     className="absolute top-2 right-2 bg-white dark:bg-slate-800 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />

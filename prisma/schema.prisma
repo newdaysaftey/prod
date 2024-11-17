@@ -1,5 +1,3 @@
-// This is your Prisma schema file
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,29 +15,35 @@ type CartItem {
   PriceAtTime Float
 }
 
-type OrderItem {
-  ProductId       String
-  ColorId         String
-  SizeId          String
-  Quantity        Int
-  PriceAtTime     Float
+model OrderItem {
+  id          String  @id @default(uuid()) @map("_id")
+  productId   String
+  colorId     String
+  sizeId      String
+  orderId     String
+  Quantity    Int
+  PriceAtTime Float
+  Order       Order   @relation(fields: [orderId], references: [orderId])
+  Product     Product @relation(fields: [productId], references: [ProductId])
+  Color       Color   @relation(fields: [colorId], references: [ColorId])
+  Size        Size    @relation(fields: [sizeId], references: [SizeId])
 }
 
 model Address {
-  id        String  @id @default(uuid()) @map("_id")
-  user      User    @relation(fields: [userId], references: [UserId])
-  userId    String
-  firstName String?
-  lastName  String?
-  street    String
-  city      String
-  state     String
-  country   String  @default("USA")
-  pincode   String
-  isDefault Boolean @default(false)
-  isDeleted Boolean @default(false)
-  ordersAsShipping   Order[] @relation("shippingAddress")
-  ordersAsBilling    Order[] @relation("billingAddress")
+  id               String  @id @default(uuid()) @map("_id")
+  user             User    @relation(fields: [userId], references: [UserId])
+  userId           String
+  firstName        String?
+  lastName         String?
+  street           String
+  city             String
+  state            String
+  country          String  @default("USA")
+  pincode          String
+  isDefault        Boolean @default(false)
+  isDeleted        Boolean @default(false)
+  ordersAsShipping Order[] @relation("shippingAddress")
+  ordersAsBilling  Order[] @relation("billingAddress")
 }
 
 model User {
@@ -89,12 +93,12 @@ model Product {
   Name          String
   Description   String
   Base_price    Float
-  Size          String? 
-  Color         String? 
-  Available     Int? 
-  Tags          String? 
-  AverageRating Float? 
-  CategoryId    String 
+  Size          String?
+  Color         String?
+  Available     Int?
+  Tags          String?
+  AverageRating Float?
+  CategoryId    String
   Category      Category  @relation(fields: [CategoryId], references: [CategoryId])
   IsDeleted     Boolean   @default(false)
   CreatedAt     DateTime  @default(now())
@@ -106,9 +110,10 @@ model Product {
   ImageUrl      String?
   IsActive      Boolean   @default(true)
   Colors        Color[]
+
+  OrderItem OrderItem[]
 }
 
-// Size model to handle size information for each color of a product
 model Size {
   SizeId          String  @id @default(uuid()) @map("_id")
   Size            String
@@ -118,9 +123,10 @@ model Size {
   Color           Color   @relation(fields: [ColorId], references: [ColorId])
   ColorId         String
   isDeleted       Boolean @default(false)
+
+  OrderItem OrderItem[]
 }
 
-// Color model to handle color information for each product
 model Color {
   ColorId   String   @id @default(uuid()) @map("_id")
   ColorName String
@@ -130,6 +136,8 @@ model Color {
   ProductId String
   Sizes     Size[]
   isDeleted Boolean  @default(false)
+
+  OrderItem OrderItem[]
 }
 
 model Order {
@@ -140,12 +148,11 @@ model Order {
   totalAmount       Float
   paymentStatus     PaymentStatus
   paymentMethod     String
-  items             OrderItem[]
- shippingAddress    Address       @relation("shippingAddress", fields: [shippingAddressId], references: [id])
-  shippingAddressId  String
-  
-  billingAddress     Address       @relation("billingAddress", fields: [billingAddressId], references: [id])
-  billingAddressId   String
+  orderItems        OrderItem[]
+  shippingAddress   Address       @relation("shippingAddress", fields: [shippingAddressId], references: [id])
+  shippingAddressId String
+  billingAddress    Address       @relation("billingAddress", fields: [billingAddressId], references: [id])
+  billingAddressId  String
   orderDate         DateTime      @default(now())
   deliveryDate      DateTime?
 }

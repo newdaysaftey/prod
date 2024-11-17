@@ -129,7 +129,7 @@ function Step2({
     });
   }, [colorVariants, setValue]);
   return (
-    <form>
+    <>
       {colorVariants.map((variant, index) => (
         <ColorVariant
           key={index}
@@ -166,7 +166,7 @@ function Step2({
           {mutation.isPending ? "Saving..." : "Save Product"}
         </motion.button>
       </div>
-    </form>
+    </>
   );
 }
 
