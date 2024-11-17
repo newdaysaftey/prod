@@ -24,7 +24,6 @@ export function ProductList() {
   if (error) return <p>Error: {error.message}</p>;
 
   const viewData = data?.data?.data.flatMap((e: any) => e.Products);
-  console.log(viewData);
 
   return (
     <div className="min-h-screen bg-gradient-to-br p-4 sm:p-8">

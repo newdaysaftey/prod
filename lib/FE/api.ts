@@ -39,15 +39,22 @@ export const getAdminProduct = async (id: string) => {
   const response = await api.get(`/product/${id}`);
   return response.data;
 };
-export const handleImageUpload = async (file: File): Promise<string | null> => {
+
+export const handleImageUpload = async (files: File[]): Promise<string[]> => {
   try {
     const formData = new FormData();
-    formData.append("ImageFile", file);
-    const response = await api.post("/uploadImage", formData);
+    files.forEach((file) => {
+      formData.append("ImageFile", file);
+    });
 
-    return response.data.imageUrl;
+    const response = await api.post("/uploadImage", formData,{
+      headers:{
+        "Content-Type":"multipart/form-data"
+      }
+    });
+    return response?.data?.data;
   } catch (error) {
-    console.error("Error uploading file:", error);
-    return null;
+    console.error("Error uploading files:", error);
+    return [];
   }
 };

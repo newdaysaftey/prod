@@ -77,7 +77,6 @@ function Step2({
     }[]
   >(initialValues?.Colors || []);
 
-  console.log(colorVariants);
   const {
     register,
     handleSubmit,
@@ -90,7 +89,6 @@ function Step2({
   const mutation = useMutation({
     mutationFn: saveProduct,
     onSuccess: (data) => {
-      console.log("Product saved successfully:", data);
 
       if (!data.error) {
         toast.info("form submitted");
@@ -127,6 +125,7 @@ function Step2({
       setValue(`Colors.${index}.ColorName`, variant.ColorName);
       setValue(`Colors.${index}.ColorCode`, variant.ColorCode);
       setValue(`Colors.${index}.Sizes`, variant.Sizes);
+      setValue(`Colors.${index}.Images`,variant.Images )
     });
   }, [colorVariants, setValue]);
   return (

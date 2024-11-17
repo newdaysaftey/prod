@@ -16,6 +16,16 @@ interface UploadImageParams {
 }
 
 export class ImageService extends BaseService {
+    async uploadMultipleImages({ files, folder }: { files: (Buffer | string)[], folder: string }): Promise<string[]> {
+    try {
+      const uploadPromises = files.map(file => this.uploadImage({ file, folder }));
+      return await Promise.all(uploadPromises);
+    } catch (error) {
+      console.error("Multiple images upload failed:", error);
+      throw new Error("Failed to upload images");
+    }
+  }
+
   async uploadImage({ file, folder }: UploadImageParams): Promise<string> {
     try {
       let buffer: Buffer;

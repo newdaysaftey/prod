@@ -34,15 +34,14 @@ function ColorVariant({
   register,
   errors,
 }: ColorVariantProps) {
-  console.log(variant);
   const handleMultipleImageUpload = async (
     files: File[]
-  ): Promise<string[]> => {
-    const imageUrls = await Promise.all(files.map(handleImageUpload));
-    return imageUrls.filter((url): url is string => url !== null);
+  ): Promise<any> => {
+    const imageUrls = await handleImageUpload(files);
+    return imageUrls;
   };
   // Usage example
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
       const imageUrls = await handleMultipleImageUpload(Array.from(files));
@@ -53,7 +52,7 @@ function ColorVariant({
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>(variant?.Images || []);
   const [selectedColor, setSelectedColor] = useState(
     variant?.ColorCode || "#000000"
   );
@@ -100,7 +99,6 @@ function ColorVariant({
         },
       ]);
     }
-    console.log(selectedSizes);
   };
   const handleStockChange = (size: string, value: number) => {
     setSelectedSizes((prevSizes) =>
@@ -120,6 +118,7 @@ function ColorVariant({
     variant["ColorName"] = colorName;
     variant["ColorCode"] = selectedColor;
     variant["Sizes"] = selectedSizes;
+    variant[ "Images"] = images
   }, [images, selectedColor, selectedSizes, setColorName]);
 
   return (
@@ -167,11 +166,11 @@ function ColorVariant({
           Available Sizes
         </label>
         <div className="flex flex-wrap gap-2">
-          {SIZES.map((size) => {
+          {SIZES.map((size,index) => {
             const selectedSize = selectedSizes.find((s) => s.Size === size);
 
             return (
-              <div className="w-[100%] items-center   flex gap-2">
+              <div className="w-[100%] items-center   flex gap-2" key={index}>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -230,7 +229,7 @@ function ColorVariant({
               accept="image/*"
               multiple
               className="hidden"
-              // onChange={handleImageUpload}
+              onChange={handleImageChangeInput}
             />
           </label>
 
