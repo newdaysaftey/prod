@@ -1,4 +1,3 @@
-//
 import { BaseService } from "@/app/api/services/base.service";
 import prisma from "@/lib/prisma";
 import { Address, OrderItem, OrderStatus, PaymentStatus } from "@prisma/client";
@@ -88,13 +87,4 @@ export class OrderService extends BaseService {
     return order;
   }
 
-  async getOrderDetails(UserId: string) {
-    const order = await prisma.order.findMany({
-      where: {
-        userId: UserId,
-      },
-    });
-
-    return order;
-  }
 }

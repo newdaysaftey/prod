@@ -67,6 +67,7 @@ function ColorVariant({
       isDeleted: boolean;
     }[]
   >(variant.Sizes);
+  console.log(selectedSizes)
 
   const toggleSize = (size: string) => {
     // Check if the size is already in the selectedSizes array
@@ -79,8 +80,7 @@ function ColorVariant({
           s.Size === size
             ? {
                 ...s,
-                stock: 0,
-                priceAdjustment: 0,
+          
                 isDeleted: !s.isDeleted,
               }
             : s
@@ -100,25 +100,32 @@ function ColorVariant({
       ]);
     }
   };
-  const handleStockChange = (size: string, value: number) => {
-    setSelectedSizes((prevSizes) =>
-      prevSizes.map((s) => (s.Size === size ? { ...s, stock: value } : s))
-    );
-  };
+const handleStockChange = (size: string, value: number) => {
+  setSelectedSizes((prevSizes) =>
+    prevSizes.map((s) => 
+      s.Size === size 
+        ? { ...s, Stock: value } 
+        : s
+    )
+  );
+};
 
-  const handlePriceAdjustmentChange = (size: string, value: number) => {
-    setSelectedSizes((prevSizes) =>
-      prevSizes.map((s) =>
-        s.Size === size ? { ...s, priceAdjustment: value } : s
-      )
-    );
-  };
+const handlePriceAdjustmentChange = (size: string, value: number) => {
+  setSelectedSizes((prevSizes) =>
+    prevSizes.map((s) =>
+      s.Size === size 
+        ? { ...s, PriceAdjustment: value } 
+        : s
+    )
+  );
+};
 
   useEffect(() => {
     variant["ColorName"] = colorName;
     variant["ColorCode"] = selectedColor;
     variant["Sizes"] = selectedSizes;
     variant[ "Images"] = images
+    console.log(variant)
   }, [images, selectedColor, selectedSizes, setColorName]);
 
   return (
@@ -168,6 +175,7 @@ function ColorVariant({
         <div className="flex flex-wrap gap-2">
           {SIZES.map((size,index) => {
             const selectedSize = selectedSizes.find((s) => s.Size === size);
+            console.log(selectedSize)
 
             return (
               <div className="w-[100%] items-center   flex gap-2" key={index}>
@@ -190,6 +198,7 @@ function ColorVariant({
                     type="number"
                     className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
                     placeholder="Price Adjustment"
+                    value={selectedSize?.PriceAdjustment}
                     onChange={(e) =>
                       handlePriceAdjustmentChange(
                         size,
@@ -201,6 +210,7 @@ function ColorVariant({
                 <input
                   type="number"
                   placeholder="Stock"
+                  value={selectedSize?.Stock}
                   className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
                   onChange={(e) =>
                     handleStockChange(size, parseFloat(e.target.value))

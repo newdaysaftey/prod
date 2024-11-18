@@ -25,19 +25,17 @@ const productSchema = z.object({
   CategoryId: z.string().uuid("Invalid category ID"),
   ProductId: z.string().optional().default(""),
   step: z.number().optional(),
-  discount: z.number().min(0).max(100).optional(),
+  // discount: z.number().min(0).max(100).optional(),
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;
 
 const saveProduct = async (data: ProductFormData) => {
-  console.log(data);
   const response = await fetch("http://localhost:3000/api/product/", {
     method: "POST",
     body: JSON.stringify(data),
   });
   if (!response.ok) throw new Error("Failed to save product");
-  console.log(response);
   return await response.json();
 };
 
@@ -59,7 +57,7 @@ export function ProductForm({ initialValues }: any) {
       step: 1,
       ProductId: initialValues?.ProductId || "",
       AverageRating: 0,
-      discount: 0,
+      // discount: 0,
     },
     mode: "all",
   });
@@ -70,14 +68,12 @@ export function ProductForm({ initialValues }: any) {
     onSuccess: (data) => {
       if (step === 1) {
         setStep(2);
-        console.log(data);
         if (data.error) {
           toast.error(`something went wrong ${data.message}`);
         } else {
           setProductId(data.data.ProductId);
         }
       } else {
-        console.log("Product saved successfully:", data);
         // Handle success (e.g., show notification, redirect)
       }
     },

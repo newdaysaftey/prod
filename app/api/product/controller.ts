@@ -58,7 +58,6 @@ export class ProductController extends BaseController {
           "Product created/updated successfully"
         );
       } else if (step === 2) {
-        console.log(body);
         const sizes = await this.service.addColorWithSizes({
           ProductId,
           Colors,
