@@ -6,6 +6,8 @@ import { Address, OrderItem, OrderStatus, PaymentStatus } from "@prisma/client";
 interface OderData {
   status: OrderStatus;
   totalAmount: number;
+  deliveryFee?: number;
+  serviceFee?: number;
   paymentStatus: PaymentStatus;
   paymentMethod: "ZELLE";
   items: OrderItem[];
@@ -54,9 +56,9 @@ export class OrderService extends BaseService {
       billingAddressId = address.id;
     }
 
-    let totalAmount = data.totalAmount | 0;
+    let subTotal = 0;
     for (let item of data.items) {
-      totalAmount += item.priceAtTime * item.quantity;
+      subTotal += item.priceAtTime * item.quantity;
       await prisma.size.update({
         where: {
           SizeId: item.sizeId,
@@ -68,22 +70,29 @@ export class OrderService extends BaseService {
         },
       });
     }
-
+    const tax = subTotal * (8.5 / 100);
+    const deliveryFee = data.deliveryFee || 7.0;
+    const serviceFee = data.serviceFee || 1.0;
+    const totalAmount = subTotal + deliveryFee + serviceFee + tax;
     const order = await prisma.order.create({
       data: {
         userId: UserId,
         status: data.status,
         totalAmount: totalAmount,
+        subTotal: subTotal,
         paymentStatus: data.paymentStatus,
         paymentMethod: data.paymentMethod,
         shippingAddressId: shippingAddressId,
         billingAddressId: billingAddressId,
+        deliveryFee: data.deliveryFee,
+        serviceFee: data.serviceFee,
+        tax: tax,
         deliveryDate: data.deliveryDate, // Assuming you want to store delivery date
         orderItems: {
           create: data.items.map((item) => ({
-            productId: item.productId, // Connect to Product model
-            sizeId: item.sizeId, // Connect to Size model
-            colorId: item.colorId, // Connect to Color model
+            productId: item.productId,
+            sizeId: item.sizeId,
+            colorId: item.colorId,
             quantity: item.quantity,
             priceAtTime: item.priceAtTime,
           })),
@@ -91,11 +100,12 @@ export class OrderService extends BaseService {
       },
       include: {
         shippingAddress: true,
+        billingAddress: true,
         orderItems: {
           include: {
-            Product: true, // Include related Product details
-            Size: true, // Include related Size details
-            Color: true, // Include related Color details
+            Product: true,
+            Size: true,
+            Color: true,
           },
         },
       },
@@ -110,6 +120,8 @@ export class OrderService extends BaseService {
         userId: UserId,
       },
       include: {
+        shippingAddress: true,
+        billingAddress: true,
         orderItems: {
           include: {
             Product: {

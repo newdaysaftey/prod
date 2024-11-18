@@ -152,6 +152,10 @@ model Order {
   user              User          @relation(fields: [userId], references: [UserId])
   status            OrderStatus   @default(PENDING)
   totalAmount       Float
+  subTotal          Float
+  deliveryFee       Float?        @default(5.00)
+  serviceFee        Float?         
+  tax               Float?
   paymentStatus     PaymentStatus
   paymentMethod     String
   orderItems        OrderItem[]

@@ -5,6 +5,9 @@ import { Address, OrderItem, OrderStatus, PaymentStatus } from "@prisma/client";
 interface OrderBody {
   status: OrderStatus;
   totalAmount: number;
+  deliveryFee?: number;
+  serviceFee?: number;
+  tax?: number;
   paymentStatus: PaymentStatus;
   paymentMethod: "ZELLE";
   items: OrderItem[];
