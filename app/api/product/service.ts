@@ -146,15 +146,16 @@ export class ProductService extends BaseService {
     const skip = (page - 1) * limit;
 
     // Base where clause
-    const whereClause = {
+    const whereClause: Prisma.ProductWhereInput = {
       IsDeleted: false,
       IsActive: true,
       ...(params.categoryId && { CategoryId: params.categoryId }),
       ...(params.search && {
-        Tags: {
-          contains: params.search,
-          mode: "insensitive" as Prisma.QueryMode, // Correct type for case-insensitive search
-        },
+        OR: [
+          { Tags: { contains: params.search, mode: "insensitive" } },
+          { Name: { contains: params.search, mode: "insensitive" } },
+          { Description: { contains: params.search, mode: "insensitive" } },
+        ],
       }),
     };
 
