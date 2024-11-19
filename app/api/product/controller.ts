@@ -78,6 +78,13 @@ export class ProductController extends BaseController {
       const limit = parseInt(searchParams.get("limit") || "10");
       const categoryId = searchParams.get("categoryId") || undefined;
       const search = searchParams.get("search") || undefined;
+      const tagsBoolean = searchParams.get("tags");
+      const tags =
+        tagsBoolean === "true"
+          ? true
+          : tagsBoolean === "false"
+          ? false
+          : undefined;
 
       // Validate pagination parameters
       if (page < 1 || limit < 1 || limit > 100) {
@@ -89,6 +96,7 @@ export class ProductController extends BaseController {
         limit,
         categoryId,
         search,
+        tags,
       });
       // const products = await this.service.getProduct();
       return this.sendSuccess(products, "Products fetched successfully");
