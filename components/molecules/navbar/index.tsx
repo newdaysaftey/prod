@@ -4,6 +4,7 @@ import { Dropdown } from "primereact/dropdown";
 import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
+import { MapPin, ShoppingCartIcon } from "lucide-react";
 
 const Navbar = () => {
   const dropDownValues = [{ name: "sleeves" }, { name: "hats" }];
@@ -18,10 +19,11 @@ const Navbar = () => {
         ></Image>
       </div>
       <div className="flex items-center justify-between gap-2 text-secondary md:hidden ">
-        <i
+        {/* <i
           className="pi pi-map-marker items-center "
           style={{ fontSize: "32px" }}
-        ></i>
+        ></i> */}
+        <MapPin></MapPin>
         <div>
           <p className="text-[12px] font-[500]">Delivering to New York 10001</p>
           <p className="text-[16px] font-[600]">Update Location</p>
@@ -64,10 +66,11 @@ const Navbar = () => {
       </div>
 
       <div className="sm:visible md:visible lg:hidden">
-        <i
+        {/* <i
           className=" pi pi-bars  text-white  "
           style={{ fontSize: "32px" }}
-        ></i>
+        ></i> */}
+        <ShoppingCartIcon></ShoppingCartIcon>
       </div>
     </div>
   );

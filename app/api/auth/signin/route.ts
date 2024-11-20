@@ -1,6 +1,6 @@
 // app/api/auth/signin/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { SigninController } from "./signin.controller";
+import { SigninController } from "./controller";
 
 const controller = new SigninController();
 export const dynamic = "dynamic";

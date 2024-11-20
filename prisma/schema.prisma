@@ -1,5 +1,3 @@
-// This is your Prisma schema file
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,16 +5,6 @@ generator client {
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
-}
-
-type Address {
-  id        String  @default(uuid())
-  Street    String
-  City      String
-  State     String
-  Country   String
-  Pincode   String
-  IsDefault Boolean @default(false)
 }
 
 type CartItem {
@@ -27,42 +15,63 @@ type CartItem {
   PriceAtTime Float
 }
 
-type OrderItem {
-  ProductId       String
-  ColorId         String
-  SizeId          String
-  Quantity        Int
-  PriceAtTime     Float
-  ProductSnapshot Json
+model OrderItem {
+  id          String  @id @default(uuid()) @map("_id")
+  productId   String
+  colorId     String
+  sizeId      String
+  orderId     String
+  Quantity    Int
+  PriceAtTime Float
+  Order       Order   @relation(fields: [orderId], references: [orderId])
+  Product     Product @relation(fields: [productId], references: [ProductId])
+  Color       Color   @relation(fields: [colorId], references: [ColorId])
+  Size        Size    @relation(fields: [sizeId], references: [SizeId])
+}
+
+model Address {
+  id               String  @id @default(uuid()) @map("_id")
+  user             User    @relation(fields: [userId], references: [UserId])
+  userId           String
+  firstName        String?
+  lastName         String?
+  street           String
+  city             String
+  state            String
+  country          String  @default("USA")
+  pincode          String
+  isDefault        Boolean @default(false)
+  isDeleted        Boolean @default(false)
+  ordersAsShipping Order[] @relation("shippingAddress")
+  ordersAsBilling  Order[] @relation("billingAddress")
 }
 
 model User {
-  UserId       String    @id @default(uuid()) @map("_id")
-  Email        String    @unique
+  UserId       String     @id @default(uuid()) @map("_id")
+  Email        String     @unique
   Username     String
   FirstName    String
   MiddleName   String?
   LastName     String
-  Role         Role      @default(USER)
+  Role         Role       @default(USER)
   PasswordHash String?
-  IsActive     Boolean   @default(false)
-  IsDeleted    Boolean   @default(false)
-  CreatedAt    DateTime  @default(now())
-  UpdatedAt    DateTime  @updatedAt
+  IsActive     Boolean    @default(false)
+  IsDeleted    Boolean    @default(false)
+  CreatedAt    DateTime   @default(now())
+  UpdatedAt    DateTime   @updatedAt
   DeletedAt    DateTime?
   CreatedById  String?
   ModifiedById String?
   DeletedById  String?
-  GoogleId     String?   @unique
-  Phone        String?
+  GoogleId     String?    @unique
+  Phone        Int?
   Gender       String?
   CountryCode  String?
   ImageUrl     String?
-  Addresses    Address[] // New field
-  LastLogin    DateTime? // New field
-  Orders       Order[] // New field
-  Cart         Cart? // New field
-  Wishlist     Wishlist? // New field
+  addresses    Address[]
+  LastLogin    DateTime?
+  Orders       Order[]
+  cartItems    CartItem[]
 }
 
 enum Role {
@@ -80,32 +89,31 @@ model Category {
 }
 
 model Product {
-  ProductId     String     @id @default(uuid()) @map("_id")
+  ProductId     String    @id @default(uuid()) @map("_id")
   Name          String
   Description   String
   Base_price    Float
-  Size          String? // Added Size field
-  Color         String? // Added Color field
-  Available     Int? // Added Available field
-  Tags          String? // Added Tags field
-  AverageRating Float? // Added AverageRating field
-  CategoryId    String // Foreign key for Category
-  Category      Category   @relation(fields: [CategoryId], references: [CategoryId])
-  IsDeleted     Boolean    @default(false)
-  CreatedAt     DateTime   @default(now())
-  ModifiedAt    DateTime   @updatedAt
+  Size          String?
+  Color         String?
+  Available     Int?
+  Tags          String?
+  AverageRating Float?
+  CategoryId    String
+  Category      Category  @relation(fields: [CategoryId], references: [CategoryId])
+  IsDeleted     Boolean   @default(false)
+  CreatedAt     DateTime  @default(now())
+  ModifiedAt    DateTime  @updatedAt
   DeletedAt     DateTime?
   CreatedById   String?
   ModifiedById  String?
   DeletedById   String?
   ImageUrl      String?
-  IsActive      Boolean    @default(true)
+  IsActive      Boolean   @default(true)
   Colors        Color[]
-  Wishlists     Wishlist[] @relation(fields: [WishlistIds], references: [WishlistId])
-  WishlistIds   String[]
+
+  OrderItem OrderItem[]
 }
 
-// Size model to handle size information for each color of a product
 model Size {
   SizeId          String  @id @default(uuid()) @map("_id")
   Size            String
@@ -114,9 +122,11 @@ model Size {
   IsAvailable     Boolean @default(true)
   Color           Color   @relation(fields: [ColorId], references: [ColorId])
   ColorId         String
+  isDeleted       Boolean @default(false)
+
+  OrderItem OrderItem[]
 }
 
-// Color model to handle color information for each product
 model Color {
   ColorId   String   @id @default(uuid()) @map("_id")
   ColorName String
@@ -125,29 +135,26 @@ model Color {
   Product   Product  @relation(fields: [ProductId], references: [ProductId])
   ProductId String
   Sizes     Size[]
-}
+  isDeleted Boolean  @default(false)
 
-model Cart {
-  CartId     String     @id @default(uuid()) @map("_id")
-  UserId     String     @unique
-  User       User       @relation(fields: [UserId], references: [UserId])
-  Items      CartItem[]
-  CreatedOn  DateTime   @default(now())
-  ModifiedOn DateTime   @updatedAt
+  OrderItem OrderItem[]
 }
 
 model Order {
-  OrderId         String        @id @default(uuid()) @map("_id")
-  UserId          String
-  User            User          @relation(fields: [UserId], references: [UserId])
-  ShippingAddress Address
-  Status          OrderStatus   @default(PENDING)
-  TotalAmount     Float
-  PaymentStatus   PaymentStatus
-  PaymentMethod   String
-  Items           OrderItem[]
-  OrderDate       DateTime      @default(now())
-  DeliveryDate    DateTime?
+  orderId           String        @id @default(uuid()) @map("_id")
+  userId            String
+  user              User          @relation(fields: [userId], references: [UserId])
+  status            OrderStatus   @default(PENDING)
+  totalAmount       Float
+  paymentStatus     PaymentStatus
+  paymentMethod     String
+  orderItems        OrderItem[]
+  shippingAddress   Address       @relation("shippingAddress", fields: [shippingAddressId], references: [id])
+  shippingAddressId String
+  billingAddress    Address       @relation("billingAddress", fields: [billingAddressId], references: [id])
+  billingAddressId  String
+  orderDate         DateTime      @default(now())
+  deliveryDate      DateTime?
 }
 
 enum OrderStatus {
@@ -163,13 +170,4 @@ enum PaymentStatus {
   PAID
   FAILED
   REFUNDED
-}
-
-model Wishlist {
-  WishlistId String    @id @default(uuid()) @map("_id")
-  UserId     String    @unique
-  User       User      @relation(fields: [UserId], references: [UserId])
-  Products   Product[] @relation(fields: [ProductIds], references: [ProductId])
-  ProductIds String[]
-  ModifiedOn DateTime  @updatedAt
 }

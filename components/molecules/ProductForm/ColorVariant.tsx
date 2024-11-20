@@ -1,37 +1,132 @@
+"use client";
 import { Trash2, Upload } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { handleImageUpload } from "@/lib/FE/api";
+import { FieldArrayWithId, UseFormRegister } from "react-hook-form";
+import { ProductFormData } from "./step2";
 
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
 
 interface ColorVariantProps {
+  variant: {
+    ColorName: string;
+    ColorCode: string;
+    Images: string[];
+    Sizes: {
+      Size: string;
+      Stock: number;
+      PriceAdjustment: number;
+      isDeleted: boolean;
+      SizeId?: string;
+    }[];
+  };
   onRemove: () => void;
+  register: UseFormRegister<ProductFormData>;
+  errors: {
+    [x: string]: any;
+  };
 }
 
-export function ColorVariant({ onRemove }: ColorVariantProps) {
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-  const [images, setImages] = useState<string[]>([]);
-  const [selectedColor, setSelectedColor] = useState("#000000");
-
-  const toggleSize = (size: string) => {
-    setSelectedSizes((prev) =>
-      prev.includes(size)
-        ? prev.filter((s) => s !== size)
-        : [...prev, size]
-    );
+function ColorVariant({
+  variant,
+  onRemove,
+  register,
+  errors,
+}: ColorVariantProps) {
+  const handleMultipleImageUpload = async (
+    files: File[]
+  ): Promise<any> => {
+    const imageUrls = await handleImageUpload(files);
+    return imageUrls;
   };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Usage example
+  const handleImageChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      const newImages = Array.from(files).map((file) => URL.createObjectURL(file));
-      setImages((prev) => [...prev, ...newImages]);
+      const imageUrls = await handleMultipleImageUpload(Array.from(files));
+      setImages((prev) => [...prev, ...imageUrls]);
     }
   };
 
   const removeImage = (index: number) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
+  const [images, setImages] = useState<string[]>(variant.Images || []);
+  const [selectedColor, setSelectedColor] = useState(
+    variant?.ColorCode || "#000000"
+  );
+  const [colorName, setColorName] = useState(variant?.ColorName || "");
+
+  const [selectedSizes, setSelectedSizes] = useState<
+    {
+      Size: string;
+      SizeId?: string;
+      Stock: number;
+      PriceAdjustment: number;
+      isDeleted: boolean;
+    }[]
+  >(variant.Sizes);
+  console.log(selectedSizes)
+
+  const toggleSize = (size: string) => {
+    // Check if the size is already in the selectedSizes array
+    const existingSize = selectedSizes.find((s) => s.Size === size);
+
+    if (existingSize) {
+      // If the size is already in the array, update its properties
+      setSelectedSizes((prevSizes) =>
+        prevSizes.map((s) =>
+          s.Size === size
+            ? {
+                ...s,
+          
+                isDeleted: !s.isDeleted,
+              }
+            : s
+        )
+      );
+    } else {
+      // If the size is not in the array, add a new object
+      setSelectedSizes((prevSizes) => [
+        ...prevSizes,
+        {
+          Size: size,
+          Stock: 0,
+          PriceAdjustment: 0,
+          isDeleted: false,
+          SizeId: "",
+        },
+      ]);
+    }
+  };
+const handleStockChange = (size: string, value: number) => {
+  setSelectedSizes((prevSizes) =>
+    prevSizes.map((s) => 
+      s.Size === size 
+        ? { ...s, Stock: value } 
+        : s
+    )
+  );
+};
+
+const handlePriceAdjustmentChange = (size: string, value: number) => {
+  setSelectedSizes((prevSizes) =>
+    prevSizes.map((s) =>
+      s.Size === size 
+        ? { ...s, PriceAdjustment: value } 
+        : s
+    )
+  );
+};
+
+  useEffect(() => {
+    variant["ColorName"] = colorName;
+    variant["ColorCode"] = selectedColor;
+    variant["Sizes"] = selectedSizes;
+    variant[ "Images"] = images
+    console.log(variant)
+  }, [images, selectedColor, selectedSizes, setColorName]);
 
   return (
     <motion.div
@@ -48,6 +143,8 @@ export function ColorVariant({ onRemove }: ColorVariantProps) {
               type="text"
               className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
               placeholder="e.g., Royal Blue"
+              value={colorName}
+              onChange={(e) => setColorName(e.target.value)}
             />
           </div>
           <div>
@@ -69,35 +166,59 @@ export function ColorVariant({ onRemove }: ColorVariantProps) {
             </div>
           </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-2">Price Adjustment</label>
-          <input
-            type="number"
-            className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
-            placeholder="0.00"
-          />
-        </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Available Sizes</label>
+        <label className="block text-sm font-medium mb-2">
+          Available Sizes
+        </label>
         <div className="flex flex-wrap gap-2">
-          {SIZES.map((size) => (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              key={size}
-              type="button"
-              onClick={() => toggleSize(size)}
-              className={`w-12 h-12 rounded-lg font-medium transition-colors ${
-                selectedSizes.includes(size)
-                  ? "bg-indigo-500 text-white"
-                  : "border border-slate-200 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500"
-              }`}
-            >
-              {size}
-            </motion.button>
-          ))}
+          {SIZES.map((size,index) => {
+            const selectedSize = selectedSizes.find((s) => s.Size === size);
+            console.log(selectedSize)
+
+            return (
+              <div className="w-[100%] items-center   flex gap-2" key={index}>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  key={size}
+                  type="button"
+                  onClick={() => toggleSize(size)}
+                  className={`w-12 h-12 rounded-lg font-medium transition-colors ${
+                    selectedSize && !selectedSize.isDeleted
+                      ? "bg-indigo-500 text-white"
+                      : "border border-slate-200 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500"
+                  }`}
+                >
+                  {size}
+                </motion.button>
+                <div>
+                  <input
+                    type="number"
+                    className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
+                    placeholder="Price Adjustment"
+                    value={selectedSize?.PriceAdjustment}
+                    onChange={(e) =>
+                      handlePriceAdjustmentChange(
+                        size,
+                        parseFloat(e.target.value)
+                      )
+                    }
+                  />
+                </div>
+                <input
+                  type="number"
+                  placeholder="Stock"
+                  value={selectedSize?.Stock}
+                  className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
+                  onChange={(e) =>
+                    handleStockChange(size, parseFloat(e.target.value))
+                  }
+                ></input>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -109,14 +230,16 @@ export function ColorVariant({ onRemove }: ColorVariantProps) {
             className="block border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-500 dark:hover:border-indigo-500 transition-colors"
           >
             <Upload className="mx-auto h-8 w-8 mb-2 text-slate-400" />
-            <span className="text-sm text-slate-500">Click to upload images</span>
+            <span className="text-sm text-slate-500">
+              Click to upload images
+            </span>
             <input
               id="images"
               type="file"
               accept="image/*"
               multiple
               className="hidden"
-              onChange={handleImageUpload}
+              onChange={handleImageChangeInput}
             />
           </label>
 
@@ -137,7 +260,7 @@ export function ColorVariant({ onRemove }: ColorVariantProps) {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => removeImage(index)}
+                    onClick={(e) => {e.preventDefault();removeImage(index)}}
                     className="absolute top-2 right-2 bg-white dark:bg-slate-800 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
@@ -162,3 +285,4 @@ export function ColorVariant({ onRemove }: ColorVariantProps) {
     </motion.div>
   );
 }
+export default ColorVariant;

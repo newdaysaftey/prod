@@ -1,14 +1,21 @@
+"use client";
+
 import { ProductView } from "@/components/molecules/productView";
+import { useQuery } from "@tanstack/react-query";
+import { getAdminProduct } from "@/lib/FE/api";
 
 export default function ViewProduct({ params }: { params: { id: string } }) {
-  return <ProductView id={params.id} />;
-}
+  const {
+    data: productData,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["product", params.id],
+    queryFn: () => getAdminProduct(params.id),
+  });
 
-export async function generateStaticParams() {
-  // Replace this with logic to get all possible product IDs
-  const productIds = ["1", "2", "3"]; // Example IDs; replace with actual IDs from your data source
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading product data</div>;
 
-  return productIds.map((id) => ({
-    id: id,
-  }));
+  return <ProductView product={productData.data} />;
 }

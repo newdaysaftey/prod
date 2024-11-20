@@ -1,4 +1,4 @@
-// services/signup.service.ts
+//
 import { BaseService } from "@/app/api/services/base.service";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";

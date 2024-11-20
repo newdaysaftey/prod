@@ -1,19 +1,15 @@
 import { BaseController } from "@/app/api/controllers/base.controller";
 import { ProductService } from "./service";
 import { NextRequest } from "next/server";
-
-interface SizeInput {
-  size: string;
-  stock: number;
-  priceAdjustment: number;
-  sku: string;
-}
+import { Size } from "@prisma/client";
 
 interface ColorBody {
+  ColorId: string;
+  isDeleted?: boolean;
   ColorName: string;
   ColorCode: string;
   Images: string[];
-  Sizes: SizeInput[];
+  Sizes: Size[];
 }
 
 interface ProductBody {
@@ -23,8 +19,6 @@ interface ProductBody {
   ImageUrl: string;
   Base_price: any;
   CategoryId: string;
-  ColorId: string;
-  SizeId: string;
   ProductId: string;
   Colors: ColorBody[];
 }
@@ -48,8 +42,6 @@ export class ProductController extends BaseController {
         Base_price,
         CategoryId,
         ProductId,
-        ColorId,
-        SizeId,
         Colors,
       } = body as ProductBody;
       if (step === 1) {
@@ -69,8 +61,6 @@ export class ProductController extends BaseController {
         const sizes = await this.service.addColorWithSizes({
           ProductId,
           Colors,
-          ColorId,
-          SizeId,
         });
         return this.sendSuccess(sizes, "added colors & sizes to the product");
       }

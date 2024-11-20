@@ -8,15 +8,15 @@ export async function POST(request: NextRequest) {
   try {
     // Process the multipart form data
     const formData = await processFormData(request);
-
     // Parse the formData into the expected format
-    const ImageFile = formData.get("ImageFile") as File;
+    const ImageFile = formData.getAll("ImageFile") as File[];
 
-    return controller.uploadImage(ImageFile);
+    return controller.uploadMultipleImages(ImageFile);
   } catch (error) {
-    return Response.json(
-      { error: "Failed to process request" },
-      { status: 500 }
-    );
+    return Response.json({
+      error: true,
+      message: "Failed to process request",
+      data: error,
+    });
   }
 }

@@ -6,27 +6,37 @@ import { UserRole } from "@/app/types/global";
 export const dynamic = "force-dynamic"; // Better explicitly force dynamic for data endpoints
 const controller = new CategoryController();
 
-// Shared error handler
-const handleError = (error: unknown) => {
-  console.error("Route Error:", error);
-  const message =
-    error instanceof Error ? error.message : "Error processing request";
-  return NextResponse.json(
-    {
-      success: false,
-      error: true,
-      message,
-      ...(process.env.NODE_ENV === "development" && { details: error }),
-    },
-    { status: 500 }
-  );
-};
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
 
-// Middleware to handle auth and roles
-const withAuth = async (
-  request: NextRequest,
-  handler: (authResult: any) => Promise<NextResponse>
-) => {
+    const authResult = await checkRole([UserRole.ADMIN])(request);
+
+    if (authResult instanceof Response) {
+      return authResult;
+    }
+    // Optional: Validate body here if needed
+    if (!body || Object.keys(body).length === 0) {
+      return NextResponse.json(
+        { error: true, message: "Request body is required" },
+        { status: 400 }
+      );
+    }
+
+    return await controller.createCategory(body);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: true,
+        message: "Error processing request",
+        data: error,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(request: NextRequest) {
   try {
     const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
       request
@@ -35,57 +45,19 @@ const withAuth = async (
     if (authResult instanceof Response) {
       return authResult;
     }
+    const searchParams = request.nextUrl.searchParams;
+    // Optional: Add query parameter handling if needed
+    const response = await controller.getCategory();
 
-    return await handler(authResult);
+    return response;
   } catch (error) {
-    return handleError(error);
+    return NextResponse.json(
+      {
+        error: true,
+        message: "Error processing request",
+        data: error,
+      },
+      { status: 500 }
+    );
   }
-};
-
-export async function POST(request: NextRequest) {
-  return withAuth(request, async (authResult) => {
-    try {
-      const body = await request.json();
-
-      // Optional: Validate body here if needed
-      if (!body || Object.keys(body).length === 0) {
-        return NextResponse.json(
-          { success: false, error: true, message: "Request body is required" },
-          { status: 400 }
-        );
-      }
-
-      return await controller.createCategory({
-        ...body,
-        userId: authResult.User.Id, // Pass authenticated user ID if needed
-      });
-    } catch (error) {
-      return handleError(error);
-    }
-  });
-}
-
-export async function GET(request: NextRequest) {
-  return withAuth(request, async (authResult) => {
-    try {
-      const searchParams = request.nextUrl.searchParams;
-      // Optional: Add query parameter handling if needed
-      const response = await controller.getCategory();
-
-      if (!response) {
-        return NextResponse.json(
-          { success: false, error: true, message: "Categories not found" },
-          { status: 404 }
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        error: false,
-        data: response,
-      });
-    } catch (error) {
-      return handleError(error);
-    }
-  });
 }

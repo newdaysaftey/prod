@@ -3,19 +3,19 @@ import jwt from "jsonwebtoken";
 import { JWTPayload, UserRole } from "@/app/types/global";
 
 // Define return type for verifyToken
-type AuthResult = { success: true; User: JWTPayload } | NextResponse;
+type AuthResult = { User: JWTPayload } | NextResponse;
 
 export async function verifyToken(request: NextRequest): Promise<AuthResult> {
   try {
     // Get token from cookies instead of headers
-    const token = request.cookies.get("token")?.value;
+    const token = request.cookies.get("authToken")?.value;
 
     if (!token) {
       return NextResponse.json(
         {
-          success: false,
           error: true,
           message: "Access denied. No token provided.",
+          data: null,
         },
         { status: 401 }
       );
@@ -32,7 +32,6 @@ export async function verifyToken(request: NextRequest): Promise<AuthResult> {
       (request as any).User = decoded;
 
       return {
-        success: true,
         User: decoded,
       };
     } catch (jwtError) {
@@ -40,7 +39,6 @@ export async function verifyToken(request: NextRequest): Promise<AuthResult> {
       if (jwtError instanceof jwt.TokenExpiredError) {
         return NextResponse.json(
           {
-            success: false,
             error: true,
             message: "Token has expired.",
           },
@@ -49,7 +47,6 @@ export async function verifyToken(request: NextRequest): Promise<AuthResult> {
       } else if (jwtError instanceof jwt.JsonWebTokenError) {
         return NextResponse.json(
           {
-            success: false,
             error: true,
             message: "Invalid token.",
           },
@@ -61,7 +58,6 @@ export async function verifyToken(request: NextRequest): Promise<AuthResult> {
     // If we get here, something went wrong with token verification
     return NextResponse.json(
       {
-        success: false,
         error: true,
         message: "Invalid token format.",
       },
@@ -71,7 +67,6 @@ export async function verifyToken(request: NextRequest): Promise<AuthResult> {
     console.error("Auth Error:", error);
     return NextResponse.json(
       {
-        success: false,
         error: true,
         message: "Authentication error occurred.",
       },
@@ -95,7 +90,6 @@ export function checkRole(allowedRoles: UserRole[]) {
     if (!allowedRoles.includes(userRole)) {
       return NextResponse.json(
         {
-          success: false,
           error: true,
           message: "Access denied. Insufficient permissions.",
         },

@@ -1,26 +1,26 @@
+// app/api/auth/signin/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { ProductController } from "./controller";
-import { checkRole } from "@/app/middilewares/middileware";
+import { OrderController } from "./controller";
 import { UserRole } from "@/app/types/global";
+import { checkRole } from "@/app/middilewares/middileware";
+
+const controller = new OrderController();
 export const dynamic = "dynamic";
-const controller = new ProductController();
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const authResult = await checkRole([UserRole.ADMIN])(request);
+    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+      request
+    );
 
     if (authResult instanceof Response) {
       return authResult;
     }
-    if (!body || Object.keys(body).length === 0) {
-      return NextResponse.json(
-        { error: true, message: "Request body is required" },
-        { status: 400 }
-      );
-    }
-    return controller.createProduct(body);
+    const response = await controller.createOrder(authResult.User.UserId, body);
+    return response;
   } catch (error) {
+    console.error("Route Error:", error);
     return NextResponse.json(
       {
         error: true,
@@ -41,8 +41,10 @@ export async function GET(request: NextRequest) {
     if (authResult instanceof Response) {
       return authResult;
     }
-    return controller.getProduct(request);
+    const response = await controller.getOrderDetails(authResult.User.UserId);
+    return response;
   } catch (error) {
+    console.error("Route Error:", error);
     return NextResponse.json(
       {
         error: true,

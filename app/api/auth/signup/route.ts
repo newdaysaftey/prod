@@ -1,7 +1,7 @@
 // app/api/auth/signup/route.ts
 import { validateSignupRequest } from "@/lib/api.middleware";
 import { NextRequest } from "next/server";
-import { SignupController } from "./signup.controller";
+import { SignupController } from "./controller";
 export const dynamic = "dynamic";
 const controller = new SignupController();
 

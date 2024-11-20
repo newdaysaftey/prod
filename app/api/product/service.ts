@@ -1,7 +1,7 @@
-// services/signup.service.ts
+//
 import { BaseService } from "@/app/api/services/base.service";
 import prisma from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, Size } from "@prisma/client";
 
 interface ProductData {
   Name: string;
@@ -12,24 +12,17 @@ interface ProductData {
   ProductId: string;
 }
 
-interface SizeInput {
-  size: string;
-  stock: number;
-  priceAdjustment: number;
-  sku: string;
-}
-
 interface ColorData {
+  ColorId: string;
+  isDeleted?: boolean;
   ColorName: string;
   ColorCode: string;
   Images: string[];
-  Sizes: SizeInput[];
+  Sizes: Size[];
 }
 
 interface AddColorData {
   ProductId: string;
-  ColorId: string;
-  SizeId: string;
   Colors: ColorData[];
 }
 
@@ -81,63 +74,68 @@ export class ProductService extends BaseService {
   }
 
   async addColorWithSizes(data: AddColorData) {
-    if (data.ColorId || data.ProductId) {
-      const createColors = await Promise.all(
-        data.Colors.map(async (color) => {
-          const createdColor = await prisma.color.upsert({
-            where: {
-              ColorId: data.ColorId,
+    // if (data.ColorId || data.ProductId) {
+    const createColors = await Promise.all(
+      data.Colors.map(async (color) => {
+        const createdColor = await prisma.color.upsert({
+          where: {
+            ColorId: color.ColorId,
+          },
+          update: {
+            ColorName: color.ColorName,
+            ColorCode: color.ColorCode,
+            Images: color.Images,
+            Product: {
+              connect: { ProductId: data.ProductId },
             },
-            update: {
-              ColorName: color.ColorName,
-              ColorCode: color.ColorCode,
-              Images: color.Images,
-              Product: {
-                connect: { ProductId: data.ProductId },
-              },
+            isDeleted: color.isDeleted,
+          },
+          create: {
+            ColorName: color.ColorName,
+            ColorCode: color.ColorCode,
+            Images: color.Images,
+            Product: {
+              connect: { ProductId: data.ProductId },
             },
-            create: {
-              ColorName: color.ColorName,
-              ColorCode: color.ColorCode,
-              Images: color.Images,
-              Product: {
-                connect: { ProductId: data.ProductId },
-              },
-            },
-          });
+            // isDeleted: color.isDeleted,
+          },
+        });
 
-          const createdSizes = await Promise.all(
-            color.Sizes.map((size) =>
-              prisma.size.upsert({
-                where: {
-                  SizeId: data.SizeId,
-                },
-                update: {
-                  Size: size.size,
-                  Stock: size.stock,
-                  PriceAdjustment: size.priceAdjustment,
-                  ColorId: createdColor.ColorId,
-                },
-                create: {
-                  Size: size.size,
-                  Stock: size.stock,
-                  PriceAdjustment: size.priceAdjustment,
-                  ColorId: createdColor.ColorId,
-                },
-              })
-            )
-          );
+        const createdSizes = await Promise.all(
+          color.Sizes.map((size) =>
+            prisma.size.upsert({
+              where: {
+                SizeId: size.SizeId,
+              },
+              update: {
+                Size: size.Size,
+                Stock: size.Stock,
+                PriceAdjustment: size.PriceAdjustment,
+                ColorId: createdColor.ColorId,
+                isDeleted: size.isDeleted,
+              },
+              create: {
+                Size: size.Size,
+                Stock: size.Stock,
+                PriceAdjustment: size.PriceAdjustment,
+                ColorId: createdColor.ColorId,
+                // isDeleted: size.isDeleted
+              },
+            })
+          )
+        );
 
-          return {
-            Color: createdColor,
-            Sizes: createdSizes,
-          };
-        })
-      );
-      return createColors;
-    } else {
-      return "Error in creating/updating the color's and size's";
-    }
+        return {
+          Color: createdColor,
+          Sizes: createdSizes,
+        };
+      })
+    );
+    return createColors;
+    // }
+    // else {
+    //   return "Error in creating/updating the color's and size's";
+    // }
 
     // return createColors;
   }
@@ -183,6 +181,9 @@ export class ProductService extends BaseService {
           },
         },
         Colors: {
+          where: {
+            isDeleted: false,
+          },
           select: {
             ColorId: true,
             ColorName: true,
@@ -195,6 +196,7 @@ export class ProductService extends BaseService {
                 Stock: true,
                 PriceAdjustment: true,
                 IsAvailable: true,
+                isDeleted: true,
               },
             },
           },
@@ -261,6 +263,7 @@ export class ProductService extends BaseService {
         Name: true,
         Description: true,
         Base_price: true,
+
         Category: {
           select: {
             CategoryId: true,

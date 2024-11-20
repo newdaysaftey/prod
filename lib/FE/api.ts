@@ -34,3 +34,27 @@ export const getAdminProducts = async (
   );
   return response.data;
 };
+
+export const getAdminProduct = async (id: string) => {
+  const response = await api.get(`/product/${id}`);
+  return response.data;
+};
+
+export const handleImageUpload = async (files: File[]): Promise<string[]> => {
+  try {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("ImageFile", file);
+    });
+
+    const response = await api.post("/uploadImage", formData,{
+      headers:{
+        "Content-Type":"multipart/form-data"
+      }
+    });
+    return response?.data?.data;
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    return [];
+  }
+};

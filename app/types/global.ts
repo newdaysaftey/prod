@@ -4,6 +4,16 @@ export enum UserRole {
   // Add other roles as needed
 }
 
+export enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  OTHERS = "OTHERS",
+}
+
+export interface authResult {
+  User: JWTPayload;
+}
+
 export interface JWTPayload {
   UserId: string;
   Email: string;
