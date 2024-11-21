@@ -2,7 +2,7 @@ import axios from "axios";
 import { string } from "zod";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "https://new-days-aftey-next-js.vercel.app/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -47,10 +47,10 @@ export const handleImageUpload = async (files: File[]): Promise<string[]> => {
       formData.append("ImageFile", file);
     });
 
-    const response = await api.post("/uploadImage", formData,{
-      headers:{
-        "Content-Type":"multipart/form-data"
-      }
+    const response = await api.post("/uploadImage", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     return response?.data?.data;
   } catch (error) {
