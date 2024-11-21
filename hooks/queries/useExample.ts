@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useExampleStore } from '@/store/example.store';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useExampleStore } from "@/store/example.store";
 
-const API_URL = '/api/example';
+const API_URL = "/api/example";
 
 export const useExample = () => {
   const queryClient = useQueryClient();
@@ -10,37 +10,34 @@ export const useExample = () => {
   const fetchExamples = async () => {
     const response = await fetch(API_URL);
     if (!response.ok) {
-      throw new Error('Failed to fetch data');
+      throw new Error("Failed to fetch data");
     }
     return response.json();
   };
 
   const createExample = async (data: any) => {
     const response = await fetch(API_URL, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
     if (!response.ok) {
-      throw new Error('Failed to create data');
+      throw new Error("Failed to create data");
     }
     return response.json();
   };
 
   const query = useQuery({
-    queryKey: ['examples'],
+    queryKey: ["examples"],
     queryFn: fetchExamples,
-    onError: (error: Error) => {
-      setError(error.message);
-    },
   });
 
   const mutation = useMutation({
     mutationFn: createExample,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['examples'] });
+      queryClient.invalidateQueries({ queryKey: ["examples"] });
     },
     onError: (error: Error) => {
       setError(error.message);

@@ -33,12 +33,12 @@ export class OrderController extends BaseController {
     }
   }
 
-  async getOrderDetails(UserId: string) {
-    try {
-      const user = await this.service.getOrderDetails(UserId);
-      return this.sendSuccess(user, "order Details Fetched successfully");
-    } catch (error) {
-      return this.sendError(error as Error);
-    }
-  }
+  // async getOrderDetails(UserId: string) {
+  //   try {
+  //     const user = await this.service.getOrderDetails(UserId);
+  //     return this.sendSuccess(user, "order Details Fetched successfully");
+  //   } catch (error) {
+  //     return this.sendError(error as Error);
+  //   }
+  // }
 }

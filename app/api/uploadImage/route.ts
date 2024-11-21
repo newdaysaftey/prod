@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { ImageController } from "./controller";
 import { processFormData } from "@/lib/multer-config";
-export const dynamic = "dynamic";
+export const dynamic = "auto";
 const controller = new ImageController();
 
 export async function POST(request: NextRequest) {

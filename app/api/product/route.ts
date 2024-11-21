@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ProductController } from "./controller";
 import { checkRole } from "@/app/middilewares/middileware";
 import { UserRole } from "@/app/types/global";
-export const dynamic = "dynamic";
+export const dynamic = "auto";
 const controller = new ProductController();
 
 export async function POST(request: NextRequest) {

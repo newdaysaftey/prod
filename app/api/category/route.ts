@@ -3,7 +3,7 @@ import { CategoryController } from "./controller";
 import { checkRole } from "@/app/middilewares/middileware";
 import { UserRole } from "@/app/types/global";
 
-export const dynamic = "force-dynamic"; // Better explicitly force dynamic for data endpoints
+export const dynamic = "auto"; // Better explicitly force dynamic for data endpoints
 const controller = new CategoryController();
 
 export async function POST(request: NextRequest) {

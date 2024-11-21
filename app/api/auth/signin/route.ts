@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { SigninController } from "./controller";
 
 const controller = new SigninController();
-export const dynamic = "dynamic";
+export const dynamic = "auto";
 
 export async function POST(request: NextRequest) {
   try {

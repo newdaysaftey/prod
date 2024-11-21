@@ -58,7 +58,7 @@ export class OrderService extends BaseService {
       totalAmount += item.PriceAtTime * item.Quantity;
       await prisma.size.update({
         where: {
-          SizeId: item.SizeId,
+          SizeId: item.sizeId,
         },
         data: {
           Stock: {
@@ -75,7 +75,7 @@ export class OrderService extends BaseService {
         totalAmount: totalAmount,
         paymentStatus: data.paymentStatus,
         paymentMethod: data.paymentMethod,
-        items: data.items,
+        // orderItems : data.items,
         shippingAddressId: shippingAddressId,
         billingAddressId: billingAddressId,
       },
@@ -86,5 +86,4 @@ export class OrderService extends BaseService {
 
     return order;
   }
-
 }

@@ -65,7 +65,7 @@ export class OrderService extends BaseService {
         totalAmount: totalAmount,
         paymentStatus: data.paymentStatus,
         paymentMethod: data.paymentMethod,
-        items: data.items,
+        // items: data.items,
         shippingAddressId: shippingAddressId,
         billingAddressId: billingAddressId,
       },

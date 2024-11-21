@@ -5,7 +5,7 @@ import { UserRole } from "@/app/types/global";
 import { checkRole } from "@/app/middilewares/middileware";
 
 const controller = new UserController();
-export const dynamic = "dynamic";
+export const dynamic = "auto";
 
 export async function POST(request: NextRequest) {
   try {

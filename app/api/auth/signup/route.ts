@@ -2,7 +2,7 @@
 import { validateSignupRequest } from "@/lib/api.middleware";
 import { NextRequest } from "next/server";
 import { SignupController } from "./controller";
-export const dynamic = "dynamic";
+export const dynamic = "auto";
 const controller = new SignupController();
 
 export async function POST(request: NextRequest) {
