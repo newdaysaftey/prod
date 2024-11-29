@@ -94,12 +94,34 @@ model Category {
   ModifiedOn DateTime  @updatedAt
 }
 
+model Tag {
+  id          String    @id @default(uuid()) @map("_id")
+  name        String    @unique  // e.g. "Hot Deals", "Top 10"
+  products    ProductToTag[]
+  startDate   DateTime?
+  endDate     DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ProductToTag {
+  id        String   @id @default(uuid()) @map("_id")
+  productId String
+  tagId     String
+  product   Product  @relation(fields: [productId], references: [ProductId])
+  tag       Tag      @relation(fields: [tagId], references: [id])
+  assignedAt DateTime @default(now())
+
+  @@unique([productId, tagId],  name: "productId_tagId")
+}
+
 model Product {
   ProductId     String    @id @default(uuid()) @map("_id")
   Name          String
   Description   String
   Base_price    Float
-  Tags          String?
+  Tags          ProductToTag[]
   AverageRating Float?
   CategoryId    String
   Category      Category  @relation(fields: [CategoryId], references: [CategoryId])
