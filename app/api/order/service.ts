@@ -81,10 +81,6 @@ export class OrderService extends BaseService {
         subTotal: subTotal,
         paymentStatus: data.paymentStatus,
         paymentMethod: data.paymentMethod,
-<<<<<<< HEAD
-        // orderItems : data.items,
-=======
->>>>>>> 91e86b5cf4e252063b3f42f4ccea1ccdf2a7610f
         shippingAddressId: shippingAddressId,
         billingAddressId: billingAddressId,
         deliveryFee: data.deliveryFee,
@@ -116,8 +112,6 @@ export class OrderService extends BaseService {
 
     return order;
   }
-<<<<<<< HEAD
-=======
 
   async getOrderDetails(UserId: string) {
     const order = await prisma.order.findMany({
@@ -213,5 +207,4 @@ export class OrderService extends BaseService {
 
     return order;
   }
->>>>>>> 91e86b5cf4e252063b3f42f4ccea1ccdf2a7610f
 }

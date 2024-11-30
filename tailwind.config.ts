@@ -19,7 +19,7 @@ const config: Config = {
         secondary: {
           DEFAULT: "rgba(203, 220, 235, 1)",
         },
-        tert:"rgba(243, 243, 224, 1)"
+        tert: "rgba(243, 243, 224, 1)",
       },
       fontSize: {
         sm: "0.8rem",
