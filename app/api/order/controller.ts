@@ -5,6 +5,9 @@ import { Address, OrderItem, OrderStatus, PaymentStatus } from "@prisma/client";
 interface OrderBody {
   status: OrderStatus;
   totalAmount: number;
+  deliveryFee?: number;
+  serviceFee?: number;
+  tax?: number;
   paymentStatus: PaymentStatus;
   paymentMethod: "ZELLE";
   items: OrderItem[];
@@ -33,12 +36,21 @@ export class OrderController extends BaseController {
     }
   }
 
-  // async getOrderDetails(UserId: string) {
-  //   try {
-  //     const user = await this.service.getOrderDetails(UserId);
-  //     return this.sendSuccess(user, "order Details Fetched successfully");
-  //   } catch (error) {
-  //     return this.sendError(error as Error);
-  //   }
-  // }
+  async getOrderDetails(UserId: string) {
+    try {
+      const user = await this.service.getOrderDetails(UserId);
+      return this.sendSuccess(user, "order's Details Fetched successfully");
+    } catch (error) {
+      return this.sendError(error as Error);
+    }
+  }
+
+  async getOrderById(UserId: string, orderId: string) {
+    try {
+      const user = await this.service.getOrderById(UserId, orderId);
+      return this.sendSuccess(user, "order Details Fetched successfully");
+    } catch (error) {
+      return this.sendError(error as Error);
+    }
+  }
 }

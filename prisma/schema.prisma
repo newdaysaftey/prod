@@ -7,12 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-type CartItem {
-  ProductId   String
-  ColorId     String
-  SizeId      String
-  Quantity    Int
-  PriceAtTime Float
+model CartItem {
+  id          String  @id @default(uuid()) @map("_id")
+  productId   String
+  colorId     String
+  sizeId      String
+  quantity    Int
+  priceAtTime Float
+  userId      String
+  Product     Product @relation(fields: [productId], references: [ProductId])
+  Color       Color   @relation(fields: [colorId], references: [ColorId])
+  Size        Size    @relation(fields: [sizeId], references: [SizeId])
+  user        User    @relation(fields: [userId], references: [UserId])
 }
 
 model OrderItem {
@@ -21,8 +27,8 @@ model OrderItem {
   colorId     String
   sizeId      String
   orderId     String
-  Quantity    Int
-  PriceAtTime Float
+  quantity    Int
+  priceAtTime Float
   Order       Order   @relation(fields: [orderId], references: [orderId])
   Product     Product @relation(fields: [productId], references: [ProductId])
   Color       Color   @relation(fields: [colorId], references: [ColorId])
@@ -88,30 +94,50 @@ model Category {
   ModifiedOn DateTime  @updatedAt
 }
 
+model Tag {
+  id        String         @id @default(uuid()) @map("_id")
+  name      String         @unique // e.g. "Hot Deals", "Top 10"
+  products  ProductToTag[]
+  startDate DateTime?
+  endDate   DateTime?
+  isActive  Boolean        @default(true)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model ProductToTag {
+  id         String   @id @default(uuid()) @map("_id")
+  productId  String
+  tagId      String
+  product    Product  @relation(fields: [productId], references: [ProductId])
+  tag        Tag      @relation(fields: [tagId], references: [id])
+  assignedAt DateTime @default(now())
+
+  @@unique([productId, tagId], name: "productId_tagId")
+}
+
 model Product {
-  ProductId     String    @id @default(uuid()) @map("_id")
+  ProductId     String         @id @default(uuid()) @map("_id")
   Name          String
   Description   String
   Base_price    Float
-  Size          String?
-  Color         String?
-  Available     Int?
-  Tags          String?
+  Tags          ProductToTag[]
   AverageRating Float?
   CategoryId    String
-  Category      Category  @relation(fields: [CategoryId], references: [CategoryId])
-  IsDeleted     Boolean   @default(false)
-  CreatedAt     DateTime  @default(now())
-  ModifiedAt    DateTime  @updatedAt
+  Category      Category       @relation(fields: [CategoryId], references: [CategoryId])
+  IsDeleted     Boolean        @default(false)
+  CreatedAt     DateTime       @default(now())
+  ModifiedAt    DateTime       @updatedAt
   DeletedAt     DateTime?
   CreatedById   String?
   ModifiedById  String?
   DeletedById   String?
   ImageUrl      String?
-  IsActive      Boolean   @default(true)
+  IsActive      Boolean        @default(true)
   Colors        Color[]
 
   OrderItem OrderItem[]
+  cartItem  CartItem[]
 }
 
 model Size {
@@ -125,6 +151,7 @@ model Size {
   isDeleted       Boolean @default(false)
 
   OrderItem OrderItem[]
+  cartItem  CartItem[]
 }
 
 model Color {
@@ -138,6 +165,7 @@ model Color {
   isDeleted Boolean  @default(false)
 
   OrderItem OrderItem[]
+  cartItem  CartItem[]
 }
 
 model Order {
@@ -146,6 +174,10 @@ model Order {
   user              User          @relation(fields: [userId], references: [UserId])
   status            OrderStatus   @default(PENDING)
   totalAmount       Float
+  subTotal          Float
+  deliveryFee       Float?        @default(5.00)
+  serviceFee        Float?
+  tax               Float?
   paymentStatus     PaymentStatus
   paymentMethod     String
   orderItems        OrderItem[]

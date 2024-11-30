@@ -31,7 +31,10 @@ export class SigninService extends BaseService {
       throw new Error("Password not set for this account");
     }
 
-    const isPasswordValid = bcrypt.compare(data.Password, user.PasswordHash);
+    const isPasswordValid = await bcrypt.compare(
+      data.Password,
+      user.PasswordHash
+    );
     if (!isPasswordValid) {
       throw new Error("Invalid password");
     }

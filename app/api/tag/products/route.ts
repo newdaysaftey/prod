@@ -1,23 +1,27 @@
-// app/api/auth/signin/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PaymentController } from "./controller";
-import { UserRole } from "@/app/types/global";
+import { TagController } from "../controller";
 import { checkRole } from "@/app/middilewares/middileware";
+import { UserRole } from "@/app/types/global";
 
-const controller = new PaymentController();
 export const dynamic = "auto";
+const controller = new TagController();
 
-export async function PATCH(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
+    const body = await request.json();
     const authResult = await checkRole([UserRole.ADMIN])(request);
 
     if (authResult instanceof Response) {
       return authResult;
     }
-    const response = await controller.updatePayment(request);
-    return response;
+    if (!body || Object.keys(body).length === 0) {
+      return NextResponse.json(
+        { error: true, message: "Request body is required" },
+        { status: 400 }
+      );
+    }
+    return controller.addProductsToTag(body.tagId, body.productIds);
   } catch (error) {
-    console.error("Route Error:", error);
     return NextResponse.json(
       {
         error: true,

@@ -22,7 +22,6 @@ const productSchema = z.object({
   Available: z.number().min(0, "Quantity must be non-negative").optional(),
   Tags: z.string().optional(),
   AverageRating: z.number().min(0).max(5).optional(),
-  CategoryId: z.string().uuid("Invalid category ID"),
   ProductId: z.string().optional().default(""),
   step: z.number().optional(),
   // discount: z.number().min(0).max(100).optional(),
