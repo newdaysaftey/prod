@@ -1,5 +1,5 @@
-import React from 'react';
-import { Instagram, Facebook, X, Youtube, } from 'lucide-react';
+import React from "react";
+import { Instagram, Facebook, X, Youtube } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -11,11 +11,31 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Company Info</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-blue-300 transition-colors">About Company</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Affiliate & Influencer Program</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Contact Us</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Career</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Press</a></li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  About Company
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Affiliate & Influencer Program
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Career
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Press
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -23,11 +43,31 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Customer Service</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Return and Refund Policy</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Intellectual Property Policy</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Shipping Info</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Your Records and Safety Alerts</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Report Suspicious Activity</a></li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Return and Refund Policy
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Intellectual Property Policy
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Shipping Info
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Your Records and Safety Alerts
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Report Suspicious Activity
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -35,12 +75,36 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Help</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Support Center & FAQ</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Safety Center</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Purchase Protection</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">How to Order</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">How to Track</a></li>
-              <li><a href="#" className="hover:text-blue-300 transition-colors">Partner with us</a></li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Support Center & FAQ
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Safety Center
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Purchase Protection
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  How to Order
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  How to Track
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-blue-300 transition-colors">
+                  Partner with us
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -68,7 +132,7 @@ const Footer = () => {
         </div>
 
         {/* Payment Methods */}
-        <div className="mt-12 border-t border-blue-800 pt-8">
+        {/* <div className="mt-12 border-t border-blue-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div>
               <h4 className="text-sm font-medium mb-2">We Accept</h4>
@@ -85,15 +149,22 @@ const Footer = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-blue-800 text-sm text-center space-y-4">
-          <p>Copyright © {new Date().getFullYear()} Company Name - All rights reserved</p>
+          <p>
+            Copyright © {new Date().getFullYear()} Company Name - All rights
+            reserved
+          </p>
           <div className="flex justify-center space-x-4">
-            <a href="#" className="hover:text-blue-300 transition-colors">Terms and Conditions</a>
+            <a href="#" className="hover:text-blue-300 transition-colors">
+              Terms and Conditions
+            </a>
             <span>•</span>
-            <a href="#" className="hover:text-blue-300 transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-blue-300 transition-colors">
+              Privacy Policy
+            </a>
           </div>
         </div>
       </div>

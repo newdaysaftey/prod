@@ -1,42 +1,37 @@
 import { BaseController } from "@/app/api/controllers/base.controller";
-import { OrderService } from "./service";
-import { Address, OrderItem, OrderStatus, PaymentStatus } from "@prisma/client";
+import { PaymentService } from "./service";
+import { PaymentStatus } from "@prisma/client";
+import { NextRequest } from "next/server";
 
-interface OrderBody {
-  status: OrderStatus;
-  totalAmount: number;
-  paymentStatus: PaymentStatus;
-  paymentMethod: "ZELLE";
-  items: OrderItem[];
-  shippingAddressId: string;
-  shippingAddress?: Address;
-  billingAddressId: string;
-  billingAddress?: Address;
-  deliveryDate: Date;
-}
-
-export class OrderController extends BaseController {
+export class PaymentController extends BaseController {
   [x: string]: any;
-  private service: OrderService;
+  private service: PaymentService;
 
   constructor() {
     super();
-    this.service = new OrderService();
+    this.service = new PaymentService();
   }
 
-  async createOrder(UserId: string, data: OrderBody) {
+  async updatePayment(request: NextRequest) {
     try {
-      const user = await this.service.createOrder(UserId, data);
-      return this.sendSuccess(user, "order created successfully");
-    } catch (error) {
-      return this.sendError(error as Error);
-    }
-  }
+      const searchParams = request.nextUrl.searchParams;
+      const orderId = searchParams.get("orderId");
+      if (!orderId) {
+        return this.sendError(new Error("Order ID is required"));
+      }
+      const paymentStatusParam = searchParams.get("paymentStatus");
+      if (
+        !paymentStatusParam ||
+        !Object.values(PaymentStatus).includes(
+          paymentStatusParam as PaymentStatus
+        )
+      ) {
+        return this.sendError(new Error("Invalid payment status"));
+      }
+      const paymentStatus: PaymentStatus = paymentStatusParam as PaymentStatus;
 
-  async getOrderDetails(UserId: string) {
-    try {
-      const user = await this.service.getOrderDetails(UserId);
-      return this.sendSuccess(user, "order Details Fetched successfully");
+      const user = await this.service.updatePayment(orderId, paymentStatus);
+      return this.sendSuccess(user, "payment updated successfully");
     } catch (error) {
       return this.sendError(error as Error);
     }

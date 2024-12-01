@@ -1,5 +1,5 @@
-import React from 'react';
-import { Star, StarHalf } from 'lucide-react';
+import React from "react";
+import { Star, StarHalf } from "lucide-react";
 
 interface ProductCardProps {
   title: string;
@@ -51,14 +51,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <div className="w-[342px] bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div className="w-[100%] sm:w-[95%] bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
       {/* Image Container */}
-      <div className="w-full h-[280px] p-4 bg-gray-50 flex items-center justify-center">
-        <img
-          src={image}
-          alt={title}
-          className="w-full h-full object-contain"
-        />
+      <div className="w-full h-[280px] sm:h-[200px] p-4 bg-gray-50 flex items-center justify-center">
+        <img src={image} alt={title} className="w-full h-full object-contain" />
       </div>
 
       {/* Content Container */}
@@ -70,9 +66,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Rating */}
         <div className="flex items-center mt-2 space-x-1">
-          <div className="flex">
-            {renderStars(rating)}
-          </div>
+          <div className="flex">{renderStars(rating)}</div>
           <span className="text-sm text-gray-500 ml-1">{reviews}</span>
         </div>
 
@@ -80,7 +74,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="mt-2 flex items-baseline space-x-2">
           <span className="text-2xl font-bold">${price}</span>
           <div className="flex items-center space-x-1">
-            <span className="text-sm text-gray-500 line-through">MRP ${mrp}</span>
+            <span className="text-sm text-gray-500 line-through">
+              MRP ${mrp}
+            </span>
             <span className="text-sm text-green-600">({discount}% off)</span>
           </div>
         </div>
@@ -98,6 +94,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
     </div>
   );
-}
+};
 
 export default ProductCard;

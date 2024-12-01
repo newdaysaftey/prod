@@ -6,6 +6,9 @@
 * {
   font-family: Poppins, sans-serif;
 }
+body {
+  overflow-x: hidden;
+}
 @layer base {
   :root {
     --background: rgba(19, 62, 135, 1);

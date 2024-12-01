@@ -5,8 +5,10 @@ import { Address, OrderItem, OrderStatus, PaymentStatus } from "@prisma/client";
 interface OderData {
   status: OrderStatus;
   totalAmount: number;
+  deliveryFee?: number;
+  serviceFee?: number;
   paymentStatus: PaymentStatus;
-  paymentMethod: "ZELLE";
+  paymentMethod: string | "ZELLE/CASHAPP";
   items: OrderItem[];
   shippingAddressId: string;
   shippingAddress?: Address;
@@ -53,34 +55,153 @@ export class OrderService extends BaseService {
       billingAddressId = address.id;
     }
 
-    let totalAmount = data.totalAmount | 0;
+    let subTotal = 0;
     for (let item of data.items) {
-      totalAmount += item.PriceAtTime * item.Quantity;
+      subTotal += item.priceAtTime * item.quantity;
       await prisma.size.update({
         where: {
           SizeId: item.sizeId,
         },
         data: {
           Stock: {
-            decrement: item.Quantity,
+            decrement: item.quantity,
           },
         },
       });
     }
-
+    const tax = subTotal * (8.5 / 100);
+    const deliveryFee = data.deliveryFee || 7.0;
+    const serviceFee = data.serviceFee || 1.0;
+    const totalAmount = subTotal + deliveryFee + serviceFee + tax;
     const order = await prisma.order.create({
       data: {
         userId: UserId,
         status: data.status,
         totalAmount: totalAmount,
+        subTotal: subTotal,
         paymentStatus: data.paymentStatus,
         paymentMethod: data.paymentMethod,
-        // orderItems : data.items,
         shippingAddressId: shippingAddressId,
         billingAddressId: billingAddressId,
+        deliveryFee: data.deliveryFee,
+        serviceFee: data.serviceFee,
+        tax: tax,
+        deliveryDate: data.deliveryDate, // Assuming you want to store delivery date
+        orderItems: {
+          create: data.items.map((item) => ({
+            productId: item.productId,
+            sizeId: item.sizeId,
+            colorId: item.colorId,
+            quantity: item.quantity,
+            priceAtTime: item.priceAtTime,
+          })),
+        },
       },
       include: {
         shippingAddress: true,
+        billingAddress: true,
+        orderItems: {
+          include: {
+            Product: true,
+            Size: true,
+            Color: true,
+          },
+        },
+      },
+    });
+
+    return order;
+  }
+
+  async getOrderDetails(UserId: string) {
+    const order = await prisma.order.findMany({
+      where: {
+        userId: UserId,
+      },
+      include: {
+        shippingAddress: true,
+        billingAddress: true,
+        orderItems: {
+          include: {
+            Product: {
+              select: {
+                ProductId: true,
+                Name: true,
+                Description: true,
+                Base_price: true,
+                ImageUrl: true,
+                AverageRating: true,
+              },
+            },
+            Color: {
+              select: {
+                ColorId: true,
+                ColorName: true,
+                ColorCode: true,
+                Images: true,
+                ProductId: true,
+              },
+            },
+            Size: {
+              select: {
+                SizeId: true,
+                Size: true,
+                Stock: true,
+                PriceAdjustment: true,
+                ColorId: true,
+                IsAvailable: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return order;
+  }
+
+  async getOrderById(UserId: string, orderId: string) {
+    const order = await prisma.order.findUnique({
+      where: {
+        userId: UserId,
+        orderId: orderId,
+      },
+      include: {
+        shippingAddress: true,
+        billingAddress: true,
+        orderItems: {
+          include: {
+            Product: {
+              select: {
+                ProductId: true,
+                Name: true,
+                Description: true,
+                Base_price: true,
+                ImageUrl: true,
+                AverageRating: true,
+              },
+            },
+            Color: {
+              select: {
+                ColorId: true,
+                ColorName: true,
+                ColorCode: true,
+                Images: true,
+                ProductId: true,
+              },
+            },
+            Size: {
+              select: {
+                SizeId: true,
+                Size: true,
+                Stock: true,
+                PriceAdjustment: true,
+                ColorId: true,
+                IsAvailable: true,
+              },
+            },
+          },
+        },
       },
     });
 

@@ -31,6 +31,7 @@ interface PaginationParams {
   limit?: number;
   categoryId?: string;
   search?: string;
+  tags?: boolean;
 }
 
 interface PaginatedResponse {
@@ -140,21 +141,31 @@ export class ProductService extends BaseService {
     // return createColors;
   }
 
-  async getProduct(params: PaginationParams = {}): Promise<PaginatedResponse> {
+  async getProduct(params: PaginationParams) {
     const page = params.page || 1;
     const limit = params.limit || 10;
     const skip = (page - 1) * limit;
+    const tags = params.tags;
 
     // Base where clause
-    const whereClause = {
+    const whereClause: Prisma.ProductWhereInput = {
       IsDeleted: false,
       IsActive: true,
       ...(params.categoryId && { CategoryId: params.categoryId }),
-      ...(params.search && {
+      ...(tags && {
         Tags: {
-          contains: params.search,
-          mode: "insensitive" as Prisma.QueryMode, // Correct type for case-insensitive search
+          // Only include products that have at least one of the tags if 'tags' is true
+          not: {
+            equals: null,
+          },
         },
+      }),
+      ...(params.search && {
+        OR: [
+          { Tags: { contains: params.search, mode: "insensitive" } },
+          { Name: { contains: params.search, mode: "insensitive" } },
+          { Description: { contains: params.search, mode: "insensitive" } },
+        ],
       }),
     };
 
@@ -174,6 +185,7 @@ export class ProductService extends BaseService {
         Description: true,
         Base_price: true,
         Tags: true,
+        ImageUrl: true,
         Category: {
           select: {
             CategoryId: true,
@@ -207,37 +219,74 @@ export class ProductService extends BaseService {
       },
     });
 
-    // Group by category
-    const groupedByCategory = products.reduce((acc, product) => {
-      const categoryId = product.Category.CategoryId;
-      if (!acc[categoryId]) {
-        acc[categoryId] = {
-          ...product.Category,
-          Products: [],
-        };
-      }
-      acc[categoryId].Products.push({
-        ProductId: product.ProductId,
-        Name: product.Name,
-        Description: product.Description,
-        Base_price: product.Base_price,
-        Tags: product.Tags,
-        Colors: product.Colors.map((color) => ({
-          ...color,
-          Sizes: color.Sizes.filter(
-            (size) => size.IsAvailable && size.Stock > 0
-          ),
-        })),
-      });
-      return acc;
-    }, {} as Record<string, any>);
+    let groupedByTagsOrCategory;
+
+    if (tags) {
+      // Group by Tags if the 'tags' param is true
+      groupedByTagsOrCategory = products.reduce((acc, product) => {
+        const productTags = Array.isArray(product.Tags)
+          ? product.Tags
+          : product.Tags
+          ? [product.Tags]
+          : [];
+        productTags.forEach((tag) => {
+          if (!acc[tag]) {
+            acc[tag] = {
+              tag,
+              Products: [],
+            };
+          }
+          acc[tag].Products.push({
+            ProductId: product.ProductId,
+            Name: product.Name,
+            Description: product.Description,
+            Base_price: product.Base_price,
+            Tags: product.Tags,
+            ImageUrl: product.ImageUrl,
+            Colors: product.Colors.map((color) => ({
+              ...color,
+              Sizes: color.Sizes.filter(
+                (size) => size.IsAvailable && size.Stock > 0
+              ),
+            })),
+          });
+        });
+        return acc;
+      }, {} as Record<string, any>);
+    } else {
+      // Group by Category if 'tags' param is false (default behavior)
+      groupedByTagsOrCategory = products.reduce((acc, product) => {
+        const categoryId = product.Category.CategoryId;
+        if (!acc[categoryId]) {
+          acc[categoryId] = {
+            ...product.Category,
+            Products: [],
+          };
+        }
+        acc[categoryId].Products.push({
+          ProductId: product.ProductId,
+          Name: product.Name,
+          Description: product.Description,
+          Base_price: product.Base_price,
+          Tags: product.Tags,
+          ImageUrl: product.ImageUrl,
+          Colors: product.Colors.map((color) => ({
+            ...color,
+            Sizes: color.Sizes.filter(
+              (size) => size.IsAvailable && size.Stock > 0
+            ),
+          })),
+        });
+        return acc;
+      }, {} as Record<string, any>);
+    }
 
     // Calculate pagination metadata
     const totalPages = Math.ceil(totalItems / limit);
 
     // Prepare paginated response
     const paginatedResponse: PaginatedResponse = {
-      data: Object.values(groupedByCategory),
+      data: Object.values(groupedByTagsOrCategory),
       metadata: {
         currentPage: page,
         totalPages,

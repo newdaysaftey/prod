@@ -27,7 +27,7 @@ export function ProductList() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br p-4 sm:p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className=" w-[90%] mx-auto sm:w-[100%]">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}

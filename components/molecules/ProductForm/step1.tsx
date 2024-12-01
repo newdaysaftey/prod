@@ -1,13 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown, Loader2 } from 'lucide-react';
+import { ChevronDown, Loader2 } from "lucide-react";
+import { fetchCategories } from "@/lib/FE/api";
 
-const fetchCategories = async () => {
-  const response = await fetch('http://localhost:3000/api/category/');
-  const result = await response.json();
-  return result.data;
-};
 const Step1 = ({
   register,
   errors,
@@ -15,16 +11,27 @@ const Step1 = ({
   handleSubmit,
   onSubmit1,
   initialValues,
+  setValue,
 }: any) => {
-    const [isOpen, setIsOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(
-    initialValues?.Category?.CategoryId || ''
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    initialValues?.Category?.CategoryId || ""
   );
 
   const { data: categories, isLoading } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ["categories"],
     queryFn: fetchCategories,
   });
+
+  useEffect(() => {
+    setValue("CategoryId", selectedCategory);
+  }, [selectedCategory]);
+
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategory(categoryId);
+    setIsOpen(false);
+  };
+
   return (
     <motion.div
       key="step1"
@@ -34,6 +41,7 @@ const Step1 = ({
       transition={{ duration: 0.3 }}
       className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 space-y-6"
     >
+      {/* Name Input */}
       <div>
         <label className="block text-sm font-medium mb-2">Product Name</label>
         <input
@@ -47,6 +55,7 @@ const Step1 = ({
         )}
       </div>
 
+      {/* Description Input */}
       <div>
         <label className="block text-sm font-medium mb-2">Description</label>
         <textarea
@@ -62,6 +71,7 @@ const Step1 = ({
         )}
       </div>
 
+      {/* Base Price Input */}
       <div className="grid gap-6 sm:grid-cols-3">
         <div>
           <label className="block text-sm font-medium mb-2">Base Price</label>
@@ -79,27 +89,14 @@ const Step1 = ({
             </p>
           )}
         </div>
-
       </div>
 
-      {/* <div>
-        <label className="block text-sm font-medium mb-2">Category ID</label>
-        <input
-          {...register("CategoryId")}
-          className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
-          placeholder="Enter category ID"
-          defaultValue={initialValues?.Category?.CategoryId}
-        />
-        {errors.CategoryId && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors.CategoryId.message}
-          </p>
-        )}
-      </div> */}
-            <div className="relative">
+      {/* Category Dropdown */}
+      <div className="relative">
         <label className="block text-sm font-medium mb-2">Category</label>
         <div className="relative">
-          <button 
+          {/* Category Select Button */}
+          <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
             className="w-full flex items-center justify-between px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
@@ -112,31 +109,31 @@ const Step1 = ({
               </div>
             ) : (
               <span>
-                {selectedCategory 
-                  ? categories?.find((c:any) => c.CategoryId === selectedCategory)?.Name 
-                  : 'Select a category'}
+                {selectedCategory
+                  ? categories?.find(
+                      (c: any) => c.CategoryId === selectedCategory
+                    )?.Name || "Select a category"
+                  : "Select a category"}
               </span>
             )}
             <ChevronDown className="h-4 w-4" />
           </button>
 
+          {/* Hidden input to register category with react-hook-form */}
           <input
             type="hidden"
             {...register("CategoryId")}
-                      defaultValue={initialValues?.Category?.CategoryId}
-
             value={selectedCategory}
           />
 
+          {/* Category Dropdown List */}
           {isOpen && !isLoading && categories && (
             <ul className="absolute z-10 w-full mt-1 border rounded bg-white dark:bg-slate-900 shadow-lg max-h-60 overflow-y-auto">
-              {categories.map((category:any) => (
-                <li 
+              {categories.map((category: any) => (
+                <li
                   key={category.CategoryId}
                   onClick={() => {
-                    setSelectedCategory(category.CategoryId);
-                    setIsOpen(false);
-                    console.log(selectedCategory,"from here man")
+                    handleCategorySelect(category.CategoryId);
                   }}
                   className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer"
                 >
@@ -153,6 +150,7 @@ const Step1 = ({
         )}
       </div>
 
+      {/* Continue Button */}
       <motion.button
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}

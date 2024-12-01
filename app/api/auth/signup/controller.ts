@@ -52,7 +52,6 @@ export class SignupController extends BaseController {
       });
       return this.sendSuccess(user, "User created successfully");
     } catch (error) {
-      console.log(error);
       return this.sendError(error as Error);
     }
   }
