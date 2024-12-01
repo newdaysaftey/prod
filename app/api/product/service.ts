@@ -155,14 +155,14 @@ export class ProductService extends BaseService {
       ...(tags && {
         Tags: {
           // Only include products that have at least one of the tags if 'tags' is true
-          not: {
-            equals: null,
-          },
+          // not: {
+          //   equals: null,
+          // },
         },
       }),
       ...(params.search && {
         OR: [
-          { Tags: { contains: params.search, mode: "insensitive" } },
+          // { Tags: { contains: params.search, mode: "insensitive" } },
           { Name: { contains: params.search, mode: "insensitive" } },
           { Description: { contains: params.search, mode: "insensitive" } },
         ],
@@ -230,26 +230,26 @@ export class ProductService extends BaseService {
           ? [product.Tags]
           : [];
         productTags.forEach((tag) => {
-          if (!acc[tag]) {
-            acc[tag] = {
-              tag,
-              Products: [],
-            };
-          }
-          acc[tag].Products.push({
-            ProductId: product.ProductId,
-            Name: product.Name,
-            Description: product.Description,
-            Base_price: product.Base_price,
-            Tags: product.Tags,
-            ImageUrl: product.ImageUrl,
-            Colors: product.Colors.map((color) => ({
-              ...color,
-              Sizes: color.Sizes.filter(
-                (size) => size.IsAvailable && size.Stock > 0
-              ),
-            })),
-          });
+          // if (!acc[tag]) {
+          //   acc[tag] = {
+          //     tag,
+          //     Products: [],
+          //   };
+          // }
+          // acc[tag].Products.push({
+          //   ProductId: product.ProductId,
+          //   Name: product.Name,
+          //   Description: product.Description,
+          //   Base_price: product.Base_price,
+          //   Tags: product.Tags,
+          //   ImageUrl: product.ImageUrl,
+          //   Colors: product.Colors.map((color) => ({
+          //     ...color,
+          //     Sizes: color.Sizes.filter(
+          //       (size) => size.IsAvailable && size.Stock > 0
+          //     ),
+          //   })),
+          // });
         });
         return acc;
       }, {} as Record<string, any>);

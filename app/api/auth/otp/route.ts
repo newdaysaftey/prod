@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { OtpController } from "./controller";
 
 const controller = new OtpController();
-export const dynamic = "dynamic";
+export const dynamic = "auto";
 
 export async function PATCH(request: NextRequest) {
   try {
