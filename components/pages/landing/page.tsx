@@ -1,14 +1,12 @@
 import Navbar from "@/components/molecules/navbar";
 import Hero from "@/components/molecules/heroLanding";
-import { ProductForm } from "@/components/molecules/ProductForm/ProductForm";
-import { ProductList } from "@/components/molecules/listView";
 import ProductCard from "@/components/molecules/productCard";
 import DealHeading from "@/components/molecules/dealsHeading";
 import Footer from "@/components/molecules/footer";
 import ContactForm from "@/components/molecules/contactForm";
-const First = () => {
+const Landing = () => {
   return (
-    <section className="bg-tert">
+    <section className="bg-tert w-[100%] overscroll-x-none overflow-x-hidden">
       <Navbar></Navbar>
       <Hero></Hero>
       <br />
@@ -18,7 +16,7 @@ const First = () => {
           subHeading="Limited Time offer"
         ></DealHeading>
       </section>
-      <div className=" bg-tert pt-10 ">
+      <div className=" bg-tert pt-10 w-[100%]">
         <div className="w-[80%] sm:w-[95%]  mx-auto sm:gap-y-6 grid grid-cols-1  md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  bg-tert">
           <ProductCard
             title="Silver Safety Jacket - Reflective, Lightweight, Waterproof, and Breathable"
@@ -129,4 +127,4 @@ const First = () => {
     </section>
   );
 };
-export default First;
+export default Landing;

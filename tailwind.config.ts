@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       screens: {
-        sm: { max: "440px" },
+        sm: { max: "480px" },
         md: { max: "767px" },
       },
       colors: {

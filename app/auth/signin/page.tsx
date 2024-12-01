@@ -1,5 +1,4 @@
 "use client";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -8,7 +7,6 @@ import { SignInInput, signInSchema } from "@/lib/FE/validations/auth";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogIn } from "lucide-react";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -27,7 +25,16 @@ export default function SignInPage() {
         toast.error(`something went wrong ${data.message}`);
       } else {
         toast.success("Signed in successfully!");
-        router.push("/admin/products");
+        const userDataString = JSON.stringify(data.data);
+        const oneHourFromNow = new Date(
+          Date.now() + 60 * 60 * 1000
+        ).toUTCString(); // 1 hour from now
+
+        document.cookie = `user=${encodeURIComponent(
+          userDataString
+        )}; path=/; SameSite=Strict; Secure; Expires=${oneHourFromNow}`;
+
+        router.push("/");
       }
     },
     onError: (error) => {

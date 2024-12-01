@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { RoleBasedContent } from "@/lib/FE/HOC/hoc";
+import { useAuth } from "@/lib/FE/hooks/useAuth";
 import Link from "next/link";
 import {
   ChevronDown,
@@ -12,6 +14,7 @@ import {
   User,
   X,
   Globe,
+  Settings,
 } from "lucide-react";
 
 const categories = [
@@ -25,6 +28,7 @@ const categories = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   return (
     <nav className="relative bg-background text-white z-20">
@@ -104,13 +108,24 @@ export default function Navbar() {
 
           {/* Right section */}
           <div className="hidden lg:flex lg:items-center lg:space-x-6">
-            <Link
-              href="/account"
-              className="flex items-center space-x-1 hover:text-gray-200"
-            >
-              <User className="h-5 w-5" />
-              <span>Sign in</span>
-            </Link>
+            {!isAuthenticated && (
+              <Link
+                href="/auth/signin"
+                className="flex items-center space-x-1 hover:text-gray-200"
+              >
+                <User className="h-5 w-5" />
+                <span>Sign in</span>
+              </Link>
+            )}
+            <RoleBasedContent roles={["ADMIN"]}>
+              <Link
+                href={"/admin/"}
+                className="flex justify-center items-center"
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                Admin
+              </Link>
+            </RoleBasedContent>
             <button className="flex items-center space-x-1 hover:text-gray-200">
               <Globe className="h-5 w-5" />
               <span>EN</span>
@@ -167,13 +182,24 @@ export default function Navbar() {
                 </div>
                 <div className="mt-4 border-t pt-4">
                   <div className="space-y-1 px-3">
-                    <Link
-                      href="/account"
-                      className="flex items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
-                    >
-                      <User className="h-5 w-5" />
-                      <span>Sign in</span>
-                    </Link>
+                    {!isAuthenticated && (
+                      <Link
+                        href="/auth/signin"
+                        className="flex items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
+                      >
+                        <User className="h-5 w-5" />
+                        <span>Sign in</span>
+                      </Link>
+                    )}
+                    <RoleBasedContent roles={["ADMIN"]}>
+                      <Link
+                        href={"/admin/"}
+                        className="flex items-center space-x-2 px-3 py-2  text-base font-medium text-gray-900 hover:bg-gray-100"
+                      >
+                        <Settings className=" h-5 w-5 text-black" />
+                        <span className="text-black">Admin</span>
+                      </Link>
+                    </RoleBasedContent>
                     <Link
                       href="/cart"
                       className="flex items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"

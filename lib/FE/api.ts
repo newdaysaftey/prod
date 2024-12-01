@@ -1,8 +1,11 @@
 import axios from "axios";
 import { string } from "zod";
+import { ProductFormDataStep1 } from "./types/step1";
+import { ProductFormDataStep2 } from "./types/step2";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  // baseURL: "http://localhost:3000/api",
+  baseURL: "https://new-days-aftey-next-js.vercel.app/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -40,6 +43,20 @@ export const getAdminProduct = async (id: string) => {
   return response.data;
 };
 
+export const saveProduct = async (
+  data: ProductFormDataStep1 | ProductFormDataStep2
+) => {
+  const response = await api.post(`product`, data);
+  if (response.status !== 200) throw new Error("Failed to save product");
+  return await response.data;
+};
+
+export const fetchCategories = async () => {
+  const response = await api.get("/category/");
+  const result = await response.data;
+  return result.data;
+};
+
 export const handleImageUpload = async (files: File[]): Promise<string[]> => {
   try {
     const formData = new FormData();
@@ -47,10 +64,10 @@ export const handleImageUpload = async (files: File[]): Promise<string[]> => {
       formData.append("ImageFile", file);
     });
 
-    const response = await api.post("/uploadImage", formData,{
-      headers:{
-        "Content-Type":"multipart/form-data"
-      }
+    const response = await api.post("/uploadImage", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     return response?.data?.data;
   } catch (error) {

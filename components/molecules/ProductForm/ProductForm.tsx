@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Package } from "lucide-react";
-import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,33 +9,8 @@ import Step1 from "./step1";
 import Step2 from "./step2";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-
-// Zod schema for product form validation
-const productSchema = z.object({
-  Name: z.string().min(1, "Product name is required").optional(),
-  Description: z.string().min(1, "Description is required").optional(),
-  Base_price: z
-    .number()
-    .min(0.01, "Base price must be greater than 0")
-    .optional(),
-  Available: z.number().min(0, "Quantity must be non-negative").optional(),
-  Tags: z.string().optional(),
-  AverageRating: z.number().min(0).max(5).optional(),
-  ProductId: z.string().optional().default(""),
-  step: z.number().optional(),
-  // discount: z.number().min(0).max(100).optional(),
-});
-
-export type ProductFormData = z.infer<typeof productSchema>;
-
-const saveProduct = async (data: ProductFormData) => {
-  const response = await fetch("http://localhost:3000/api/product/", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-  if (!response.ok) throw new Error("Failed to save product");
-  return await response.json();
-};
+import { saveProduct } from "@/lib/FE/api";
+import { productSchemaStep1, ProductFormDataStep1 } from "@/lib/FE/types/step1";
 
 export function ProductForm({ initialValues }: any) {
   const router = useRouter();
@@ -50,15 +24,12 @@ export function ProductForm({ initialValues }: any) {
     reset,
     formState: { errors },
     setValue,
-  } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
+  } = useForm<ProductFormDataStep1>({
+    resolver: zodResolver(productSchemaStep1),
     defaultValues: {
       step: 1,
-      ProductId: initialValues?.ProductId || "",
-      AverageRating: 0,
-      // discount: 0,
     },
-    mode: "all",
+    mode: "onBlur",
   });
 
   // Mutation for saving product
@@ -66,11 +37,11 @@ export function ProductForm({ initialValues }: any) {
     mutationFn: saveProduct,
     onSuccess: (data) => {
       if (step === 1) {
-        setStep(2);
         if (data.error) {
           toast.error(`something went wrong ${data.message}`);
         } else {
           setProductId(data.data.ProductId);
+          setStep(2);
         }
       } else {
         // Handle success (e.g., show notification, redirect)
@@ -81,7 +52,8 @@ export function ProductForm({ initialValues }: any) {
     },
   });
 
-  const onSubmit1 = (data: ProductFormData) => {
+  const onSubmit1 = (data: ProductFormDataStep1) => {
+    console.log(data);
     mutation.mutate({
       ...data,
       step,
@@ -90,7 +62,7 @@ export function ProductForm({ initialValues }: any) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4 sm:p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="w-[90%] mx-auto">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -143,12 +115,14 @@ export function ProductForm({ initialValues }: any) {
                 handleSubmit={handleSubmit}
                 onSubmit1={onSubmit1}
                 initialValues={initialValues || {}}
+                setValue={setValue}
               ></Step1>
             ) : (
               <Step2
                 productId={productId}
                 initialValues={initialValues || {}}
                 router={router}
+                saveProduct={saveProduct}
               ></Step2>
             )}
           </AnimatePresence>

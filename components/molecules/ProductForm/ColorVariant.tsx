@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { handleImageUpload } from "@/lib/FE/api";
 import { FieldArrayWithId, UseFormRegister } from "react-hook-form";
-import { ProductFormData } from "./step2";
+import { ProductFormDataStep2 } from "@/lib/FE/types/step2";
 
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
 
 interface ColorVariantProps {
+  key: string;
   variant: {
     ColorName: string;
     ColorCode: string;
@@ -22,40 +23,50 @@ interface ColorVariantProps {
     }[];
   };
   onRemove: () => void;
-  register: UseFormRegister<ProductFormData>;
+  register: UseFormRegister<ProductFormDataStep2>;
   errors: {
     [x: string]: any;
   };
+  onImageChange: (images: string[]) => void;
 }
 
 function ColorVariant({
+  key,
   variant,
   onRemove,
   register,
   errors,
+  onImageChange,
 }: ColorVariantProps) {
-  const handleMultipleImageUpload = async (
-    files: File[]
-  ): Promise<any> => {
+  const [images, setImages] = useState<string[]>(variant.Images || []);
+
+  const handleMultipleImageUpload = async (files: File[]): Promise<any> => {
     const imageUrls = await handleImageUpload(files);
     return imageUrls;
   };
-  // Usage example
-  const handleImageChangeInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleImageChangeInput = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = e.target.files;
     if (files) {
       const imageUrls = await handleMultipleImageUpload(Array.from(files));
-      setImages((prev) => [...prev, ...imageUrls]);
+      const newImages = [...images, ...imageUrls];
+      setImages(newImages);
+      // onImageChange(newImages);
     }
   };
 
   const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
+    const newImages = images.filter((_, i) => i !== index);
+    // setImages(newImages);
+    // onImageChange(newImages);
   };
-  const [images, setImages] = useState<string[]>(variant.Images || []);
+
   const [selectedColor, setSelectedColor] = useState(
     variant?.ColorCode || "#000000"
   );
+
   const [colorName, setColorName] = useState(variant?.ColorName || "");
 
   const [selectedSizes, setSelectedSizes] = useState<
@@ -67,27 +78,21 @@ function ColorVariant({
       isDeleted: boolean;
     }[]
   >(variant.Sizes);
-  console.log(selectedSizes)
 
   const toggleSize = (size: string) => {
-    // Check if the size is already in the selectedSizes array
     const existingSize = selectedSizes.find((s) => s.Size === size);
-
     if (existingSize) {
-      // If the size is already in the array, update its properties
       setSelectedSizes((prevSizes) =>
         prevSizes.map((s) =>
           s.Size === size
             ? {
                 ...s,
-          
                 isDeleted: !s.isDeleted,
               }
             : s
         )
       );
     } else {
-      // If the size is not in the array, add a new object
       setSelectedSizes((prevSizes) => [
         ...prevSizes,
         {
@@ -100,33 +105,27 @@ function ColorVariant({
       ]);
     }
   };
-const handleStockChange = (size: string, value: number) => {
-  setSelectedSizes((prevSizes) =>
-    prevSizes.map((s) => 
-      s.Size === size 
-        ? { ...s, Stock: value } 
-        : s
-    )
-  );
-};
 
-const handlePriceAdjustmentChange = (size: string, value: number) => {
-  setSelectedSizes((prevSizes) =>
-    prevSizes.map((s) =>
-      s.Size === size 
-        ? { ...s, PriceAdjustment: value } 
-        : s
-    )
-  );
-};
+  const handleStockChange = (size: string, value: number) => {
+    setSelectedSizes((prevSizes) =>
+      prevSizes.map((s) => (s.Size === size ? { ...s, Stock: value } : s))
+    );
+  };
+
+  const handlePriceAdjustmentChange = (size: string, value: number) => {
+    setSelectedSizes((prevSizes) =>
+      prevSizes.map((s) =>
+        s.Size === size ? { ...s, PriceAdjustment: value } : s
+      )
+    );
+  };
 
   useEffect(() => {
     variant["ColorName"] = colorName;
     variant["ColorCode"] = selectedColor;
     variant["Sizes"] = selectedSizes;
-    variant[ "Images"] = images
-    console.log(variant)
-  }, [images, selectedColor, selectedSizes, setColorName]);
+    variant["Images"] = images;
+  }, [images, selectedColor, selectedSizes, setColorName, variant]);
 
   return (
     <motion.div
@@ -173,10 +172,8 @@ const handlePriceAdjustmentChange = (size: string, value: number) => {
           Available Sizes
         </label>
         <div className="flex flex-wrap gap-2">
-          {SIZES.map((size,index) => {
+          {SIZES.map((size, index) => {
             const selectedSize = selectedSizes.find((s) => s.Size === size);
-            console.log(selectedSize)
-
             return (
               <div className="w-[100%] items-center   flex gap-2" key={index}>
                 <motion.button
@@ -226,7 +223,7 @@ const handlePriceAdjustmentChange = (size: string, value: number) => {
         <label className="block text-sm font-medium mb-2">Color Images</label>
         <div className="space-y-4">
           <label
-            htmlFor="images"
+            htmlFor={`images${key}`}
             className="block border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center cursor-pointer hover:border-indigo-500 dark:hover:border-indigo-500 transition-colors"
           >
             <Upload className="mx-auto h-8 w-8 mb-2 text-slate-400" />
@@ -234,7 +231,7 @@ const handlePriceAdjustmentChange = (size: string, value: number) => {
               Click to upload images
             </span>
             <input
-              id="images"
+              id={`images${key}`}
               type="file"
               accept="image/*"
               multiple
@@ -260,7 +257,10 @@ const handlePriceAdjustmentChange = (size: string, value: number) => {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={(e) => {e.preventDefault();removeImage(index)}}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      removeImage(index);
+                    }}
                     className="absolute top-2 right-2 bg-white dark:bg-slate-800 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
