@@ -1,5 +1,7 @@
+"use client";
 import React from "react";
 import { Star, StarHalf } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
   title: string;
@@ -24,6 +26,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   deliveryDate,
   deliveryTime,
 }) => {
+  const router = useRouter();
+
   const renderStars = (rating: number) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -49,7 +53,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     return stars;
   };
+  const handleViewNow = () => {
+    // Navigate to checkout page
+    router.push("/products/edb7f379-4bc0-471b-a113-cc5c0d4af497");
+  };
 
+  const handleAddToCart = () => {
+    // Navigate to cart page
+    router.push("/cart");
+  };
   return (
     <div className="w-[100%] sm:w-[95%] bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
       {/* Image Container */}
@@ -88,9 +100,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Add to Cart Button */}
-        <button className="mt-4 w-full bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-800 transition-colors duration-200 font-medium">
-          Add to Cart
-        </button>
+        <div className="flex gap-6 ">
+          <button
+            className="mt-4 w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-800 transition-colors duration-200 font-medium"
+            onClick={handleViewNow}
+          >
+            View Item
+          </button>
+          <button
+            className="mt-4 w-full bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-800 transition-colors duration-200 font-medium"
+            onClick={handleAddToCart}
+          >
+            Add to Cart
+          </button>
+        </div>
       </div>
     </div>
   );

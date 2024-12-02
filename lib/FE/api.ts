@@ -133,3 +133,12 @@ export const linkProductsToTag = async (
   );
   return response.data;
 };
+
+export const getProductById = async (id: string) => {
+  const response = await axios.get(`/api/product/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};

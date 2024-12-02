@@ -7,7 +7,6 @@ import ContactForm from "@/components/molecules/contactForm";
 const Landing = () => {
   return (
     <section className="bg-tert w-[100%] overscroll-x-none overflow-x-hidden">
-      <Navbar></Navbar>
       <Hero></Hero>
       <br />
       <section className="w-[80%] sm:w-[90%] mx-auto bg-tert">
@@ -123,7 +122,6 @@ const Landing = () => {
         ></DealHeading>
       </section>
       <ContactForm></ContactForm>
-      <Footer></Footer>
     </section>
   );
 };
