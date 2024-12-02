@@ -5,6 +5,7 @@ import { ProductFormDataStep2 } from "./types/step2";
 
 const api = axios.create({
   baseURL: "https://new-days-aftey-next-js.vercel.app/api",
+  // baseURL: "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -73,4 +74,25 @@ export const handleImageUpload = async (files: File[]): Promise<string[]> => {
     console.error("Error uploading files:", error);
     return [];
   }
+};
+export const getCategories = async () => {
+  const response = await api.get("/category/", {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const createCategory = async (name: string) => {
+  const response = await api.post(
+    "/category/",
+    { Name: name },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
 };

@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { Package, Tags, Layout, Home, Menu, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 export default function AdminLayout({
   children,
@@ -14,6 +16,17 @@ export default function AdminLayout({
   const { hasRole, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState("products"); // Default active tab
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  useEffect(() => {
+    // Extract the last segment of the path
+    const pathSegments = pathname.split("/");
+    const currentTab = pathSegments[pathSegments.length - 1];
+
+    // Update active tab if it matches expected routes
+    if (["products", "tags", "categories"].includes(currentTab)) {
+      setActiveTab(currentTab);
+    }
+  }, [pathname]);
 
   if (isLoading) {
     return null;
@@ -36,7 +49,7 @@ export default function AdminLayout({
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center sm:flex-col sm:items-start sm:pt-4 sm:h-24">
+          <div className="flex  justify-between h-20 items-center sm:flex-col sm:items-start sm:pt-4 sm:h-24">
             {/* Home Link */}
             <Link href="/" className="flex items-center">
               <Home className="h-6 w-6" />
@@ -46,7 +59,7 @@ export default function AdminLayout({
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex space-x-8 items-center justify-center sm:pb-2 ">
+            <div className=" flex space-x-8 items-center justify-center sm:pb-2 ">
               <Link
                 href="/admin/products"
                 onClick={() => setActiveTab("products")}
@@ -80,7 +93,7 @@ export default function AdminLayout({
             </div>
 
             {/* Mobile Menu Toggle */}
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <button
                 onClick={toggleMobileMenu}
                 className="text-gray-600 hover:text-gray-800 focus:outline-none"
