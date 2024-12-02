@@ -30,7 +30,7 @@ export const signIn = async (data: { Email: string; Password: string }) => {
 export const getAdminProducts = async (
   pageSize: number = 10,
   pageNumber: number = 1,
-  category: string
+  category?: string
 ) => {
   const response = await api.get(
     `/product?page=${pageNumber}&limit=${pageSize}`
@@ -88,6 +88,43 @@ export const createCategory = async (name: string) => {
   const response = await api.post(
     "/category/",
     { Name: name },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+export const getTags = async () => {
+  const response = await axios.get("/api/tag", {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const createTag = async (name: string) => {
+  const response = await axios.post(
+    "/api/tag",
+    { name },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+
+export const linkProductsToTag = async (
+  tagId: string,
+  productIds: string[]
+) => {
+  const response = await axios.post(
+    "/api/tag/products",
+    { tagId, productIds },
     {
       headers: {
         "Content-Type": "application/json",
