@@ -2,6 +2,7 @@ import axios from "axios";
 import { string } from "zod";
 import { ProductFormDataStep1 } from "./types/step1";
 import { ProductFormDataStep2 } from "./types/step2";
+import { CartItem } from "./types/cart";
 
 const api = axios.create({
   baseURL: "https://new-days-aftey-next-js.vercel.app/api",
@@ -69,6 +70,7 @@ export const handleImageUpload = async (files: File[]): Promise<string[]> => {
         "Content-Type": "multipart/form-data",
       },
     });
+    console.log(response, "is it wokring?");
     return response?.data?.data;
   } catch (error) {
     console.error("Error uploading files:", error);
@@ -136,6 +138,56 @@ export const linkProductsToTag = async (
 
 export const getProductById = async (id: string) => {
   const response = await axios.get(`/api/product/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const addToCart = async (cartItems: CartItem[]) => {
+  const response = await axios.post(
+    "/api/cart/",
+    {
+      cartItems,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+export const getCart = async () => {
+  const response = await axios.get("/api/cart/", {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const updateCartItemQuantity = async (
+  itemId: string,
+  quantity: number
+) => {
+  const response = await axios.patch(
+    `/api/cart/item/${itemId}`,
+    {
+      quantity,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};
+
+export const removeCartItem = async (itemId: string) => {
+  const response = await axios.delete(`/api/cart/item/${itemId}`, {
     headers: {
       "Content-Type": "application/json",
     },

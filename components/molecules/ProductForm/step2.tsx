@@ -166,6 +166,11 @@ export default function Step2({
   router,
   saveProduct,
 }: Step2Props) {
+  const handleMultipleImageUpload = async (files: File[]): Promise<any> => {
+    const imageUrls = await handleImageUpload(files);
+    console.log(imageUrls, "from 171 man");
+    return imageUrls;
+  };
   const [colorVariants, setColorVariants] = useState<ColorVariantType[]>(
     initialValues?.Colors || []
   );
@@ -225,7 +230,7 @@ export default function Step2({
             updateColorVariant(index, updatedVariant)
           }
           onRemove={() => removeColorVariant(index)}
-          handleImageUpload={handleImageUpload}
+          handleImageUpload={handleMultipleImageUpload}
         />
       ))}
 

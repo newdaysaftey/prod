@@ -100,15 +100,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Add to Cart Button */}
-        <div className="flex gap-6 ">
+        <div className="flex gap-6  sm:flex-col sm:gap-3">
           <button
-            className="mt-4 w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-800 transition-colors duration-200 font-medium"
+            className="mt-4 w-full  sm:text-sm text-green-600 bg-white py-2 px-4 rounded-md hover:bg-green-600 hover:text-white transition-colors duration-200 font-medium border-green-600 border-2"
             onClick={handleViewNow}
           >
             View Item
           </button>
           <button
-            className="mt-4 w-full bg-blue-700 text-white py-2 px-4 rounded-md hover:bg-blue-800 transition-colors duration-200 font-medium"
+            className="mt-4 sm:mt-0 sm:text-sm w-full text-background bg-white py-2 px-4 rounded-md hover:text-white hover:bg-background border-background border-2 transition-colors duration-200 font-medium"
             onClick={handleAddToCart}
           >
             Add to Cart

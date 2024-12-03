@@ -18,8 +18,10 @@ export function ImageUploader({
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = e.target.files;
+    console.log(files);
     if (files) {
       const imageUrls = await handleImageUpload(Array.from(files));
+      console.log(imageUrls);
       onImagesChange([...images, ...imageUrls]);
     }
   };

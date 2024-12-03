@@ -16,7 +16,8 @@ export function ProductForm({ initialValues }: any) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [colorVariants, setColorVariants] = useState([0]);
-  const [productId, setProductId] = useState("");
+  console.log(initialValues?.ProductId);
+  const [productId, setProductId] = useState(initialValues?.ProductId || "");
   // Form setup with react-hook-form and zod validation
   const {
     register,
@@ -28,6 +29,7 @@ export function ProductForm({ initialValues }: any) {
     resolver: zodResolver(productSchemaStep1),
     defaultValues: {
       step: 1,
+      ProductId: initialValues?.ProductId || "",
     },
     mode: "onBlur",
   });
