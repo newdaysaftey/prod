@@ -154,15 +154,25 @@ export class ProductService extends BaseService {
       ...(params.categoryId && { CategoryId: params.categoryId }),
       ...(tags && {
         Tags: {
-          // Only include products that have at least one of the tags if 'tags' is true
-          not: {
-            equals: null,
+          some: {
+            tag: {
+              isActive: true,
+              OR: [{ endDate: null }, { endDate: { gt: new Date() } }],
+            },
           },
         },
       }),
       ...(params.search && {
         OR: [
-          { Tags: { contains: params.search, mode: "insensitive" } },
+          {
+            Tags: {
+              some: {
+                tag: {
+                  name: { contains: params.search, mode: "insensitive" },
+                },
+              },
+            },
+          },
           { Name: { contains: params.search, mode: "insensitive" } },
           { Description: { contains: params.search, mode: "insensitive" } },
         ],
@@ -184,7 +194,16 @@ export class ProductService extends BaseService {
         Name: true,
         Description: true,
         Base_price: true,
-        Tags: true,
+        Tags: {
+          select: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
         ImageUrl: true,
         Category: {
           select: {
@@ -224,19 +243,15 @@ export class ProductService extends BaseService {
     if (tags) {
       // Group by Tags if the 'tags' param is true
       groupedByTagsOrCategory = products.reduce((acc, product) => {
-        const productTags = Array.isArray(product.Tags)
-          ? product.Tags
-          : product.Tags
-          ? [product.Tags]
-          : [];
-        productTags.forEach((tag) => {
-          if (!acc[tag]) {
-            acc[tag] = {
-              tag,
+        const productTags = product.Tags.map((pt) => pt.tag.name);
+        productTags.forEach((tagName) => {
+          if (!acc[tagName]) {
+            acc[tagName] = {
+              tagName,
               Products: [],
             };
           }
-          acc[tag].Products.push({
+          acc[tagName].Products.push({
             ProductId: product.ProductId,
             Name: product.Name,
             Description: product.Description,

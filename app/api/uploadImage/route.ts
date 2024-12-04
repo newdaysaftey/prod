@@ -1,23 +1,22 @@
 import { NextRequest } from "next/server";
 import { ImageController } from "./controller";
-import { processFormData } from "@/lib/multer-config";
-export const dynamic = "dynamic";
+
+export const dynamic = "force-dynamic";
 const controller = new ImageController();
 
 export async function POST(request: NextRequest) {
   try {
-    // Process the multipart form data
-    const formData = await processFormData(request);
-
-    // Parse the formData into the expected format
-    const ImageFile = formData.get("ImageFile") as File;
-
-    return controller.uploadImage(ImageFile);
+    const formData = await request.formData();
+    const file = formData.get("ImageFile") as File;
+    return controller.uploadImage(file);
   } catch (error) {
-    return Response.json({
-      error: true,
-      message: "Failed to process request",
-      data: error,
-    });
+    return Response.json(
+      {
+        error: true,
+        message: "Failed to process request",
+        data: error,
+      },
+      { status: 500 }
+    );
   }
 }

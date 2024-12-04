@@ -22,6 +22,18 @@ export interface JWTPayload {
   exp: number;
 }
 
+export interface UploadImageParams {
+  file: Buffer | string;
+  folder: string;
+  resourceType?: string;
+}
+
+export interface CloudinaryResponse {
+  secure_url: string;
+  public_id: string;
+  format: string;
+}
+
 // Extend the NextRequest type
 declare module "next/server" {
   interface NextRequest {
