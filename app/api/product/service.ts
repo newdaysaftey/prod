@@ -75,6 +75,13 @@ export class ProductService extends BaseService {
   }
 
   async addColorWithSizes(data: AddColorData) {
+    const product = await prisma.product.findUnique({
+      where: { ProductId: data.ProductId },
+    });
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
     // if (data.ColorId || data.ProductId) {
     const createColors = await Promise.all(
       data.Colors.map(async (color) => {

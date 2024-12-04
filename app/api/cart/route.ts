@@ -53,3 +53,27 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    console.log("----");
+    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+      request
+    );
+
+    if (authResult instanceof Response) {
+      return authResult;
+    }
+    return controller.deleteFromCart(authResult.User.UserId, request);
+  } catch (error) {
+    console.error("Route Error:", error);
+    return NextResponse.json(
+      {
+        error: true,
+        message: "Error processing request",
+        data: error,
+      },
+      { status: 500 }
+    );
+  }
+}

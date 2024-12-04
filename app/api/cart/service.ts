@@ -151,6 +151,16 @@ export class CartService extends BaseService {
     return { ...cart, totalPrice };
   }
 
+  async deleteFromCart(userId: string, cartItemId?: string) {
+    const deleteFromCart = await prisma.cartItem.delete({
+      where: {
+        id: cartItemId,
+      },
+    });
+    if (!deleteFromCart) throw new Error("Cart item not found");
+    return deleteFromCart;
+  }
+
   async getCart(UserId: string) {
     const cart = await prisma.user.findUnique({
       where: {
