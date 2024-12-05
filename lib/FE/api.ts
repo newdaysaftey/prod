@@ -5,8 +5,8 @@ import { ProductFormDataStep2 } from "./types/step2";
 import { CartItem } from "./types/cart";
 
 const api = axios.create({
-  baseURL: "https://new-days-aftey-next-js.vercel.app/api",
-  // baseURL: "http://localhost:3000/api",
+  // baseURL: "https://new-days-aftey-next-js.vercel.app/api",
+  baseURL: "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
   },

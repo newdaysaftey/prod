@@ -33,7 +33,7 @@ export class TagController extends BaseController {
   async getTags() {
     try {
       const tags = await this.service.getTags();
-      return this.sendSuccess(tags, "Tag created sucessfully");
+      return this.sendSuccess(tags, "Tag fetched sucessfully");
     } catch (error) {
       return this.sendError(error as Error);
     }

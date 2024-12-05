@@ -1,24 +1,28 @@
 import { BaseService } from "@/app/api/services/base.service";
 import { v2 as cloudinary } from "cloudinary";
 import { randomUUID } from "crypto";
-
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-interface UploadImageParams {
-  file: Buffer | string;
-  folder: string;
-  resourceType?: string;
-}
+import { UploadImageParams, CloudinaryResponse } from "@/app/types/global";
 
 export class ImageService extends BaseService {
-    async uploadMultipleImages({ files, folder }: { files: (Buffer | string)[], folder: string }): Promise<string[]> {
+  constructor() {
+    super();
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+  }
+  async uploadMultipleImages({
+    files,
+    folder,
+  }: {
+    files: (Buffer | string)[];
+    folder: string;
+  }): Promise<string[]> {
     try {
-      const uploadPromises = files.map(file => this.uploadImage({ file, folder }));
+      const uploadPromises = files.map((file) =>
+        this.uploadImage({ file, folder })
+      );
       return await Promise.all(uploadPromises);
     } catch (error) {
       console.error("Multiple images upload failed:", error);
@@ -26,48 +30,50 @@ export class ImageService extends BaseService {
     }
   }
 
+  private async uploadToCloudinary(
+    buffer: Buffer,
+    fileName: string,
+    folder: string
+  ): Promise<CloudinaryResponse> {
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: `products/${folder}`,
+          resource_type: "image",
+          public_id: fileName,
+        },
+        (error, result) =>
+          error ? reject(error) : resolve(result as CloudinaryResponse)
+      );
+      uploadStream.end(buffer);
+    });
+  }
   async uploadImage({ file, folder }: UploadImageParams): Promise<string> {
     try {
-      let buffer: Buffer;
-      let fileName: string;
-
-      // Handle base64 strings
-      if (typeof file === "string" && file.startsWith("data:")) {
-        const base64Data = file.split(",")[1];
-        buffer = Buffer.from(base64Data, "base64");
-
-        // Extract the file extension (e.g., jpg, png, etc.) from the base64 string
-        const mimeType = file.split(";")[0].split(":")[1];
-        const extension = mimeType.split("/")[1];
-        fileName = `${randomUUID()}-${Date.now()}.${extension}`;
-      } else {
-        buffer = file as Buffer;
-
-        // Extract file name and extension from the Buffer's file name or URL
-        const extension = "jpg"; // You can set a default extension here
-        fileName = `${randomUUID()}-${Date.now()}.${extension}`;
-      }
-
-      const uploadResult = await new Promise<any>((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-          {
-            folder: `products/${folder}`,
-            resource_type: "image",
-            public_id: `${fileName}`, // Set the custom filename with timestamp
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-
-        uploadStream.end(buffer);
-      });
-
-      return uploadResult.secure_url;
+      const { buffer, extension } = await this.processFile(file);
+      const fileName = `${randomUUID()}-${Date.now()}.${extension}`;
+      const result = await this.uploadToCloudinary(buffer, fileName, folder);
+      return result.secure_url;
     } catch (error) {
-      console.error("Image upload failed:", error);
-      throw new Error("Failed to upload image");
+      throw new Error(`Image upload failed: ${(error as Error).message}`);
     }
+  }
+
+  private processFile(file: Buffer | string): {
+    buffer: Buffer;
+    extension: string;
+  } {
+    if (typeof file === "string" && file.startsWith("data:")) {
+      const [mimeInfo, base64Data] = file.split(",");
+      const extension = mimeInfo.split(":")[1].split("/")[1].split(";")[0];
+      return {
+        buffer: Buffer.from(base64Data, "base64"),
+        extension,
+      };
+    }
+    return {
+      buffer: file as Buffer,
+      extension: "jpg",
+    };
   }
 }
