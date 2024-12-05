@@ -5,8 +5,8 @@ import { ProductFormDataStep2 } from "./types/step2";
 import { CartItem } from "./types/cart";
 
 const api = axios.create({
-  // baseURL: "https://new-days-aftey-next-js.vercel.app/api",
-  baseURL: "http://localhost:3000/api",
+  baseURL: "https://new-days-aftey-next-js.vercel.app/api",
+  // baseURL: "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -188,6 +188,26 @@ export const updateCartItemQuantity = async (
 
 export const removeCartItem = async (itemId: string) => {
   const response = await axios.delete(`/api/cart/item/${itemId}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const getProducts = async (
+  limit: number,
+  page: number,
+  tags?: string,
+  categoryId?: string
+) => {
+  const params = new URLSearchParams();
+  params.append("page", page.toString());
+  params.append("limit", limit.toString());
+  if (tags) params.append("tags", tags);
+  if (categoryId) params.append("categoryId", categoryId);
+
+  const response = await axios.get(`/api/product/?${params.toString()}`, {
     headers: {
       "Content-Type": "application/json",
     },
