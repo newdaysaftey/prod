@@ -34,11 +34,11 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN])(request);
+    // // const authResult = await checkRole([UserRole.ADMIN])(request);
 
-    if (authResult instanceof Response) {
-      return authResult;
-    }
+    // if (authResult instanceof Response) {
+    //   return authResult;
+    // }
     return controller.getTags();
   } catch (error) {
     return NextResponse.json(
