@@ -31,11 +31,6 @@ export default function CartPage() {
     return <EmptyCart />;
   }
 
-  const handleCheckout = () => {
-    // TODO: Implement checkout logic
-    console.log("Proceed to checkout");
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <Toaster />
@@ -64,7 +59,7 @@ export default function CartPage() {
 
           {/* Cart Summary */}
           <div className="lg:col-span-1">
-            <CartSummary cart={cart} onCheckout={handleCheckout} />
+            <CartSummary cart={cart} />
           </div>
         </div>
       </div>

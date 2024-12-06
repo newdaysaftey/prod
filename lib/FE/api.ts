@@ -3,6 +3,8 @@ import { string } from "zod";
 import { ProductFormDataStep1 } from "./types/step1";
 import { ProductFormDataStep2 } from "./types/step2";
 import { CartItem } from "./types/cart";
+import { UpdateUserProfile } from "./types/user";
+import { CreateOrder } from "./types/order";
 
 const api = axios.create({
   baseURL: "https://new-days-aftey-next-js.vercel.app/api",
@@ -208,6 +210,41 @@ export const getProducts = async (
   if (categoryId) params.append("categoryId", categoryId);
 
   const response = await axios.get(`/api/product/?${params.toString()}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const getUserProfile = async () => {
+  const response = await axios.get("/api/user", {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const updateUserProfile = async (data: UpdateUserProfile) => {
+  const response = await axios.post("/api/user", data, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+export const getAddresses = async () => {
+  const response = await axios.get("/api/address", {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const createOrder = async (orderData: CreateOrder) => {
+  const response = await axios.post("/api/order", orderData, {
     headers: {
       "Content-Type": "application/json",
     },
