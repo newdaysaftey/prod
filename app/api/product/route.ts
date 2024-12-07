@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
-      request
-    );
+    // const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    //   request
+    // );
 
-    if (authResult instanceof Response) {
-      return authResult;
-    }
+    // if (authResult instanceof Response) {
+    //   return authResult;
+    // }
     return controller.getProduct(request);
   } catch (error) {
     return NextResponse.json(
