@@ -54,8 +54,10 @@ export default function Navbar() {
 
           {/* Location (Hidden on mobile) */}
           <div className="hidden lg:flex items-center space-x-2 text-sm mr-4">
-            <MapPin className="h-4 w-4" />
-            <button className="hover:underline">Update Location</button>
+            <Link href={"/profile"} className="flex items-center space-x-2">
+              <MapPin className="h-4 w-4" />
+              <button className="hover:underline">Update Location</button>
+            </Link>
           </div>
 
           {/* Categories Dropdown (Hidden on mobile) */}

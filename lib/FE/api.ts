@@ -13,6 +13,18 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+api.interceptors.response.use(
+  (response) => response, // Return response directly if successful
+  (error) => {
+    if (error.response?.status === 401) {
+      // Check if window is defined to ensure client-side execution
+      if (typeof window !== "undefined") {
+        window.location.href = "/auth/signin";
+      }
+    }
+    return Promise.reject(error); // Reject the error to handle it in the calling function
+  }
+);
 
 export const signUp = async (data: {
   Email: string;
@@ -101,7 +113,7 @@ export const createCategory = async (name: string) => {
   return response.data;
 };
 export const getTags = async () => {
-  const response = await axios.get("/api/tag", {
+  const response = await api.get("/tag", {
     headers: {
       "Content-Type": "application/json",
     },
@@ -110,8 +122,8 @@ export const getTags = async () => {
 };
 
 export const createTag = async (name: string) => {
-  const response = await axios.post(
-    "/api/tag",
+  const response = await api.post(
+    "/tag",
     { name },
     {
       headers: {
@@ -126,8 +138,8 @@ export const linkProductsToTag = async (
   tagId: string,
   productIds: string[]
 ) => {
-  const response = await axios.post(
-    "/api/tag/products",
+  const response = await api.post(
+    "/tag/products",
     { tagId, productIds },
     {
       headers: {
@@ -139,7 +151,7 @@ export const linkProductsToTag = async (
 };
 
 export const getProductById = async (id: string) => {
-  const response = await axios.get(`/api/product/${id}`, {
+  const response = await api.get(`/product/${id}`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -148,8 +160,8 @@ export const getProductById = async (id: string) => {
 };
 
 export const addToCart = async (cartItems: CartItem[]) => {
-  const response = await axios.post(
-    "/api/cart/",
+  const response = await api.post(
+    "/cart/",
     {
       cartItems,
     },
@@ -162,7 +174,7 @@ export const addToCart = async (cartItems: CartItem[]) => {
   return response.data;
 };
 export const getCart = async () => {
-  const response = await axios.get("/api/cart/", {
+  const response = await api.get("/cart/", {
     headers: {
       "Content-Type": "application/json",
     },
@@ -174,8 +186,8 @@ export const updateCartItemQuantity = async (
   itemId: string,
   quantity: number
 ) => {
-  const response = await axios.patch(
-    `/api/cart/item/${itemId}`,
+  const response = await api.patch(
+    `/cart/item/${itemId}`,
     {
       quantity,
     },
@@ -189,7 +201,7 @@ export const updateCartItemQuantity = async (
 };
 
 export const removeCartItem = async (itemId: string) => {
-  const response = await axios.delete(`/api/cart/item/${itemId}`, {
+  const response = await api.delete(`/cart/item/${itemId}`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -209,7 +221,7 @@ export const getProducts = async (
   if (tags) params.append("tags", tags);
   if (categoryId) params.append("categoryId", categoryId);
 
-  const response = await axios.get(`/api/product/?${params.toString()}`, {
+  const response = await api.get(`/product/?${params.toString()}`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -218,7 +230,7 @@ export const getProducts = async (
 };
 
 export const getUserProfile = async () => {
-  const response = await axios.get("/api/user", {
+  const response = await api.get("/user", {
     headers: {
       "Content-Type": "application/json",
     },
@@ -227,7 +239,7 @@ export const getUserProfile = async () => {
 };
 
 export const updateUserProfile = async (data: UpdateUserProfile) => {
-  const response = await axios.post("/api/user", data, {
+  const response = await api.post("/user", data, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -235,7 +247,7 @@ export const updateUserProfile = async (data: UpdateUserProfile) => {
   return response.data;
 };
 export const getAddresses = async () => {
-  const response = await axios.get("/api/address", {
+  const response = await api.get("/address", {
     headers: {
       "Content-Type": "application/json",
     },
@@ -244,7 +256,7 @@ export const getAddresses = async () => {
 };
 
 export const createOrder = async (orderData: CreateOrder) => {
-  const response = await axios.post("/api/order", orderData, {
+  const response = await api.post("/order", orderData, {
     headers: {
       "Content-Type": "application/json",
     },
