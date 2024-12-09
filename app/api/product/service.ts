@@ -159,16 +159,16 @@ export class ProductService extends BaseService {
       IsDeleted: false,
       IsActive: true,
       ...(params.categoryId && { CategoryId: params.categoryId }),
-      ...(tags && {
-        Tags: {
-          some: {
-            tag: {
-              isActive: true,
-              OR: [{ endDate: null }, { endDate: { gt: new Date() } }],
-            },
-          },
-        },
-      }),
+      // ...(tags && {
+      //   Tags: {
+      //     some: {
+      //       tag: {
+      //         isActive: true,
+      //         OR: [{ endDate: null }, { endDate: { gt: new Date() } }],
+      //       },
+      //     },
+      //   },
+      // }),
       ...(params.search && {
         OR: [
           {
