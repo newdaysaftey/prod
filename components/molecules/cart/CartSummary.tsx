@@ -63,15 +63,16 @@ export function CartSummary({ cart }: CartSummaryProps) {
       deliveryFee: DELIVERY_FEE,
       serviceFee: SERVICE_FEE,
       items: cart.cartItems.map((item) => ({
-        productId: item.ProductId,
-        colorId: item.ColorId,
-        sizeId: item.SizeId,
-        quantity: item.Quantity,
+        productId: item.productId,
+        colorId: item.colorId,
+        sizeId: item.sizeId,
+        quantity: item.quantity,
         priceAtTime: item.priceAtTime,
       })),
       shippingAddressId: selectedAddressId,
       billingAddressId: selectedAddressId, // Using same address for billing
     };
+    console.log(orderData);
 
     orderMutation.mutate(orderData);
   };

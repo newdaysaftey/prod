@@ -69,7 +69,6 @@ export default function ProfilePage() {
       addresses: formData.addresses,
     };
 
-    console.log(updateData);
     updateMutation.mutate(updateData);
   };
 

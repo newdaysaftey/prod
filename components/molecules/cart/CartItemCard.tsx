@@ -18,6 +18,7 @@ export function CartItemCard({
   onUpdateQuantity,
   onRemove,
 }: CartItemCardProps) {
+  console.log(item);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -28,7 +29,7 @@ export function CartItemCard({
       <div className="flex items-start p-4 gap-4">
         {/* Product Image */}
         <Link
-          href={`/products/${item.ProductId}`}
+          href={`/products/${item.productId}`}
           className="relative w-24 h-24 flex-shrink-0"
         >
           <Image
@@ -41,7 +42,7 @@ export function CartItemCard({
 
         {/* Product Details */}
         <div className="flex-grow">
-          <Link href={`/products/${item.ProductId}`}>
+          <Link href={`/products/${item.productId}`}>
             <h3 className="font-semibold text-lg mb-1 hover:text-indigo-500 transition-colors">
               {item.Product.Name}
             </h3>
@@ -63,16 +64,16 @@ export function CartItemCard({
         {/* Quantity and Actions */}
         <div className="flex flex-col items-end gap-4">
           <QuantitySelector
-            quantity={item.Quantity}
+            quantity={item.quantity}
             onQuantityChange={(quantity) =>
-              onUpdateQuantity(item.ProductId, quantity)
+              onUpdateQuantity(item.productId, quantity)
             }
             maxQuantity={item.Size.Stock}
           />
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            onClick={() => onRemove(item.ProductId)}
+            onClick={() => onRemove(item.productId)}
             className="text-red-500 hover:text-red-600 p-2"
           >
             <Trash2 className="w-5 h-5" />

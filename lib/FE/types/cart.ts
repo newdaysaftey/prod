@@ -29,10 +29,10 @@ export interface CartSize {
 }
 
 export interface CartItemDetail {
-  ProductId: string;
-  ColorId: string;
-  SizeId: string;
-  Quantity: number;
+  productId: string;
+  colorId: string;
+  sizeId: string;
+  quantity: number;
   priceAtTime: number;
   Product: CartProduct;
   Color: CartColor;

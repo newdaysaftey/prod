@@ -4,7 +4,8 @@ import { ProductFormDataStep1 } from "./types/step1";
 import { ProductFormDataStep2 } from "./types/step2";
 import { CartItem } from "./types/cart";
 import { UpdateUserProfile } from "./types/user";
-import { CreateOrder } from "./types/order";
+import { CreateOrder, Order } from "./types/order";
+import { ApiResponse } from "@/app/api/types";
 
 const api = axios.create({
   baseURL: "https://new-days-aftey-next-js.vercel.app/api",
@@ -187,7 +188,7 @@ export const updateCartItemQuantity = async (
   quantity: number
 ) => {
   const response = await api.patch(
-    `/cart/item/${itemId}`,
+    `/cart`,
     {
       quantity,
     },
@@ -261,5 +262,17 @@ export const createOrder = async (orderData: CreateOrder) => {
       "Content-Type": "application/json",
     },
   });
+  return response.data;
+};
+
+export const getOrders = async (): Promise<ApiResponse<Order[]>> => {
+  const response = await api.get("/order");
+  return response.data;
+};
+
+export const getOrderDetails = async (
+  orderId: string
+): Promise<ApiResponse<Order>> => {
+  const response = await api.get(`/order/${orderId}`);
   return response.data;
 };
