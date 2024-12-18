@@ -1,5 +1,4 @@
 import axios from "axios";
-import { string } from "zod";
 import { ProductFormDataStep1 } from "./types/step1";
 import { ProductFormDataStep2 } from "./types/step2";
 import { CartItem } from "./types/cart";
@@ -219,7 +218,8 @@ export const getProducts = async (
   const params = new URLSearchParams();
   params.append("page", page.toString());
   params.append("limit", limit.toString());
-  if (tags) params.append("tags", tags);
+
+  if(tags) params.append("search",tags)
   if (categoryId) params.append("categoryId", categoryId);
 
   const response = await api.get(`/product/?${params.toString()}`, {

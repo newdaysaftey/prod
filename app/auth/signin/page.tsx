@@ -33,8 +33,8 @@ export default function SignInPage() {
         document.cookie = `user=${encodeURIComponent(
           userDataString
         )}; path=/; SameSite=Strict; Secure; Expires=${oneHourFromNow}`;
+        window.location.href= "/";
 
-        router.push("/");
       }
     },
     onError: (error) => {
