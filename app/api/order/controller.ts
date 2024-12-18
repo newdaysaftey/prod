@@ -36,9 +36,9 @@ export class OrderController extends BaseController {
     }
   }
 
-  async getOrderDetails(UserId: string) {
+  async getOrderDetails(UserId: string, role: string) {
     try {
-      const user = await this.service.getOrderDetails(UserId);
+      const user = await this.service.getOrderDetails(UserId, role);
       return this.sendSuccess(user, "order's Details Fetched successfully");
     } catch (error) {
       return this.sendError(error as Error);

@@ -41,7 +41,10 @@ export async function GET(request: NextRequest) {
     if (authResult instanceof Response) {
       return authResult;
     }
-    const response = await controller.getOrderDetails(authResult.User.UserId);
+    const response = await controller.getOrderDetails(
+      authResult.User.UserId,
+      authResult.User.Role
+    );
     return response;
   } catch (error) {
     console.error("Route Error:", error);

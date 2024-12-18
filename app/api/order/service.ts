@@ -111,54 +111,105 @@ export class OrderService extends BaseService {
       },
     });
 
-    return order;
-  }
-
-  async getOrderDetails(UserId: string) {
-    const order = await prisma.order.findMany({
+    await prisma.cartItem.deleteMany({
       where: {
-        userId: UserId,
-      },
-      include: {
-        shippingAddress: true,
-        billingAddress: true,
-        orderItems: {
-          include: {
-            Product: {
-              select: {
-                ProductId: true,
-                Name: true,
-                Description: true,
-                Base_price: true,
-                ImageUrl: true,
-                AverageRating: true,
-              },
-            },
-            Color: {
-              select: {
-                ColorId: true,
-                ColorName: true,
-                ColorCode: true,
-                Images: true,
-                ProductId: true,
-              },
-            },
-            Size: {
-              select: {
-                SizeId: true,
-                Size: true,
-                Stock: true,
-                PriceAdjustment: true,
-                ColorId: true,
-                IsAvailable: true,
-              },
-            },
-          },
+        id: {
+          in: data.items.map((item) => item.id),
         },
       },
     });
 
     return order;
+  }
+
+  async getOrderDetails(UserId: string, role: string) {
+    if (role === "ADMIN") {
+      const order = await prisma.order.findMany({
+        where: {},
+        include: {
+          shippingAddress: true,
+          billingAddress: true,
+          orderItems: {
+            include: {
+              Product: {
+                select: {
+                  ProductId: true,
+                  Name: true,
+                  Description: true,
+                  Base_price: true,
+                  ImageUrl: true,
+                  AverageRating: true,
+                },
+              },
+              Color: {
+                select: {
+                  ColorId: true,
+                  ColorName: true,
+                  ColorCode: true,
+                  Images: true,
+                  ProductId: true,
+                },
+              },
+              Size: {
+                select: {
+                  SizeId: true,
+                  Size: true,
+                  Stock: true,
+                  PriceAdjustment: true,
+                  ColorId: true,
+                  IsAvailable: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      return order;
+    } else {
+      const order = await prisma.order.findMany({
+        where: {
+          userId: UserId,
+        },
+        include: {
+          shippingAddress: true,
+          billingAddress: true,
+          orderItems: {
+            include: {
+              Product: {
+                select: {
+                  ProductId: true,
+                  Name: true,
+                  Description: true,
+                  Base_price: true,
+                  ImageUrl: true,
+                  AverageRating: true,
+                },
+              },
+              Color: {
+                select: {
+                  ColorId: true,
+                  ColorName: true,
+                  ColorCode: true,
+                  Images: true,
+                  ProductId: true,
+                },
+              },
+              Size: {
+                select: {
+                  SizeId: true,
+                  Size: true,
+                  Stock: true,
+                  PriceAdjustment: true,
+                  ColorId: true,
+                  IsAvailable: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      return order;
+    }
   }
 
   async getOrderById(UserId: string, orderId: string) {
