@@ -17,6 +17,10 @@ interface OrderBody {
   billingAddress?: Address;
   deliveryDate: Date;
 }
+interface updateOrderBody {
+  orderId: string;
+  orderStatus: OrderStatus;
+}
 
 export class OrderController extends BaseController {
   [x: string]: any;
@@ -49,6 +53,19 @@ export class OrderController extends BaseController {
     try {
       const user = await this.service.getOrderById(UserId, orderId);
       return this.sendSuccess(user, "order Details Fetched successfully");
+    } catch (error) {
+      return this.sendError(error as Error);
+    }
+  }
+
+  async updateOrderstatus(UserId: string, updateOrderBody: updateOrderBody) {
+    try {
+      const user = await this.service.updateOrderstatus(
+        UserId,
+        updateOrderBody.orderId,
+        updateOrderBody.orderStatus
+      );
+      return this.sendSuccess(user, "order updated successfully");
     } catch (error) {
       return this.sendError(error as Error);
     }

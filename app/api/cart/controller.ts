@@ -62,4 +62,23 @@ export class CartController extends BaseController {
       return this.sendError(error as Error);
     }
   }
+
+  async updateCart(UserId: string, request: NextRequest) {
+    try {
+      const searchParams = request.nextUrl.searchParams;
+      const cartItemId = searchParams.get("cartItemId") || undefined;
+      const quantity = parseInt(searchParams.get("quantity") || "0");
+      const category = await this.service.updateCart(
+        UserId,
+        cartItemId,
+        quantity
+      );
+      return this.sendSuccess(
+        category,
+        "product quantity updated form cart successfully"
+      );
+    } catch (error) {
+      return this.sendError(error as Error);
+    }
+  }
 }

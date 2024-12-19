@@ -110,7 +110,6 @@ export class OrderService extends BaseService {
         },
       },
     });
-
     await prisma.cartItem.deleteMany({
       where: {
         id: {
@@ -257,6 +256,23 @@ export class OrderService extends BaseService {
       },
     });
 
+    return order;
+  }
+
+  async updateOrderstatus(
+    userId: string,
+    orderId: string,
+    orderStatus: OrderStatus
+  ) {
+    const order = await prisma.order.update({
+      where: {
+        userId: userId,
+        orderId: orderId,
+      },
+      data: {
+        status: orderStatus,
+      },
+    });
     return order;
   }
 }
