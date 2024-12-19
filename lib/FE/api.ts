@@ -8,6 +8,7 @@ import { ApiResponse } from "@/app/api/types";
 
 const api = axios.create({
   baseURL: "https://new-days-aftey-next-js.vercel.app/api",
+
   // baseURL: "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
@@ -219,7 +220,7 @@ export const getProducts = async (
   params.append("page", page.toString());
   params.append("limit", limit.toString());
 
-  if(tags) params.append("search",tags)
+  if (tags) params.append("search", tags);
   if (categoryId) params.append("categoryId", categoryId);
 
   const response = await api.get(`/product/?${params.toString()}`, {
