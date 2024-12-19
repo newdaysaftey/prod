@@ -1,21 +1,30 @@
 "use client";
 
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getProducts } from '@/lib/FE/api';
-import { CategorySidebar } from './CategorySidebar';
-import { ProductListingContent } from './ProductListingContent';
-import { ProductListingSkeleton } from './ProductListingSkeleton';
+import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getProducts } from "@/lib/FE/api";
+import { CategorySidebar } from "./CategorySidebar";
+import { ProductListingContent } from "./ProductListingContent";
+import { ProductListingSkeleton } from "./ProductListingSkeleton";
+import { useSearchParams } from "next/navigation";
 
 export function ProductListingPage() {
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    category
+  );
+  useEffect(() => {
+    setSelectedCategoryId(category);
+  }, [category]);
   const [page, setPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const limit = 12;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['products', page, limit, selectedCategoryId, searchQuery],
-    queryFn: () => getProducts(limit, page, undefined, selectedCategoryId || undefined),
+    queryKey: ["products", page, limit, selectedCategoryId, searchQuery],
+    queryFn: () =>
+      getProducts(limit, page, undefined, selectedCategoryId || undefined),
   });
 
   if (error) {
@@ -32,7 +41,7 @@ export function ProductListingPage() {
         <div className="flex gap-8">
           {/* Left Panel - Categories */}
           <div className="w-64 flex-shrink-0">
-            <CategorySidebar 
+            <CategorySidebar
               selectedCategoryId={selectedCategoryId}
               onCategorySelect={setSelectedCategoryId}
             />

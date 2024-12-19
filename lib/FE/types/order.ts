@@ -91,3 +91,8 @@ export interface ApiResponse<T> {
   message: string;
   data: T;
 }
+export interface UpdatePaymentStatusResponse {
+  error: boolean;
+  message: string;
+  data: Order;
+}

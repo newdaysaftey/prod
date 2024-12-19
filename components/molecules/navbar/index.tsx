@@ -17,16 +17,18 @@ import {
   User2,
 } from "lucide-react";
 import { CategoriesDropdown } from "./categories-dropdown";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useQuery } from "@tanstack/react-query";
 import { getCategories } from "@/lib/FE/api";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function Navbar() {
-
-  
   const [isOpen, setIsOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
+  const categories = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+  });
 
   return (
     <nav className="relative bg-background text-white z-20">
@@ -53,7 +55,7 @@ export default function Navbar() {
           {/* Location (Hidden on mobile) */}
 
           {/* Categories Dropdown */}
-          <CategoriesDropdown 
+          <CategoriesDropdown
             isOpen={isCategoriesOpen}
             onToggle={() => setIsCategoriesOpen(!isCategoriesOpen)}
           />
@@ -90,7 +92,10 @@ export default function Navbar() {
               </Link>
             ) : null}
             <RoleBasedContent roles={["ADMIN"]}>
-              <Link href={"/admin/"} className="flex justify-center items-center">
+              <Link
+                href={"/admin/"}
+                className="flex justify-center items-center"
+              >
                 <Settings className="mr-2 h-4 w-4" />
                 Admin
               </Link>
@@ -99,13 +104,16 @@ export default function Navbar() {
               <Globe className="h-5 w-5" />
               <span>EN</span>
             </button> */}
-          <div className="hidden lg:flex items-center space-x-2 text-sm mr-4">
-            <Link href={"/profile"} className="flex items-center space-x-2">
-              <User></User>
-              {/* <button className="hover:underline">Profile</button> */}
-            </Link>
-          </div>
-            <Link href="/cart" className="flex items-center space-x-1 hover:text-gray-200">
+            <div className="hidden lg:flex items-center space-x-2 text-sm mr-4">
+              <Link href={"/profile"} className="flex items-center space-x-2">
+                <User></User>
+                {/* <button className="hover:underline">Profile</button> */}
+              </Link>
+            </div>
+            <Link
+              href="/cart"
+              className="flex items-center space-x-1 hover:text-gray-200"
+            >
               <ShoppingCart className="h-5 w-5" />
               <span className="sr-only">Shopping Cart</span>
             </Link>
@@ -131,7 +139,65 @@ export default function Navbar() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg"
             >
-              {/* Mobile menu content remains the same */}
+              <div className="flex h-16 items-center justify-between px-4 border-b">
+                <span className="text-xl font-bold text-gray-900">Menu</span>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-md p-2 text-gray-500 hover:bg-gray-100"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+              <div className="py-4">
+                <div className="space-y-1 px-3">
+                  {categories?.data?.data?.map((category) => (
+                    <Link
+                      key={category.Name}
+                      href={"/products/?category=" + category.CategoryId}
+                      className="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
+                    >
+                      {category.Name}
+                    </Link>
+                  ))}
+                </div>
+                <div className="mt-4 border-t pt-4">
+                  <div className="space-y-1 px-3">
+                    {!isAuthenticated && (
+                      <Link
+                        href="/auth/signin"
+                        className="flex items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
+                      >
+                        <User className="h-5 w-5" />
+                        <span>Sign in</span>
+                      </Link>
+                    )}
+                    <RoleBasedContent roles={["ADMIN"]}>
+                      <Link
+                        href={"/admin/"}
+                        className="flex items-center space-x-2 px-3 py-2  text-base font-medium text-gray-900 hover:bg-gray-100"
+                      >
+                        <Settings className=" h-5 w-5 text-black" />
+                        <span className="text-black">Admin</span>
+                      </Link>
+                    </RoleBasedContent>
+                    <Link
+                      href="/cart"
+                      className="flex items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      <span>Cart</span>
+                    </Link>
+                    <button className="flex w-full items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100">
+                      <Globe className="h-5 w-5" />
+                      <span>Language: EN</span>
+                    </button>
+                    <button className="flex w-full items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100">
+                      <MapPin className="h-5 w-5" />
+                      <span>Update Location</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           </>
         )}

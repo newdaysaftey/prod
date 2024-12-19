@@ -23,7 +23,7 @@ export default function AdminLayout({
     const currentTab = pathSegments[pathSegments.length - 1];
 
     // Update active tab if it matches expected routes
-    if (["products", "tags", "categories"].includes(currentTab)) {
+    if (["products", "tags", "categories", "orders"].includes(currentTab)) {
       setActiveTab(currentTab);
     }
   }, [pathname]);
@@ -90,6 +90,16 @@ export default function AdminLayout({
                 <Tags className="mr-2 h-6 w-6" />
                 <span>Tags</span>
               </Link>
+              <Link
+                href="/admin/orders"
+                onClick={() => setActiveTab("orders")}
+                className={`flex items-center ${
+                  activeTab === "orders" ? activeStyle : inactiveStyle
+                }`}
+              >
+                <Tags className="mr-2 h-6 w-6" />
+                <span>Orders</span>
+              </Link>
             </div>
 
             {/* Mobile Menu Toggle */}
@@ -149,6 +159,21 @@ export default function AdminLayout({
                   }}
                   className={`block py-2 ${
                     activeTab === "tags" ? activeStyle : inactiveStyle
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <Tags className="mr-2 h-6 w-6" />
+                    <span>Tags</span>
+                  </div>
+                </Link>
+                <Link
+                  href="/admin/orders"
+                  onClick={() => {
+                    setActiveTab("orders");
+                    toggleMobileMenu();
+                  }}
+                  className={`block py-2 ${
+                    activeTab === "orders" ? activeStyle : inactiveStyle
                   }`}
                 >
                   <div className="flex items-center">

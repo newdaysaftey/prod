@@ -3,12 +3,11 @@ import { ProductFormDataStep1 } from "./types/step1";
 import { ProductFormDataStep2 } from "./types/step2";
 import { CartItem } from "./types/cart";
 import { UpdateUserProfile } from "./types/user";
-import { CreateOrder, Order } from "./types/order";
+import { CreateOrder, Order, UpdatePaymentStatusResponse } from "./types/order";
 import { ApiResponse } from "@/app/api/types";
 
 const api = axios.create({
   baseURL: "https://new-days-aftey-next-js.vercel.app/api",
-
   // baseURL: "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
@@ -275,5 +274,14 @@ export const getOrderDetails = async (
   orderId: string
 ): Promise<ApiResponse<Order>> => {
   const response = await api.get(`/order/${orderId}`);
+  return response.data;
+};
+export const updateOrderPaymentStatus = async (
+  orderId: string,
+  paymentStatus: string
+): Promise<UpdatePaymentStatusResponse> => {
+  const response = await api.patch(
+    `/payment?orderId=${orderId}&paymentStatus=${paymentStatus}`
+  );
   return response.data;
 };

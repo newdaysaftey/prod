@@ -108,6 +108,49 @@ const ContactForm = () => {
 
             <div>
               <label
+                htmlFor="orderType"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Order Type
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <input
+                    type="radio"
+                    id="singleOrder"
+                    name="orderType"
+                    className="peer hidden"
+                  />
+                  <label
+                    htmlFor="singleOrder"
+                    className="block w-full p-4 text-sm border rounded-lg cursor-pointer bg-white hover:border-blue-500 peer-checked:border-blue-500 peer-checked:bg-blue-50"
+                  >
+                    <div className="font-medium">Single Order</div>
+                    <div className="text-gray-500">
+                      For individual purchases
+                    </div>
+                  </label>
+                </div>
+                <div className="relative">
+                  <input
+                    type="radio"
+                    id="bulkOrder"
+                    name="orderType"
+                    className="peer hidden"
+                  />
+                  <label
+                    htmlFor="bulkOrder"
+                    className="block w-full p-4 text-sm border rounded-lg cursor-pointer bg-white hover:border-blue-500 peer-checked:border-blue-500 peer-checked:bg-blue-50"
+                  >
+                    <div className="font-medium">Bulk Order</div>
+                    <div className="text-gray-500">For orders of 10+ items</div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label
                 htmlFor="message"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >

@@ -12,7 +12,10 @@ interface CategoriesDropdownProps {
   onToggle: () => void;
 }
 
-export function CategoriesDropdown({ isOpen, onToggle }: CategoriesDropdownProps) {
+export function CategoriesDropdown({
+  isOpen,
+  onToggle,
+}: CategoriesDropdownProps) {
   const { data: categories, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
@@ -44,7 +47,7 @@ export function CategoriesDropdown({ isOpen, onToggle }: CategoriesDropdownProps
               categories?.data?.map((category: any) => (
                 <Link
                   key={category.Name}
-                  href={category.Name}
+                  href={"/products/?category=" + category.CategoryId}
                   className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                 >
                   {category.Name}
