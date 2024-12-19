@@ -150,7 +150,7 @@ export default function Navbar() {
               </div>
               <div className="py-4">
                 <div className="space-y-1 px-3">
-                  {categories?.data?.data?.map((category) => (
+                  {categories?.data?.data?.map((category: any) => (
                     <Link
                       key={category.Name}
                       href={"/products/?category=" + category.CategoryId}
