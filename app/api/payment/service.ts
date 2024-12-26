@@ -10,6 +10,12 @@ export class PaymentService extends BaseService {
         orderId: orderId,
       },
       data: {
+        status:
+          paymentStatus === "PAID"
+            ? "PROCESSING"
+            : paymentStatus === "FAILED"
+            ? "CANCELLED"
+            : "PENDING",
         paymentStatus: paymentStatus,
       },
     });

@@ -1,11 +1,9 @@
-// app/api/auth/signin/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { OrderController } from "./controller";
-import { UserRole } from "@/app/types/global";
+import { CommentController } from "./controller";
 import { checkRole } from "@/app/middilewares/middileware";
-
-const controller = new OrderController();
-export const dynamic = "auto";
+import { UserRole } from "@/app/types/global";
+export const dynamic = "dynamic";
+const controller = new CommentController();
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,10 +15,14 @@ export async function POST(request: NextRequest) {
     if (authResult instanceof Response) {
       return authResult;
     }
-    const response = await controller.createOrder(authResult.User.UserId, body);
-    return response;
+    if (!body || Object.keys(body).length === 0) {
+      return NextResponse.json(
+        { error: true, message: "Request body is required" },
+        { status: 400 }
+      );
+    }
+    return controller.createComment(authResult.User.UserId, body);
   } catch (error) {
-    console.error("Route Error:", error);
     return NextResponse.json(
       {
         error: true,
@@ -34,20 +36,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
-      request
-    );
+    // const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    //   request
+    // );
 
-    if (authResult instanceof Response) {
-      return authResult;
-    }
-    const response = await controller.getOrderDetails(
-      authResult.User.UserId,
-      authResult.User.Role
-    );
-    return response;
+    // if (authResult instanceof Response) {
+    //   return authResult;
+    // }
+    return controller.getComments(request);
   } catch (error) {
-    console.error("Route Error:", error);
     return NextResponse.json(
       {
         error: true,
@@ -69,13 +66,36 @@ export async function PUT(request: NextRequest) {
     if (authResult instanceof Response) {
       return authResult;
     }
-    const response = await controller.updateOrderstatus(
-      authResult.User.UserId,
-      body
-    );
-    return response;
+    if (!body || Object.keys(body).length === 0) {
+      return NextResponse.json(
+        { error: true, message: "Request body is required" },
+        { status: 400 }
+      );
+    }
+    return controller.updateComments(authResult.User.UserId, body);
   } catch (error) {
-    console.error("Route Error:", error);
+    return NextResponse.json(
+      {
+        error: true,
+        message: "Error processing request",
+        data: error,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+      request
+    );
+
+    if (authResult instanceof Response) {
+      return authResult;
+    }
+    return controller.deleteComment(authResult.User.UserId, request);
+  } catch (error) {
     return NextResponse.json(
       {
         error: true,

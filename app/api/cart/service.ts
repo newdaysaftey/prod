@@ -15,18 +15,6 @@ interface CartData {
   cartItems: CartItemData[];
 }
 
-interface cartItemsWithDetails {
-  subTotal: number;
-  productId: any;
-  colorId: any;
-  sizeId: any;
-  priceAtTime: number;
-  quantity: number;
-  Product: any;
-  Color: any;
-  Size: any;
-}
-
 export class CartService extends BaseService {
   async addtoCart(data: CartData) {
     let totalPrice = 0;
@@ -142,7 +130,6 @@ export class CartService extends BaseService {
       }
     }
 
-    // Fetch updated cart with total price
     const cart = await prisma.user.findUnique({
       where: { UserId: data.UserId },
       select: { UserId: true, cartItems: true },
@@ -228,5 +215,19 @@ export class CartService extends BaseService {
       cartItems: cartItemsWithDetails, // Include the cart items with the calculated subTotal
       totalAmount, // Return the totalAmount
     };
+  }
+
+  async updateCart(userId: string, cartItemId?: string, quantity?: number) {
+    const updateCart = await prisma.cartItem.update({
+      where: {
+        id: cartItemId,
+        userId: userId,
+      },
+      data: {
+        quantity: quantity,
+      },
+    });
+    if (!updateCart) throw new Error("Cart item not found");
+    return updateCart;
   }
 }
