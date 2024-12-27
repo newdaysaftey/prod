@@ -213,6 +213,7 @@ export const getProducts = async (
   limit: number,
   page: number,
   tags?: string,
+  search?: string,
   categoryId?: string
 ) => {
   const params = new URLSearchParams();
@@ -220,6 +221,7 @@ export const getProducts = async (
   params.append("limit", limit.toString());
 
   if (tags) params.append("search", tags);
+  if (search) params.append("search", search);
   if (categoryId) params.append("categoryId", categoryId);
 
   const response = await api.get(`/product/?${params.toString()}`, {

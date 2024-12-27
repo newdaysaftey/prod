@@ -27,6 +27,7 @@ export function ProductList({
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["products", page, tags, categoryId],
     queryFn: () => getProducts(pageSize, page, tags, categoryId),
+    staleTime: 0,
     // Replace onSuccess with a useEffect hook
   });
 

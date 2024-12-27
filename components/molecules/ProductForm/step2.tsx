@@ -124,6 +124,7 @@ export default function Step2({
             : "Save Product"}
         </motion.button>
       </div>
+      <br></br>
     </div>
   );
 }

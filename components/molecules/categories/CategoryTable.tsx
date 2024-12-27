@@ -24,15 +24,6 @@ export function CategoryTable({ categories }: CategoryTableProps) {
             <th className="text-left px-6 py-4 text-sm font-medium text-slate-500">
               Category Name
             </th>
-            <th className="text-left px-6 py-4 text-sm font-medium text-slate-500">
-              Created At
-            </th>
-            <th className="text-left px-6 py-4 text-sm font-medium text-slate-500">
-              Updated At
-            </th>
-            <th className="text-right px-6 py-4 text-sm font-medium text-slate-500">
-              Actions
-            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
@@ -46,12 +37,6 @@ export function CategoryTable({ categories }: CategoryTableProps) {
             >
               <td className="px-6 py-4">
                 <span className="font-medium">{category.Name}</span>
-              </td>
-              <td className="px-6 py-4">
-                {new Date(category.createdAt).toLocaleDateString()}
-              </td>
-              <td className="px-6 py-4">
-                {new Date(category.updatedAt).toLocaleDateString()}
               </td>
               <td className="px-6 py-4">
                 {/* <div className="flex items-center justify-end gap-3">

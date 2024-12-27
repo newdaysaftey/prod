@@ -17,7 +17,7 @@ export function ProductList() {
 
   if (isLoading)
     return (
-      <p className="min-h-screen bg-gradient-to-br max-w-7xl mx-auto">
+      <p className="min-h-screen bg-gradient-to-br max-w-7xl mr-2">
         Loading...
       </p>
     );
@@ -59,7 +59,7 @@ export function ProductList() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden"
+          className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden sm:w-[95%] mx-auto"
         >
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="relative">
