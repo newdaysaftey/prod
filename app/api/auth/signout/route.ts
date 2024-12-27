@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { SignoutController } from "./controller";
 
 const controller = new SignoutController();
-export const dynamic = "dynamic";
+export const dynamic = "auto";
 
 export async function POST(request: NextRequest) {
   try {
