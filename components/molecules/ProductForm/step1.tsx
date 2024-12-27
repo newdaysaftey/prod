@@ -110,7 +110,7 @@ const Step1 = ({
             ) : (
               <span>
                 {selectedCategory
-                  ? categories?.find(
+                  ? categories?.data?.find(
                       (c: any) => c.CategoryId === selectedCategory
                     )?.Name || "Select a category"
                   : "Select a category"}
@@ -129,7 +129,7 @@ const Step1 = ({
           {/* Category Dropdown List */}
           {isOpen && !isLoading && categories && (
             <ul className="absolute z-10 w-full mt-1 border rounded bg-white dark:bg-slate-900 shadow-lg max-h-60 overflow-y-auto">
-              {categories.map((category: any) => (
+              {categories?.data?.map((category: any) => (
                 <li
                   key={category.CategoryId}
                   onClick={() => {

@@ -188,8 +188,8 @@ export default function AdminLayout({
       </nav>
 
       {/* Main Content Area */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <div className="bg-white shadow rounded-lg p-4 sm:p-6">{children}</div>
+      <div className="container mx-auto px-4 sm:px-0 lg:px-8 mt-6">
+        <div className="bg-white shadow rounded-lg p-4 sm:p-0">{children}</div>
       </div>
     </div>
   );

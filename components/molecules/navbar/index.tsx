@@ -12,9 +12,8 @@ import {
   ShoppingCart,
   User,
   X,
-  Globe,
   Settings,
-  User2,
+  ShoppingBag,
 } from "lucide-react";
 import { CategoriesDropdown } from "./categories-dropdown";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -42,25 +41,27 @@ export default function Navbar() {
             >
               <Menu className="h-6 w-6" />
             </button>
+            <div className="flex flex-1 items-center mr-4">
+              <Link href="/" className="flex items-center space-x-2">
+                {/* <div className="h-8 w-8 bg-white rounded-md" /> */}
+                <span className=" text-xl font-bold lg:block">Store</span>
+              </Link>
+            </div>
           </div>
 
           {/* Logo */}
           <div className="flex flex-1 items-center lg:flex-none mr-4">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="h-8 w-8 bg-white rounded-md" />
+              {/* <div className="h-8 w-8 bg-white rounded-md" /> */}
               <span className="hidden text-xl font-bold lg:block">Store</span>
             </Link>
           </div>
 
-          {/* Location (Hidden on mobile) */}
-
-          {/* Categories Dropdown */}
           <CategoriesDropdown
             isOpen={isCategoriesOpen}
             onToggle={() => setIsCategoriesOpen(!isCategoriesOpen)}
           />
 
-          {/* Search */}
           <div className="flex flex-1 items-center justify-center px-6">
             <div className="w-full max-w-lg">
               <div className="relative">
@@ -76,7 +77,6 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Right section */}
           <div className="hidden lg:flex lg:items-center lg:space-x-6">
             {isLoading ? (
               <div className="h-5 w-5">
@@ -100,14 +100,9 @@ export default function Navbar() {
                 Admin
               </Link>
             </RoleBasedContent>
-            {/* <button className="flex items-center space-x-1 hover:text-gray-200">
-              <Globe className="h-5 w-5" />
-              <span>EN</span>
-            </button> */}
             <div className="hidden lg:flex items-center space-x-2 text-sm mr-4">
               <Link href={"/profile"} className="flex items-center space-x-2">
                 <User></User>
-                {/* <button className="hover:underline">Profile</button> */}
               </Link>
             </div>
             <Link
@@ -116,6 +111,13 @@ export default function Navbar() {
             >
               <ShoppingCart className="h-5 w-5" />
               <span className="sr-only">Shopping Cart</span>
+            </Link>
+            <Link
+              href="/orders"
+              className="flex items-center space-x-1 hover:text-gray-200"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              <span className="sr-only">Orders</span>
             </Link>
           </div>
         </div>
@@ -150,6 +152,9 @@ export default function Navbar() {
               </div>
               <div className="py-4">
                 <div className="space-y-1 px-3">
+                  {/* <p className="block rounded-md px-3 py-2 text-[16px] text-base  font-medium text-gray-900 hover:bg-gray-100">
+                    Categories
+                  </p> */}
                   {categories?.data?.data?.map((category: any) => (
                     <Link
                       key={category.Name}
@@ -187,14 +192,13 @@ export default function Navbar() {
                       <ShoppingCart className="h-5 w-5" />
                       <span>Cart</span>
                     </Link>
-                    <button className="flex w-full items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100">
-                      <Globe className="h-5 w-5" />
-                      <span>Language: EN</span>
-                    </button>
-                    <button className="flex w-full items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100">
-                      <MapPin className="h-5 w-5" />
-                      <span>Update Location</span>
-                    </button>
+                    <Link
+                      href="/orders"
+                      className="flex items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
+                    >
+                      <ShoppingBag className="h-5 w-5" />
+                      <span>Orders</span>
+                    </Link>
                   </div>
                 </div>
               </div>

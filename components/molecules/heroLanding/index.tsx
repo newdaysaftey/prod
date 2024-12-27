@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 const Hero = () => {
   return (
     <section className="bg-lightBlue h-[480px] sm:h-[350px] relative">
@@ -10,9 +11,11 @@ const Hero = () => {
           <p className="text-[40px] sm:text-[20px] text-white font-[600]">
             Enjoy 30% Off All Safety Gear!
           </p>
-          <button className="h-[64px] w-[154px] bg-background text-white rounded-[15px] mt-8">
-            Explore now
-          </button>
+          <Link href={"/products"}>
+            <button className="h-[64px] w-[154px] bg-background text-white rounded-[15px] mt-8">
+              Explore now
+            </button>
+          </Link>
         </div>
         <div className="w-[40%] relative  mt-[60px] sm:hidden">
           <Image

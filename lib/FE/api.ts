@@ -7,8 +7,8 @@ import { CreateOrder, Order, UpdatePaymentStatusResponse } from "./types/order";
 import { ApiResponse } from "@/app/api/types";
 
 const api = axios.create({
-  baseURL: "https://new-days-aftey-next-js.vercel.app/api",
-  // baseURL: "http://localhost:3000/api",
+  // baseURL: "https://new-days-aftey-next-js.vercel.app/api",
+  baseURL: "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -283,5 +283,10 @@ export const updateOrderPaymentStatus = async (
   const response = await api.patch(
     `/payment?orderId=${orderId}&paymentStatus=${paymentStatus}`
   );
+  return response.data;
+};
+
+export const faqSection = async (question: string): Promise<any> => {
+  const response = await api.post("/faq/", { question });
   return response.data;
 };

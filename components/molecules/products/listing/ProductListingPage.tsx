@@ -38,9 +38,9 @@ export function ProductListingPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex gap-8">
+        <div className="flex gap-8 sm:flex-col">
           {/* Left Panel - Categories */}
-          <div className="w-64 flex-shrink-0">
+          <div className="w-64 flex-shrink-0 sm:w-[90%]">
             <CategorySidebar
               selectedCategoryId={selectedCategoryId}
               onCategorySelect={setSelectedCategoryId}

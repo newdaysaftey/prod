@@ -4,7 +4,7 @@ export function ProductListingSkeleton() {
   return (
     <div className="space-y-6">
       {/* Header Skeleton */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between sm:flex-col sm:items-start">
         <div>
           <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
           <div className="h-4 w-32 bg-gray-100 dark:bg-gray-800 rounded mt-2 animate-pulse" />
@@ -13,7 +13,7 @@ export function ProductListingSkeleton() {
       </div>
 
       {/* Grid Skeleton */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-4 gap-6">
         {[...Array(8)].map((_, i) => (
           <div
             key={i}

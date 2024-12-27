@@ -1,5 +1,4 @@
 "use client";
-
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
@@ -45,13 +44,19 @@ export function CategoriesDropdown({
               </div>
             ) : (
               categories?.data?.map((category: any) => (
-                <Link
-                  key={category.Name}
-                  href={"/products/?category=" + category.CategoryId}
-                  className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                <button
+                  onClick={() => {
+                    onToggle();
+                  }}
                 >
-                  {category.Name}
-                </Link>
+                  <Link
+                    key={category.Name}
+                    href={"/products/?category=" + category.CategoryId}
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  >
+                    {category.Name}
+                  </Link>
+                </button>
               ))
             )}
           </motion.div>
