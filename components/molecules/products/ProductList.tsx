@@ -59,12 +59,20 @@ export function ProductList({
     <div className="">
       <div className="max-w-7xl sm:w-[90%] mx-auto">
         {isLoading && !allProducts.length ? (
-          <div className="flex justify-center py-12">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={i}
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden"
+              >
+                <div className="aspect-square bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                <div className="p-4 space-y-3">
+                  <div className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="h-4 w-1/2 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+                  <div className="h-4 w-1/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           <ProductGrid

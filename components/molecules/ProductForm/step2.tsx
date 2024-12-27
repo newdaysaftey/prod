@@ -1,145 +1,3 @@
-// "use client";
-// import { useEffect, useState } from "react";
-// import ColorVariant from "./ColorVariant";
-// import { useMutation } from "@tanstack/react-query";
-// import { motion } from "framer-motion";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import { useForm } from "react-hook-form";
-// import { Plus, Save } from "lucide-react";
-// import { toast } from "sonner";
-// import { ProductFormDataStep2, productSchemaStep2 } from "@/lib/FE/types/step2";
-// import { saveProduct } from "@/lib/FE/api";
-
-// function Step2({
-//   productId,
-//   initialValues,
-//   router,
-// }: {
-//   productId: string;
-//   initialValues: any;
-//   router: any;
-// }) {
-//   const [colorVariants, setColorVariants] = useState<
-//     {
-//       ColorId: string;
-//       ColorName: string;
-//       ColorCode: string;
-//       Images: string[];
-//       Sizes: {
-//         Size: string;
-//         SizeId: string;
-//         Stock: number;
-//         PriceAdjustment: number;
-//         isDeleted: boolean;
-//       }[];
-//     }[]
-//   >(initialValues?.Colors || []);
-
-//   useEffect(() => {
-//     console.log(colorVariants);
-//   }, [colorVariants]);
-
-//   const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//     setValue,
-//   } = useForm<ProductFormDataStep2>({
-//     resolver: zodResolver(productSchemaStep2),
-//   });
-
-//   const mutation = useMutation({
-//     mutationFn: saveProduct,
-//     onSuccess: (data) => {
-//       if (!data.error) {
-//         toast.info("form submitted");
-//         router.push("/admin/products");
-//       }
-//       // Handle success (e.g., show notification, redirect)
-//     },
-//   });
-
-//   const onSubmit = () => {
-//     console.log(colorVariants, productId);
-//     mutation.mutate({ step: 2, ProductId: productId, Colors: colorVariants });
-//   };
-
-//   const addColorVariant = () => {
-//     setColorVariants((prev) => [
-//       ...prev,
-//       {
-//         ColorName: "",
-//         ColorId: "",
-//         ColorCode: "#000000",
-//         Images: [],
-//         Sizes: [],
-//       },
-//     ]);
-//   };
-
-//   const removeColorVariant = (index: number) => {
-//     setColorVariants((prev) => prev.filter((_, i) => i !== index));
-//   };
-
-//   useEffect(() => {
-//     colorVariants.forEach((variant, index) => {
-//       setValue(`Colors.${index}.ColorName`, variant.ColorName);
-//       setValue(`Colors.${index}.ColorCode`, variant.ColorCode);
-//       setValue(`Colors.${index}.Sizes`, variant.Sizes);
-//       setValue(`Colors.${index}.Images`, variant.Images);
-//     });
-//   }, [colorVariants, setValue]);
-
-//   return (
-//     <>
-//       {colorVariants.map((variant, index) => (
-//         <ColorVariant
-//           key={index.toString()}
-//           variant={variant}
-//           onRemove={() => removeColorVariant(index)}
-//           register={register}
-//           errors={errors}
-//           onImageChange={(newImages) => {
-//             setColorVariants((prev) =>
-//               prev.map((v, i) =>
-//                 i === index ? { ...v, Images: newImages } : v
-//               )
-//             );
-//           }}
-//         />
-//       ))}
-//       <br />
-//       <motion.button
-//         whileHover={{ scale: 1.01 }}
-//         whileTap={{ scale: 0.99 }}
-//         type="button"
-//         onClick={addColorVariant}
-//         className="w-full py-4 border-2 border-dashed border-slate-700 dark:border-slate-700 rounded-xl hover:border-indigo-500 dark:hover:border-indigo-500 transition-colors flex items-center justify-center gap-2 text-slate-600 dark:text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400"
-//       >
-//         <Plus className="h-5 w-5" />
-//         Add Color Variant
-//       </motion.button>
-//       <br />
-//       <div className="flex gap-4">
-//         <motion.button
-//           whileHover={{ scale: 1.01 }}
-//           whileTap={{ scale: 0.99 }}
-//           type="button"
-//           className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-//           disabled={mutation.isPending}
-//           onClick={() => {
-//             onSubmit();
-//           }}
-//         >
-//           <Save className="h-4 w-4" />
-//           {mutation.isPending ? "Saving..." : "Save Product"}
-//         </motion.button>
-//       </div>
-//     </>
-//   );
-// }
-
-// export default Step2;
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Save } from "lucide-react";
@@ -166,9 +24,12 @@ export default function Step2({
   router,
   saveProduct,
 }: Step2Props) {
+  const [isPending, setIsPending] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const handleMultipleImageUpload = async (files: File[]): Promise<any> => {
+    setUploadingImage(true);
     const imageUrls = await handleImageUpload(files);
-    console.log(imageUrls, "from 171 man");
+    setUploadingImage(false);
     return imageUrls;
   };
   const [colorVariants, setColorVariants] = useState<ColorVariantType[]>(
@@ -177,12 +38,13 @@ export default function Step2({
 
   const handleSave = async () => {
     try {
+      setIsPending(true);
       const response = await saveProduct({
         step: 2,
         ProductId: productId,
         Colors: colorVariants,
       });
-
+      setIsPending(true);
       if (!response.error) {
         toast.success("Product saved successfully");
         router.push("/admin/products");
@@ -251,10 +113,15 @@ export default function Step2({
           whileTap={{ scale: 0.99 }}
           type="button"
           onClick={handleSave}
+          disabled={isPending}
           className="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
         >
           <Save className="h-4 w-4" />
-          Save Product
+          {uploadingImage
+            ? "Uploading Image please wait"
+            : isPending
+            ? "Saving..."
+            : "Save Product"}
         </motion.button>
       </div>
     </div>

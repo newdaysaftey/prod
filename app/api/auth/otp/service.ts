@@ -1,16 +1,13 @@
 import { authenticator } from "otplib"; // Importing OTP library
 import nodemailer from "nodemailer";
 import { randomBytes } from "crypto";
+import prisma from "@/lib/prisma";
+import jwt from "jsonwebtoken";
 
-export interface OTPService {
-  generateOTP: (email: string) => Promise<string>;
-  verifyOTP: (email: string, otp: string) => boolean;
-  sendOTPEmail: (email: string, otp: string) => Promise<void>; // Make this public in the interface
-}
-
-export class OTPServiceImplementation implements OTPService {
+export class OTPServiceImplementation {
   private otpCache: Map<string, { otp: string; expiresAt: number }> = new Map();
   private otpExpiryTime = 5 * 60 * 1000; // 5 minutes expiry
+  private JWT_SECRET = process.env.JWT_SECRET as string;
 
   // Generate OTP
   async generateOTP(email: string): Promise<string> {
@@ -26,7 +23,7 @@ export class OTPServiceImplementation implements OTPService {
   }
 
   // Verify OTP
-  verifyOTP(email: string, otp: string): boolean {
+  async verifyOTP(email: string, otp: string) {
     const cachedOTP = this.otpCache.get(email);
     // console.log(cachedOTP);
 
@@ -43,7 +40,30 @@ export class OTPServiceImplementation implements OTPService {
     }
 
     // Verify the OTP
-    return otp === correctOTP;
+    if (otp === correctOTP) {
+      const user = await prisma.user.findFirst({
+        where: {
+          Email: email,
+        },
+        select: {
+          UserId: true,
+          Email: true,
+          Role: true,
+        },
+      });
+      if (!user) {
+        throw new Error("User not found, please signup");
+      }
+
+      const token = jwt.sign(
+        { UserId: user.UserId, Email: user.Email, Role: user.Role },
+        this.JWT_SECRET,
+        { expiresIn: "1h" }
+      );
+      return { user, token };
+    } else {
+      throw new Error("Invalid OTP");
+    }
   }
 
   // Send OTP via email

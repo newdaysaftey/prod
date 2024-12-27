@@ -285,3 +285,8 @@ export const updateOrderPaymentStatus = async (
   );
   return response.data;
 };
+
+export const faqSection = async (question: string): Promise<any> => {
+  const response = await api.post("/faq/", { question });
+  return response.data;
+};

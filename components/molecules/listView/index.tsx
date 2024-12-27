@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Package, Plus, Search, Eye, Edit } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { getAdminProducts } from "@/lib/FE/api";
 import Link from "next/link";
 
@@ -26,12 +26,12 @@ export function ProductList() {
   const viewData = data?.data?.data.flatMap((e: any) => e.Products);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br p-4 sm:p-8">
-      <div className=" w-[90%] mx-auto sm:w-[100%]">
+    <div className="min-h-screen bg-gradient-to-br p-4 sm:p-0">
+      <div className="sm:w-[100%] w-[90%] mx-auto ">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 mb-8"
+          className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6  mb-8"
         >
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
@@ -72,7 +72,8 @@ export function ProductList() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Table View for Larger Screens */}
+          <div className="hidden sm:hidden overflow-x-auto">
             <table className="w-full">
               <thead className="bg-slate-50 dark:bg-slate-800/50">
                 <tr>
@@ -152,6 +153,52 @@ export function ProductList() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Card View for Mobile */}
+          <div className="block sm:block">
+            {viewData.map((product: any) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                whileHover={{ scale: 1.02 }}
+                className="bg-white dark:bg-slate-950 shadow rounded-lg mb-4 p-4"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-medium">{product.Name}</h2>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      product.status === "In Stock"
+                        ? "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400"
+                        : "bg-yellow-50 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400"
+                    }`}
+                  >
+                    {product.status}
+                  </span>
+                </div>
+                <p className="text-sm text-slate-500 mb-3">
+                  Price: ${product.Base_price}
+                </p>
+                <p className="text-sm text-slate-500 mb-3">
+                  Variants: {product.Colors.length}
+                </p>
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={`/admin/products/${product.ProductId}`}
+                    className="p-2 text-indigo-500 hover:text-indigo-600 transition-colors"
+                  >
+                    <Eye className="h-5 w-5" />
+                  </Link>
+                  <Link
+                    href={`/admin/products/${product.ProductId}/edit`}
+                    className="p-2 text-indigo-500 hover:text-indigo-600 transition-colors"
+                  >
+                    <Edit className="h-5 w-5" />
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </div>

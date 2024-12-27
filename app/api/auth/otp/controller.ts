@@ -29,13 +29,22 @@ export class OtpController extends BaseController {
   async verifyOtp(body: OtpRequestBody) {
     try {
       const { email, otp } = body;
-      const response = await this.service.verifyOTP(email, otp);
+      const user = await this.service.verifyOTP(email, otp);
 
-      if (response === true) {
-        return this.sendSuccess("verified succesfully");
-      } else {
-        throw new Error("Error Verifying Otp");
+      if (!user) {
+        throw new Error("Authentication failed && invalid OTP");
       }
+      const response = this.sendSuccess(user.user, "verified succesfully");
+      response.cookies.set({
+        name: "authToken",
+        value: user.token,
+        httpOnly: true,
+        path: "/",
+        maxAge: 3600000, // 1 hour in seconds
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      });
+      return response;
     } catch (error) {
       return this.sendError(error as Error);
     }

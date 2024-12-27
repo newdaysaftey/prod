@@ -63,12 +63,12 @@ export function ProductForm({ initialValues }: any) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4 sm:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-4 sm:p-0">
       <div className="w-[90%] mx-auto">
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-8 mb-8"
+          className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl p-6 sm:p-6 mb-8"
         >
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>

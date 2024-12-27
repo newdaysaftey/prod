@@ -1,27 +1,33 @@
 "use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-import { FolderTree } from 'lucide-react';
-import { getCategories } from '@/lib/FE/api';
+import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
+import { FolderTree } from "lucide-react";
+import { getCategories } from "@/lib/FE/api";
 
 interface CategorySidebarProps {
   selectedCategoryId: string | null;
   onCategorySelect: (categoryId: string | null) => void;
 }
 
-export function CategorySidebar({ selectedCategoryId, onCategorySelect }: CategorySidebarProps) {
+export function CategorySidebar({
+  selectedCategoryId,
+  onCategorySelect,
+}: CategorySidebarProps) {
   const { data, isLoading } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ["categories"],
     queryFn: getCategories,
   });
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 space-y-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-4">
         <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-10 bg-gray-100 dark:bg-gray-700 rounded animate-pulse" />
+        {Array(5).map((_, i) => (
+          <div
+            key={i}
+            className="h-10 bg-gray-100 dark:bg-gray-700 rounded animate-pulse"
+          />
         ))}
       </div>
     );
@@ -41,8 +47,8 @@ export function CategorySidebar({ selectedCategoryId, onCategorySelect }: Catego
           onClick={() => onCategorySelect(null)}
           className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
             selectedCategoryId === null
-              ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400'
-              : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              ? "bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400"
+              : "hover:bg-gray-50 dark:hover:bg-gray-700/50"
           }`}
         >
           All Products
@@ -56,8 +62,8 @@ export function CategorySidebar({ selectedCategoryId, onCategorySelect }: Catego
             onClick={() => onCategorySelect(category.CategoryId)}
             className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
               selectedCategoryId === category.CategoryId
-                ? 'bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400'
-                : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                ? "bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400"
+                : "hover:bg-gray-50 dark:hover:bg-gray-700/50"
             }`}
           >
             {category.Name}
