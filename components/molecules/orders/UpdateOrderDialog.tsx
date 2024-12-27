@@ -40,7 +40,7 @@ export function UpdateOrderDialog({ order, onClose }: UpdateOrderDialogProps) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="absolute top-[35%] left-[40%] transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md  rounded-lg bg-white p-6 shadow-xl"
+          className="absolute sm:left-[5%] sm:w-[90%] sm:max-w-[65%] top-[35%] left-[40%] transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md  rounded-lg bg-white p-6 shadow-xl"
         >
           <h2 className="text-lg font-semibold mb-4">Update Order Status</h2>
 

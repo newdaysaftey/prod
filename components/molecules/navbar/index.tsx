@@ -19,8 +19,17 @@ import { CategoriesDropdown } from "./categories-dropdown";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useQuery } from "@tanstack/react-query";
 import { getCategories } from "@/lib/FE/api";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+  const [searchText, setSearchText] = useState("");
+  const router = useRouter();
+
+  const handleSearch = () => {
+    if (searchText.trim()) {
+      router.push(`/products?search=${encodeURIComponent(searchText.trim())}`);
+    }
+  };
   const [isOpen, setIsOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
   const { isAuthenticated, isLoading } = useAuth();
@@ -68,9 +77,17 @@ export default function Navbar() {
                 <input
                   type="text"
                   placeholder="Search"
-                  className="w-full rounded-md border-0 bg-white py-1.5 pl-4 pr-10 text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  className="sm:w-[150px] w-full rounded-md border-0 bg-white py-1.5 pl-4 pr-10 text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSearch();
+                  }}
                 />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                <div
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                  onClick={handleSearch}
+                >
                   <Search className="h-5 w-5 text-gray-400" />
                 </div>
               </div>

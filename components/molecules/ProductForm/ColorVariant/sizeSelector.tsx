@@ -23,7 +23,7 @@ export function SizeSelector({
         whileTap={{ scale: 0.95 }}
         type="button"
         onClick={() => onSizeToggle(size)}
-        className={`w-12 h-12 rounded-lg font-medium transition-colors ${
+        className={`sm:w-12 w-12 h-12 rounded-lg font-medium transition-colors ${
           selectedSize && !selectedSize.isDeleted
             ? "bg-indigo-500 text-white"
             : "border border-slate-200 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500"
@@ -33,7 +33,7 @@ export function SizeSelector({
       </motion.button>
       <input
         type="number"
-        className="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
+        className="w-full sm:w-32 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
         placeholder="Price Adjustment"
         value={selectedSize?.PriceAdjustment || ""}
         onChange={(e) =>
@@ -44,7 +44,7 @@ export function SizeSelector({
         type="number"
         placeholder="Stock"
         value={selectedSize?.Stock || ""}
-        className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
+        className="sm:w-14 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
         onChange={(e) => onStockChange(size, parseFloat(e.target.value) || 0)}
       />
     </div>

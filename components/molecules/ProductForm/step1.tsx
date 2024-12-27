@@ -72,7 +72,7 @@ const Step1 = ({
       </div>
 
       {/* Base Price Input */}
-      <div className="grid gap-6 sm:grid-cols-3">
+      <div className="grid gap-6 ">
         <div>
           <label className="block text-sm font-medium mb-2">Base Price</label>
           <input

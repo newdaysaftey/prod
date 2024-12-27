@@ -11,20 +11,34 @@ import { useSearchParams } from "next/navigation";
 export function ProductListingPage() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
+  const search = searchParams.get("search");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     category
   );
   useEffect(() => {
     setSelectedCategoryId(category);
-  }, [category]);
+  }, [category, search]);
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const limit = 12;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["products", page, limit, selectedCategoryId, searchQuery],
+    queryKey: [
+      "products",
+      page,
+      limit,
+      selectedCategoryId,
+      searchQuery,
+      search,
+    ],
     queryFn: () =>
-      getProducts(limit, page, undefined, selectedCategoryId || undefined),
+      getProducts(
+        limit,
+        page,
+        undefined,
+        search || undefined,
+        selectedCategoryId || undefined
+      ),
   });
 
   if (error) {

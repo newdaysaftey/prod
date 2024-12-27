@@ -4,7 +4,15 @@ import { useAuth } from "@/lib/FE/hooks/useAuth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
-import { Package, Tags, Layout, Home, Menu, X } from "lucide-react";
+import {
+  Package,
+  Tags,
+  Layout,
+  Home,
+  Menu,
+  X,
+  ShoppingBag,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
@@ -51,15 +59,15 @@ export default function AdminLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex  justify-between h-20 items-center sm:flex-col sm:items-start sm:pt-4 sm:h-24">
             {/* Home Link */}
-            <Link href="/" className="flex items-center">
+            <div className="flex items-center">
               <Home className="h-6 w-6" />
               <span className="ml-2 font-semibold hidden sm:inline">
-                Store Admin
+                Admin Panel
               </span>
-            </Link>
+            </div>
 
             {/* Desktop Navigation */}
-            <div className=" flex space-x-8 items-center justify-center sm:pb-2 ">
+            <div className="sm:hidden flex space-x-8 items-center justify-center sm:pb-2 ">
               <Link
                 href="/admin/products"
                 onClick={() => setActiveTab("products")}
@@ -97,7 +105,7 @@ export default function AdminLayout({
                   activeTab === "orders" ? activeStyle : inactiveStyle
                 }`}
               >
-                <Tags className="mr-2 h-6 w-6" />
+                <ShoppingBag className="mr-2 h-6 w-6" />
                 <span>Orders</span>
               </Link>
             </div>
@@ -111,7 +119,10 @@ export default function AdminLayout({
                 {isMobileMenuOpen ? (
                   <X className="h-6 w-6" />
                 ) : (
-                  <Menu className="h-6 w-6" />
+                  <div className="flex gap-2">
+                    <Menu className="h-6 w-6" />
+                    <p>Admin pages</p>
+                  </div>
                 )}
               </button>
             </div>
@@ -119,7 +130,7 @@ export default function AdminLayout({
 
           {/* Mobile Navigation Menu */}
           {isMobileMenuOpen && (
-            <div className="md:hidden absolute left-0 right-0 bg-white shadow-lg">
+            <div className=" absolute left-0 right-0 bg-white shadow-lg">
               <div className="px-4 pt-2 pb-3 space-y-2">
                 <Link
                   href="/admin/products"
@@ -177,8 +188,8 @@ export default function AdminLayout({
                   }`}
                 >
                   <div className="flex items-center">
-                    <Tags className="mr-2 h-6 w-6" />
-                    <span>Tags</span>
+                    <ShoppingBag className="mr-2 h-6 w-6" />
+                    <span>Orders</span>
                   </div>
                 </Link>
               </div>
