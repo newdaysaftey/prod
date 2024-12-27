@@ -3,7 +3,7 @@ import { faqController } from "./controller";
 import { checkRole } from "@/app/middilewares/middileware";
 import { UserRole } from "@/app/types/global";
 
-export const dynamic = "dynamic";
+export const dynamic = "auto";
 
 export async function GET(request: NextRequest) {
   try {
