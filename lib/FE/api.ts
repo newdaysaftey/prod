@@ -7,8 +7,8 @@ import { CreateOrder, Order, UpdatePaymentStatusResponse } from "./types/order";
 import { ApiResponse } from "@/app/api/types";
 
 const api = axios.create({
-  // baseURL: "https://new-days-aftey-next-js.vercel.app/api",
-  baseURL: "http://localhost:3000/api",
+  baseURL: "https://new-days-aftey-next-js.vercel.app/api",
+  // baseURL: "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
   },
