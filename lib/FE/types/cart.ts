@@ -29,6 +29,7 @@ export interface CartSize {
 }
 
 export interface CartItemDetail {
+  id:string,
   productId: string;
   colorId: string;
   sizeId: string;

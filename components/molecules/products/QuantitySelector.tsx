@@ -28,7 +28,7 @@ export function QuantitySelector({
 
   return (
     <div className="flex items-center space-x-2">
-      <motion.button
+      {/* <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handleDecrement}
@@ -41,11 +41,12 @@ export function QuantitySelector({
           }`}
       >
         <Minus className="w-4 h-4" />
-      </motion.button>
+      </motion.button> */}
+      <span className="w-12 text-center font-medium"> Quantity: </span>
 
-      <span className="w-12 text-center font-medium">{quantity}</span>
+      <span className="w-12 text-center font-medium"> {quantity}</span>
 
-      <motion.button
+      {/* <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handleIncrement}
@@ -58,7 +59,7 @@ export function QuantitySelector({
           }`}
       >
         <Plus className="w-4 h-4" />
-      </motion.button>
+      </motion.button> */}
     </div>
   );
 }

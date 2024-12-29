@@ -13,7 +13,7 @@ interface TagSectionProps {
 export function TagSection({ title, subHeading = "", tag, pageSize = 12 }: TagSectionProps) {
   return (
     <>
-      <section className="w-[80%] sm:w-[90%] mx-auto bg-tert">
+      <section className="w-[80%] sm:w-[90%] mx-auto bg-gray-50 dark:bg-gray-900">
         <DealHeading Heading={title} subHeading={subHeading} />
       </section>
       <div className="bg-tert pt-10 w-[100%]">

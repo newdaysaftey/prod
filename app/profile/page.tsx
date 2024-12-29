@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Plus, Save, Edit2, X } from "lucide-react";
+import { Plus, Save, Edit2, X, LogOut } from "lucide-react";
 import { getUserProfile, updateUserProfile } from "@/lib/FE/api";
 import { PersonalInfo } from "@/components/molecules/profile/PersonalInfo";
 import { AddressCard } from "@/components/molecules/profile/AddressCard";
@@ -39,6 +39,28 @@ export default function ProfilePage() {
   });
 
   const [formData, setFormData] = useState<UserProfile | null>(null);
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/signout/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body:JSON.stringify({})
+      });
+      
+      if (response.ok) {
+        toast.success("Logged out successfully");
+        // Redirect to login page or home page after successful logout
+        window.location.href = '/';
+      } else {
+        toast.error("Failed to logout");
+      }
+    } catch (error) {
+      toast.error("Failed to logout");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -124,33 +146,44 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex sm:flex-col items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">My Profile</h1>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              if (isEditing) {
-                handleSave();
-              } else {
-                setFormData(profile);
-                setIsEditing(true);
-              }
-            }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600"
-          >
-            {isEditing ? (
-              <>
-                <Save className="w-5 h-5" />
-                Save Changes
-              </>
-            ) : (
-              <>
-                <Edit2 className="w-5 h-5" />
-                Edit Profile
-              </>
-            )}
-          </motion.button>
+          <div className="flex gap-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                if (isEditing) {
+                  handleSave();
+                } else {
+                  setFormData(profile);
+                  setIsEditing(true);
+                }
+              }}
+              className=" inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-500 text-white hover:bg-indigo-600"
+            >
+              {isEditing ? (
+                <>
+                  <Save className="w-5 h-5" />
+                  Save Changes
+                </>
+              ) : (
+                <>
+                  <Edit2 className="w-5 h-5" />
+                  Edit Profile
+                </>
+              )}
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleLogout}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600"
+            >
+              <LogOut className="w-5 h-5" />
+              Logout
+            </motion.button>
+          </div>
         </div>
 
         <div className="space-y-8">

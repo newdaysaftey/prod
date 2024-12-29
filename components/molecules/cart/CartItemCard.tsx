@@ -73,7 +73,7 @@ export function CartItemCard({
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            onClick={() => onRemove(item.productId)}
+            onClick={() => onRemove(item.id)}
             className="text-red-500 hover:text-red-600 p-2"
           >
             <Trash2 className="w-5 h-5" />

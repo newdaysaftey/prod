@@ -30,6 +30,14 @@ export class SignoutController extends BaseController {
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
       });
+      response.cookies.delete({
+        name: "user",
+        httpOnly: true,
+        path: "/",
+        maxAge: 3600000, // 1 hour in seconds
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      });
 
       return response;
     } catch (error) {

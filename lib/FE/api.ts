@@ -7,8 +7,7 @@ import { CreateOrder, Order, UpdatePaymentStatusResponse } from "./types/order";
 import { ApiResponse } from "@/app/api/types";
 
 const api = axios.create({
-  baseURL: "https://newdaysafety.com/api",
-  // baseURL: "http://localhost:3000/api",
+  baseURL: "/api/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -201,7 +200,7 @@ export const updateCartItemQuantity = async (
 };
 
 export const removeCartItem = async (itemId: string) => {
-  const response = await api.delete(`/cart/item/${itemId}`, {
+  const response = await api.delete(`/cart/?cartItemId=${itemId}`, {
     headers: {
       "Content-Type": "application/json",
     },

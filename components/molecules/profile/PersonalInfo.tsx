@@ -27,7 +27,7 @@ export function PersonalInfo({
       </h2>
 
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               First Name
@@ -111,12 +111,12 @@ export function PersonalInfo({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 ">
                 <Mail className="w-4 h-4" />
                 Email
               </div>
             </label>
-            <p className="text-gray-900 dark:text-gray-100">{profile.Email}</p>
+            <p className="text-gray-900 dark:text-gray-100 sm:overflow-x-scroll">{profile.Email}</p>
           </div>
         </div>
 
