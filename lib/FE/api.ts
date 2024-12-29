@@ -8,6 +8,7 @@ import { ApiResponse } from "@/app/api/types";
 
 const api = axios.create({
   baseURL: "https://newdaysafety.com/api",
+  
   // baseURL: "http://localhost:3000/api",
   headers: {
     "Content-Type": "application/json",
