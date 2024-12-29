@@ -19,6 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <title>NewdaySatey</title>
       <body className={inter.className}>
         <Providers>
           <Navbar></Navbar>
