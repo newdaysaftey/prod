@@ -84,14 +84,20 @@ export class TagService extends BaseService {
           },
         },
       },
+      where: {
+        isActive: true,
+      },
     });
     return tags;
   }
 
   async deleteTag(tagId?: string) {
-    const product = await prisma.tag.delete({
+    const product = await prisma.tag.update({
       where: {
         id: tagId,
+      },
+      data: {
+        isActive: false,
       },
     });
     return product;
