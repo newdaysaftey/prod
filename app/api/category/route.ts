@@ -59,3 +59,23 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const authResult = await checkRole([UserRole.ADMIN])(request);
+
+    if (authResult instanceof Response) {
+      return authResult;
+    }
+    return await controller.deleteCategory(request);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: true,
+        message: "Error processing request",
+        data: error,
+      },
+      { status: 500 }
+    );
+  }
+}

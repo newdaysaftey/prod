@@ -291,3 +291,30 @@ export const faqSection = async (question: string): Promise<any> => {
   const response = await api.post("/faq/", { question });
   return response.data;
 };
+export const deleteProduct = async (productId: string) => {
+  const token = localStorage.getItem("token");
+  const response = await api.delete(`/product/?productId=${productId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+export const deleteCategory = async (categoryId: string) => {
+  const token = localStorage.getItem("token");
+  const response = await api.delete(`/category/?categoryId=${categoryId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+export const deleteTag = async (tagId: string) => {
+  const token = localStorage.getItem("token");
+  const response = await api.delete(`/tag?tagId=${tagId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
