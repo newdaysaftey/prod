@@ -38,4 +38,15 @@ export class TagController extends BaseController {
       return this.sendError(error as Error);
     }
   }
+
+  async deleteTag(request: NextRequest) {
+    try {
+      const searchParams = request.nextUrl.searchParams;
+      const tagId = searchParams.get("tagId") || undefined;
+      const tag = await this.service.deleteTag(tagId);
+      return this.sendSuccess(tag, "tag deleted successfully");
+    } catch (error) {
+      return this.sendError(error as Error);
+    }
+  }
 }

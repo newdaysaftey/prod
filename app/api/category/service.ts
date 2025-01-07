@@ -30,4 +30,18 @@ export class CategoryService extends BaseService {
     });
     return category;
   }
+
+  async deleteFromCategory(categoryId?: string) {
+    const category = await prisma.category.update({
+      where: {
+        CategoryId: categoryId,
+      },
+      data: { IsDeleted: true },
+      select: {
+        CategoryId: true,
+        Name: true,
+      },
+    });
+    return category;
+  }
 }

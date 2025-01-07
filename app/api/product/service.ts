@@ -158,17 +158,10 @@ export class ProductService extends BaseService {
     const whereClause: Prisma.ProductWhereInput = {
       IsDeleted: false,
       IsActive: true,
+      Category: {
+        IsDeleted: false,
+      },
       ...(params.categoryId && { CategoryId: params.categoryId }),
-      // ...(tags && {
-      //   Tags: {
-      //     some: {
-      //       tag: {
-      //         isActive: true,
-      //         OR: [{ endDate: null }, { endDate: { gt: new Date() } }],
-      //       },
-      //     },
-      //   },
-      // }),
       ...(params.search && {
         OR: [
           {
@@ -353,6 +346,16 @@ export class ProductService extends BaseService {
       },
     });
 
+    return product;
+  }
+
+  async deleteProduct(productId?: string) {
+    const product = await prisma.product.update({
+      where: {
+        ProductId: productId,
+      },
+      data: { IsDeleted: true },
+    });
     return product;
   }
 }
