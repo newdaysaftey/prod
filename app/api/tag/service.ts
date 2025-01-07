@@ -87,4 +87,13 @@ export class TagService extends BaseService {
     });
     return tags;
   }
+
+  async deleteTag(tagId?: string) {
+    const product = await prisma.tag.delete({
+      where: {
+        id: tagId,
+      },
+    });
+    return product;
+  }
 }

@@ -355,4 +355,14 @@ export class ProductService extends BaseService {
 
     return product;
   }
+
+  async deleteProduct(productId?: string) {
+    const product = await prisma.product.update({
+      where: {
+        ProductId: productId,
+      },
+      data: { IsDeleted: true },
+    });
+    return product;
+  }
 }
