@@ -79,3 +79,43 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    const authResult = await checkRole([UserRole.ADMIN])(request);
+
+    if (authResult instanceof Response) {
+      return authResult;
+    }
+    return await controller.updateSequence(request);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: true,
+        message: "Error processing request",
+        data: error,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const authResult = await checkRole([UserRole.ADMIN])(request);
+
+    if (authResult instanceof Response) {
+      return authResult;
+    }
+    return await controller.updateCategory(request);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: true,
+        message: "Error processing request",
+        data: error,
+      },
+      { status: 500 }
+    );
+  }
+}

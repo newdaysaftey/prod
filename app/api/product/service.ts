@@ -327,7 +327,6 @@ export class ProductService extends BaseService {
         Name: true,
         Description: true,
         Base_price: true,
-
         Category: {
           select: {
             CategoryId: true,
@@ -335,6 +334,9 @@ export class ProductService extends BaseService {
           },
         },
         Colors: {
+          where: {
+            isDeleted: false,
+          },
           select: {
             ColorId: true,
             ColorName: true,
@@ -355,6 +357,17 @@ export class ProductService extends BaseService {
         ProductId: productId,
       },
       data: { IsDeleted: true },
+    });
+    return product;
+  }
+
+  async deleteColorVarient(productId?: string, colorId?: string) {
+    const product = await prisma.color.update({
+      where: {
+        ProductId: productId,
+        ColorId: colorId,
+      },
+      data: { isDeleted: true },
     });
     return product;
   }

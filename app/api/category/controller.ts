@@ -49,4 +49,38 @@ export class CategoryController extends BaseController {
       return this.sendError(error as Error);
     }
   }
+
+  async updateSequence(request: NextRequest) {
+    try {
+      const body = await request.json();
+      const categories = body.categories;
+
+      if (!Array.isArray(categories)) {
+        return this.sendError("Invalid request format");
+      }
+
+      const result = await this.service.updateCategorySequence(categories);
+      return this.sendSuccess(result, "sequence updated successfully");
+    } catch (error) {
+      console.error("Error updating sequence:", error);
+      return this.sendError(error as Error);
+    }
+  }
+
+  async updateCategory(request: NextRequest) {
+    try {
+      const body = await request.json();
+      const categoryId = body.categoryId;
+      const name = body.name;
+      if (!categoryId || !name) {
+        console.log(categoryId, name);
+        return this.sendError("Body is invalid");
+      }
+      const result = await this.service.updateCategory(categoryId, name);
+      return this.sendSuccess(result, "category updated successfully");
+    } catch (error) {
+      console.error("Error updating sequence:", error);
+      return this.sendError(error as Error);
+    }
+  }
 }

@@ -91,6 +91,7 @@ model Category {
   Name       String
   IsDeleted  Boolean   @default(false)
   Products   Product[]
+  Sequence   Int?      @unique
   CreatedOn  DateTime  @default(now())
   ModifiedOn DateTime  @updatedAt
 }
