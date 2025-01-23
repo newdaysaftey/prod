@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Package } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Step1 from "./step1";
@@ -13,12 +13,11 @@ import { saveProduct } from "@/lib/FE/api";
 import { productSchemaStep1, ProductFormDataStep1 } from "@/lib/FE/types/step1";
 
 export function ProductForm({ initialValues }: any) {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [colorVariants, setColorVariants] = useState([0]);
-  console.log(initialValues?.ProductId);
   const [productId, setProductId] = useState(initialValues?.ProductId || "");
-  // Form setup with react-hook-form and zod validation
   const {
     register,
     handleSubmit,
@@ -54,12 +53,12 @@ export function ProductForm({ initialValues }: any) {
     },
   });
 
-  const onSubmit1 = (data: ProductFormDataStep1) => {
-    console.log(data);
+  const onSubmit1 = async (data: ProductFormDataStep1) => {
     mutation.mutate({
       ...data,
       step,
     });
+    await queryClient.invalidateQueries({ queryKey: ["products"] });
   };
 
   return (

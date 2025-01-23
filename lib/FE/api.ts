@@ -318,3 +318,32 @@ export const deleteTag = async (tagId: string) => {
   });
   return response.data;
 };
+export const updateCategorySequence = async (data: {
+  categories: { CategoryId: string; sequence: number }[];
+}) => {
+  const response = await api.put("/category/", data, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
+
+export const removeColorVariantApi = async (
+  productId: string,
+  colorId: string
+) => {
+  const response = await api.put(
+    "/product/",
+    {
+      productId,
+      colorId,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};

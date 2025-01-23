@@ -73,3 +73,23 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    const authResult = await checkRole([UserRole.ADMIN])(request);
+
+    if (authResult instanceof Response) {
+      return authResult;
+    }
+    return controller.deleteColorVarient(request);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: true,
+        message: "Error processing request",
+        data: error,
+      },
+      { status: 500 }
+    );
+  }
+}

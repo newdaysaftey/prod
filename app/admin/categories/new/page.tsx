@@ -5,8 +5,11 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FolderTree } from "lucide-react";
 import { createCategory } from "@/lib/FE/api";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function NewCategoryPage() {
+  const queryClient = useQueryClient();
+
   const router = useRouter();
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,6 +22,8 @@ export default function NewCategoryPage() {
 
     try {
       await createCategory(name);
+      await queryClient.invalidateQueries({ queryKey: ["categories"] });
+
       router.push("/admin/categories");
     } catch (err) {
       setError(

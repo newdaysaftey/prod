@@ -1,12 +1,29 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Edit, Eye, Trash2, X, AlertTriangle } from "lucide-react";
-import Link from "next/link";
+import { Trash2, X, AlertTriangle, GripVertical } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { deleteCategory } from "@/lib/FE/api";
+import { deleteCategory, updateCategorySequence } from "@/lib/FE/api";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface Category {
   CategoryId: string;
@@ -19,12 +36,85 @@ interface CategoryTableProps {
   categories: Category[];
 }
 
-export function CategoryTable({ categories }: CategoryTableProps) {
+interface SortableRowProps {
+  category: Category;
+  onDeleteClick: (category: Category) => void;
+}
+
+function SortableRow({ category, onDeleteClick }: SortableRowProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.CategoryId });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 1 : 0,
+    position: isDragging ? "relative" : "static",
+    backgroundColor: isDragging ? "var(--bg-dragging)" : undefined,
+  } as React.CSSProperties;
+
+  return (
+    <motion.tr
+      ref={setNodeRef}
+      style={style}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      whileHover={{ backgroundColor: "rgba(0,0,0,0.02)" }}
+      className={`group ${isDragging ? "shadow-lg" : ""}`}
+    >
+      <td className="px-6 py-4">
+        <div className="flex items-center gap-3">
+          <button
+            {...attributes}
+            {...listeners}
+            className="touch-none p-1 text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing"
+          >
+            <GripVertical className="h-5 w-5" />
+          </button>
+          <span className="font-medium">{category.Name}</span>
+        </div>
+      </td>
+      <td className="px-6 py-4">
+        <div className="flex items-center justify-end gap-3">
+          <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <button
+              onClick={() => onDeleteClick(category)}
+              className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+            >
+              <Trash2 className="h-5 w-5" />
+            </button>
+          </motion.div>
+        </div>
+      </td>
+    </motion.tr>
+  );
+}
+
+export function CategoryTable({
+  categories: initialCategories,
+}: CategoryTableProps) {
+  const [categories, setCategories] = useState(initialCategories || []);
+  useEffect(() => {
+    setCategories(initialCategories);
+  }, initialCategories);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
     null
   );
   const queryClient = useQueryClient();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleDelete = async (category: Category) => {
     try {
@@ -37,9 +127,38 @@ export function CategoryTable({ categories }: CategoryTableProps) {
     }
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = categories.findIndex(
+      (cat) => cat.CategoryId === active.id
+    );
+    const newIndex = categories.findIndex((cat) => cat.CategoryId === over.id);
+
+    const newOrder = arrayMove(categories, oldIndex, newIndex);
+    setCategories(newOrder);
+
+    try {
+      const updateData = {
+        categories: newOrder.map((cat: { CategoryId: any }, index: number) => ({
+          CategoryId: cat.CategoryId,
+          sequence: index + 1,
+        })),
+      };
+
+      await updateCategorySequence(updateData);
+      toast.success("Category order updated successfully");
+      await queryClient.invalidateQueries({ queryKey: ["categories"] });
+    } catch (error) {
+      toast.error("Failed to update category order");
+      setCategories(initialCategories); // Revert to original order on error
+    }
+  };
+
   return (
     <>
-      {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white dark:bg-slate-900 rounded-lg p-6 max-w-md w-full mx-4">
@@ -93,39 +212,29 @@ export function CategoryTable({ categories }: CategoryTableProps) {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-            {categories.map((category) => (
-              <motion.tr
-                key={category.CategoryId}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                whileHover={{ backgroundColor: "rgba(0,0,0,0.02)" }}
-                className="group"
-              >
-                <td className="px-6 py-4">
-                  <span className="font-medium">{category.Name}</span>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center justify-end gap-3">
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <button
-                        onClick={() => {
-                          setCategoryToDelete(category);
-                          setShowDeleteModal(true);
-                        }}
-                        className="p-2 text-slate-400 hover:text-red-500 transition-colors"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </motion.div>
-                  </div>
-                </td>
-              </motion.tr>
-            ))}
-          </tbody>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={categories?.map((cat) => cat.CategoryId)}
+              strategy={verticalListSortingStrategy}
+            >
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                {categories?.map((category) => (
+                  <SortableRow
+                    key={category.CategoryId}
+                    category={category}
+                    onDeleteClick={(cat) => {
+                      setCategoryToDelete(cat);
+                      setShowDeleteModal(true);
+                    }}
+                  />
+                ))}
+              </tbody>
+            </SortableContext>
+          </DndContext>
         </table>
       </div>
     </>

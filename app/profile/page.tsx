@@ -28,8 +28,8 @@ export default function ProfilePage() {
 
   const updateMutation = useMutation({
     mutationFn: updateUserProfile,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["userProfile"] });
       setIsEditing(false);
       toast.success("Profile updated successfully");
     },
@@ -42,18 +42,18 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/auth/signout/', {
-        method: 'POST',
+      const response = await fetch("/api/auth/signout/", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body:JSON.stringify({})
+        body: JSON.stringify({}),
       });
-      
+
       if (response.ok) {
         toast.success("Logged out successfully");
         // Redirect to login page or home page after successful logout
-        window.location.href = '/';
+        window.location.href = "/";
       } else {
         toast.error("Failed to logout");
       }
@@ -65,7 +65,7 @@ export default function ProfilePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4  border-indigo-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
