@@ -7,7 +7,7 @@ interface CategoryData {
 }
 
 interface CategoryWithSequence {
-  categoryId: string;
+  CategoryId: string;
   sequence: number;
 }
 
@@ -55,9 +55,9 @@ export class CategoryService extends BaseService {
 
   async updateCategorySequence(categories: CategoryWithSequence[]) {
     try {
-      const updates = categories.map(({ categoryId, sequence }) =>
+      const updates = categories.map(({ CategoryId, sequence }) =>
         prisma.category.update({
-          where: { CategoryId: categoryId },
+          where: { CategoryId },
           data: {
             Sequence: sequence,
             ModifiedOn: new Date(),

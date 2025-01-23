@@ -28,8 +28,8 @@ export default function ProfilePage() {
 
   const updateMutation = useMutation({
     mutationFn: updateUserProfile,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["userProfile"] });
       setIsEditing(false);
       toast.success("Profile updated successfully");
     },

@@ -72,7 +72,6 @@ export function CartSummary({ cart }: CartSummaryProps) {
       shippingAddressId: selectedAddressId,
       billingAddressId: selectedAddressId, // Using same address for billing
     };
-    console.log(orderData);
 
     orderMutation.mutate(orderData);
   };

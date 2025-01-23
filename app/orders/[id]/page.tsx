@@ -11,7 +11,6 @@ export default function OrderDetailsPage({
 }: {
   params: { id: string };
 }) {
-  console.log(params);
   const { data, isLoading, error } = useQuery({
     queryKey: ["order", params.id],
     queryFn: () => getOrderDetails(params.id),

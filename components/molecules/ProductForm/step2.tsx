@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Plus, Save } from "lucide-react";
 import { toast } from "sonner";
 import { ColorVariant } from "./ColorVariant/colorVariant";
-import { handleImageUpload } from "@/lib/FE/api";
+import { handleImageUpload, removeColorVariantApi } from "@/lib/FE/api";
 import {
   ColorVariant as ColorVariantType,
   ProductFormData,
@@ -78,9 +78,36 @@ export default function Step2({
     );
   };
 
-  const removeColorVariant = (index: number) => {
-    setColorVariants((prev) => prev.filter((_, i) => i !== index));
+  const removeColorVariant = async (colorId: string) => {
+    try {
+      if (!colorId) {
+        // If colorId is empty, it's a new unsaved variant
+        setColorVariants((prev) =>
+          prev.filter((variant) => variant.ColorId !== colorId)
+        );
+        return;
+      }
+
+      const response = await removeColorVariantApi(productId, colorId);
+
+      if (!response.error) {
+        setColorVariants((prev) =>
+          prev.filter((variant) => variant.ColorId !== colorId)
+        );
+        toast.success("Color variant removed successfully");
+      } else {
+        toast.error("Failed to remove color variant");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("An error occurred while removing the color variant");
+    }
   };
+
+  // const removeColorVariant = (index: number) => {
+  //   //make the api call function here
+  //   setColorVariants((prev) => prev.filter((_, i) => i !== index));
+  // };
 
   return (
     <div className="space-y-6">
@@ -91,7 +118,7 @@ export default function Step2({
           onUpdate={(updatedVariant) =>
             updateColorVariant(index, updatedVariant)
           }
-          onRemove={() => removeColorVariant(index)}
+          onRemove={() => removeColorVariant(variant.ColorId)}
           handleImageUpload={handleMultipleImageUpload}
         />
       ))}

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { getCategories } from "@/lib/FE/api";
 import { CategoryHeader } from "@/components/molecules/categories/CategoryHeader";
 import { SearchCategories } from "@/components/molecules/categories/SearchCategories";
@@ -10,23 +10,34 @@ import { CategoryTable } from "@/components/molecules/categories/CategoryTable";
 
 export default function CategoriesPage() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
   });
 
-  if (isLoading)
-    return (
-      <p className="min-h-screen bg-gradient-to-br max-w-7xl mx-auto">
-        Loading...
-      </p>
-    );
-  if (error) return <p>Error: {(error as Error).message}</p>;
+  useMemo(() => {
+    let x =
+      data?.data?.filter((category: { Name: string }) =>
+        category.Name.toLowerCase().includes(searchQuery.toLowerCase())
+      ) || [];
+    setFilteredCategories(x);
+  }, [searchQuery, data]);
 
-  const filteredCategories = data?.data?.filter((category: any) =>
-    category.Name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <p>Error: {error instanceof Error ? error.message : "Unknown error"}</p>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br p-4 sm:p-8">
@@ -40,7 +51,7 @@ export default function CategoriesPage() {
           className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden"
         >
           <SearchCategories onSearch={setSearchQuery} />
-          <CategoryTable categories={filteredCategories || []} />
+          <CategoryTable categories={filteredCategories} />
         </motion.div>
       </div>
     </div>

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { deleteCategory, updateCategorySequence } from "@/lib/FE/api";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import {
   DndContext,
   closestCenter,
@@ -98,7 +99,10 @@ function SortableRow({ category, onDeleteClick }: SortableRowProps) {
 export function CategoryTable({
   categories: initialCategories,
 }: CategoryTableProps) {
-  const [categories, setCategories] = useState(initialCategories);
+  const [categories, setCategories] = useState(initialCategories || []);
+  useEffect(() => {
+    setCategories(initialCategories);
+  }, initialCategories);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
     null
@@ -214,11 +218,11 @@ export function CategoryTable({
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={categories.map((cat) => cat.CategoryId)}
+              items={categories?.map((cat) => cat.CategoryId)}
               strategy={verticalListSortingStrategy}
             >
               <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                {categories.map((category) => (
+                {categories?.map((category) => (
                   <SortableRow
                     key={category.CategoryId}
                     category={category}
