@@ -318,3 +318,13 @@ export const deleteTag = async (tagId: string) => {
   });
   return response.data;
 };
+export const updateCategorySequence = async (data: {
+  categories: { CategoryId: string; sequence: number }[];
+}) => {
+  const response = await axios.put("/api/category/", data, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+};
