@@ -36,32 +36,30 @@ export function CategoriesDropdown({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute top-full left-0 mt-1 w-48 rounded-md bg-white py-2 shadow-lg"
+            className="absolute top-full left-0 mt-1 w-64 rounded-md bg-white py-2 shadow-lg"
           >
-          <div className="flex flex-col items-start">
-            {isLoading ? (
-              <div className="flex justify-center py-4">
-                <LoadingSpinner />
-              </div>
-            ) : (
-              
-              
-              categories?.data?.map((category: any) => (
-                <button
-                onClick={() => {
-                  onToggle();
-                }}
-                >
-                  <Link
-                    key={category.Name}
-                    href={"/products/?category=" + category.CategoryId}
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+            <div className="flex flex-col items-start">
+              {isLoading ? (
+                <div className="flex justify-center py-4">
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                categories?.data?.map((category: any) => (
+                  <button
+                    onClick={() => {
+                      onToggle();
+                    }}
+                  >
+                    <Link
+                      key={category.Name}
+                      href={"/products/?category=" + category.CategoryId}
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                     >
-                    {category.Name}
-                  </Link>
-                </button>
-              ))
-            )}
+                      {category.Name}
+                    </Link>
+                  </button>
+                ))
+              )}
             </div>
           </motion.div>
         )}
