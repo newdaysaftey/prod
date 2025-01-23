@@ -50,6 +50,16 @@ export interface FAQRequest {
   question: string;
 }
 
+export interface ContactFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  region: "US" | "CA" | "UK";
+  orderType: "Single" | "Bulk";
+  message: string;
+}
+
 // Extend the NextRequest type
 declare module "next/server" {
   interface NextRequest {
