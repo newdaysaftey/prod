@@ -1,11 +1,14 @@
 //
 import { BaseService } from "@/app/api/services/base.service";
-import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
-import { Role } from "@/lib/enum";
 
 interface CategoryData {
   Name: string;
+}
+
+interface CategoryWithSequence {
+  categoryId: string;
+  sequence: number;
 }
 
 export class CategoryService extends BaseService {
@@ -26,6 +29,10 @@ export class CategoryService extends BaseService {
       select: {
         CategoryId: true,
         Name: true,
+        Sequence: true,
+      },
+      orderBy: {
+        Sequence: "asc",
       },
     });
     return category;
@@ -40,6 +47,41 @@ export class CategoryService extends BaseService {
       select: {
         CategoryId: true,
         Name: true,
+        Sequence: true,
+      },
+    });
+    return category;
+  }
+
+  async updateCategorySequence(categories: CategoryWithSequence[]) {
+    try {
+      const updates = categories.map(({ categoryId, sequence }) =>
+        prisma.category.update({
+          where: { CategoryId: categoryId },
+          data: {
+            Sequence: sequence,
+            ModifiedOn: new Date(),
+          },
+        })
+      );
+
+      return await prisma.$transaction(updates);
+    } catch (error) {
+      console.error("Error updating category sequence:", error);
+      throw error;
+    }
+  }
+
+  async updateCategory(categoryId?: string, name?: string) {
+    const category = await prisma.category.update({
+      where: {
+        CategoryId: categoryId,
+      },
+      data: { Name: name },
+      select: {
+        CategoryId: true,
+        Name: true,
+        Sequence: true,
       },
     });
     return category;

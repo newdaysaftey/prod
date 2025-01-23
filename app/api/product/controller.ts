@@ -123,4 +123,19 @@ export class ProductController extends BaseController {
       return this.sendError(error as Error);
     }
   }
+
+  async deleteColorVarient(request: NextRequest) {
+    try {
+      const body = await request.json();
+      const productId = body.productId;
+      const colorId = body.colorId;
+      if (!colorId || !productId) {
+        return this.sendError("Body is invalid");
+      }
+      const product = await this.service.deleteColorVarient(productId, colorId);
+      return this.sendSuccess(product, "product deleted successfully");
+    } catch (error) {
+      return this.sendError(error as Error);
+    }
+  }
 }
