@@ -140,6 +140,7 @@ model Product {
   OrderItem     OrderItem[]
   cartItem      CartItem[]
   comments      Comments[]
+  ProductType   ProductType   @default(SHIRTS_PANTS)
 }
 
 model Comments {
@@ -215,4 +216,10 @@ enum PaymentStatus {
   PAID
   FAILED
   REFUNDED
+}
+
+enum ProductType {
+  SHIRTS_PANTS
+  HELMET
+  SHOES
 }
