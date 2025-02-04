@@ -10,6 +10,13 @@ export const productSchemaStep1 = z.object({
   Tags: z.string().optional(),
   AverageRating: z.number().min(0).max(5).optional(),
   ProductId: z.string().optional().default(""),
+  ProductType: z
+    .string({
+      required_error: "Please select a product Type",
+      invalid_type_error: "product Type must be selected",
+    })
+    .optional()
+    .default("SHIRTS_PANTS"),
   step: z.number().optional(),
   CategoryId: z
     .string({

@@ -7,13 +7,14 @@ import {
   Size,
 } from "../../../../lib/FE/types/product";
 
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+// const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"];
 
 interface ColorVariantProps {
   variant: ColorVariantType;
   onUpdate: (updatedVariant: ColorVariantType) => void;
   onRemove: () => void;
   handleImageUpload: (files: File[]) => Promise<string[]>;
+  SIZES: string[];
 }
 
 export function ColorVariant({
@@ -21,6 +22,7 @@ export function ColorVariant({
   onUpdate,
   onRemove,
   handleImageUpload,
+  SIZES,
 }: ColorVariantProps) {
   const updateVariant = (updates: Partial<ColorVariantType>) => {
     onUpdate({ ...variant, ...updates });

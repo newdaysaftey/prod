@@ -54,6 +54,7 @@ export function ProductForm({ initialValues }: any) {
   });
 
   const onSubmit1 = async (data: ProductFormDataStep1) => {
+    console.log(data);
     mutation.mutate({
       ...data,
       step,

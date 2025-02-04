@@ -3,6 +3,7 @@ import { BaseService } from "@/app/api/services/base.service";
 import prisma from "@/lib/prisma";
 import { Prisma, Size } from "@prisma/client";
 
+type productType = "SHIRTS_PANTS" | "HELMET" | "SHOES";
 interface ProductData {
   Name: string;
   Description: string;
@@ -10,6 +11,7 @@ interface ProductData {
   Base_price: any;
   CategoryId: string;
   ProductId: string;
+  ProductType: productType;
 }
 
 interface ColorData {
@@ -57,6 +59,7 @@ export class ProductService extends BaseService {
         Description: data.Description,
         Base_price: data.Base_price,
         ImageUrl: data.ImageUrl,
+        ProductType: data.ProductType,
         Category: {
           connect: { CategoryId: data.CategoryId }, // Connects existing category
         },
@@ -66,6 +69,7 @@ export class ProductService extends BaseService {
         Description: data.Description,
         Base_price: data.Base_price,
         ImageUrl: data.ImageUrl,
+        ProductType: data.ProductType,
         Category: {
           connect: { CategoryId: data.CategoryId }, // Connects existing category
         },
@@ -324,6 +328,7 @@ export class ProductService extends BaseService {
       },
       select: {
         ProductId: true,
+        ProductType: true,
         Name: true,
         Description: true,
         Base_price: true,
