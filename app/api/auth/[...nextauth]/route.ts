@@ -46,8 +46,9 @@ export const authOptions: AuthOptions = {
         return {
           id: user.UserId,
           email: user.Email,
-          name: `${user.Username}`,
+          name: `${user.FirstName} ${user.LastName}`,
           role: user.Role,
+          test: "testinggg",
         };
       },
     }),
@@ -56,14 +57,26 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, trigger }) {
+      console.log(
+        token,
+        user,
+        account,
+        trigger,
+        "/////////////////////////////// from jwt"
+      );
       if (user) {
-        token.role = user.role;
-        token.id = user.id;
+        token.role = user.Role;
+        token.id = user.UserId;
       }
       return token;
     },
     async session({ session, token }) {
+      console.log(
+        session,
+        token,
+        "////////////////////////////// from session"
+      );
       if (session.user) {
         session.user.role = token.role;
         session.user.id = token.id;
@@ -72,7 +85,7 @@ export const authOptions: AuthOptions = {
     },
   },
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/auth1/signin",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
