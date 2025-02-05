@@ -7,7 +7,7 @@ export const dynamic = "auto";
 
 export async function GET(request: NextRequest) {
   try {
-    const authResult = await checkRole([])(request);
+    const authResult = await checkRole([], request);
 
     if (authResult instanceof Response) {
       return authResult;

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.7.4",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
@@ -34,6 +35,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.446.0",
     "next": "13.5.1",
+    "next-auth": "^4.24.11",
     "next-cloudinary": "^6.16.0",
     "next-connect": "^1.0.0",
     "next-themes": "^0.3.0",

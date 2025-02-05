@@ -1,102 +1,36 @@
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
-import { JWTPayload, UserRole } from "@/app/types/global";
+import { UserRole } from "@/app/types/global";
 
-// Define return type for verifyToken
-type AuthResult = { User: JWTPayload } | NextResponse;
+export async function checkRole(
+  allowedRoles: UserRole[],
+  request: NextRequest
+) {
+  const session = await getServerSession(authOptions);
 
-export async function verifyToken(request: NextRequest): Promise<AuthResult> {
-  try {
-    // Get token from cookies instead of headers
-    const token = request.cookies.get("authToken")?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        {
-          error: true,
-          message: "Access denied. No token provided.",
-          data: null,
-        },
-        { status: 401 }
-      );
-    }
-
-    try {
-      // Verify the token and cast it to our JWTPayload type
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET as string
-      ) as JWTPayload;
-
-      // Attach the user to the request
-      (request as any).User = decoded;
-
-      return {
-        User: decoded,
-      };
-    } catch (jwtError) {
-      // Handle specific JWT errors
-      if (jwtError instanceof jwt.TokenExpiredError) {
-        return NextResponse.json(
-          {
-            error: true,
-            message: "Token has expired.",
-          },
-          { status: 401 }
-        );
-      } else if (jwtError instanceof jwt.JsonWebTokenError) {
-        return NextResponse.json(
-          {
-            error: true,
-            message: "Invalid token.",
-          },
-          { status: 401 }
-        );
-      }
-    }
-
-    // If we get here, something went wrong with token verification
+  if (!session) {
     return NextResponse.json(
-      {
-        error: true,
-        message: "Invalid token format.",
-      },
+      { error: true, message: "No session found" },
       { status: 401 }
     );
-  } catch (error) {
-    console.error("Auth Error:", error);
+  }
+
+  const userRole = session.user.role;
+
+  if (!allowedRoles.includes(userRole as UserRole)) {
     return NextResponse.json(
-      {
-        error: true,
-        message: "Authentication error occurred.",
-      },
-      { status: 500 }
+      { error: true, message: "Insufficient permissions" },
+      { status: 403 }
     );
   }
-}
 
-// Role-based access control middleware
-export function checkRole(allowedRoles: UserRole[]) {
-  return async (request: NextRequest) => {
-    const authResult = await verifyToken(request);
-
-    // If authResult is a NextResponse, it means there was an error
-    if (authResult instanceof NextResponse) {
-      return authResult;
-    }
-
-    const userRole = authResult.User.Role;
-
-    if (!allowedRoles.includes(userRole)) {
-      return NextResponse.json(
-        {
-          error: true,
-          message: "Access denied. Insufficient permissions.",
-        },
-        { status: 403 }
-      );
-    }
-
-    return authResult;
+  return {
+    User: {
+      UserId: session.user.id,
+      Email: session.user.email,
+      Name: session.user.name,
+      Role: session.user.role,
+    },
   };
 }

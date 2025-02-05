@@ -9,7 +9,7 @@ const controller = new TagController();
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const authResult = await checkRole([UserRole.ADMIN])(request);
+    const authResult = await checkRole([UserRole.ADMIN], request);
 
     if (authResult instanceof Response) {
       return authResult;

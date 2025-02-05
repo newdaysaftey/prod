@@ -13,7 +13,13 @@ const Step1 = ({
   initialValues,
   setValue,
 }: any) => {
+  const productTypes = ["SHIRTS_PANTS", "HELMET", "SHOES"];
   const [isOpen, setIsOpen] = useState(false);
+  const [productTypeIsOpen, setProductTypeIsOpen] = useState(false);
+  const [selectedProductType, setSelectedProductType] = useState<string>(
+    initialValues?.ProductType
+  );
+
   const [selectedCategory, setSelectedCategory] = useState<string>(
     initialValues?.Category?.CategoryId || ""
   );
@@ -25,13 +31,17 @@ const Step1 = ({
 
   useEffect(() => {
     setValue("CategoryId", selectedCategory);
-  }, [selectedCategory]);
+    setValue("ProductType", selectedProductType);
+  }, [selectedCategory, selectedProductType]);
 
   const handleCategorySelect = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setIsOpen(false);
   };
-
+  const handleProductSelect = (productType: string) => {
+    setSelectedProductType(productType);
+    setProductTypeIsOpen(false);
+  };
   return (
     <motion.div
       key="step1"
@@ -95,7 +105,6 @@ const Step1 = ({
       <div className="relative">
         <label className="block text-sm font-medium mb-2">Category</label>
         <div className="relative">
-          {/* Category Select Button */}
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
@@ -119,14 +128,12 @@ const Step1 = ({
             <ChevronDown className="h-4 w-4" />
           </button>
 
-          {/* Hidden input to register category with react-hook-form */}
           <input
             type="hidden"
             {...register("CategoryId")}
             value={selectedCategory}
           />
 
-          {/* Category Dropdown List */}
           {isOpen && !isLoading && categories && (
             <ul className="absolute z-10 w-full mt-1 border rounded bg-white dark:bg-slate-900 shadow-lg max-h-60 overflow-y-auto">
               {categories?.data?.map((category: any) => (
@@ -146,6 +153,60 @@ const Step1 = ({
         {errors.CategoryId && (
           <p className="text-red-500 text-sm mt-1">
             {errors.CategoryId.message}
+          </p>
+        )}
+      </div>
+
+      <div className="relative">
+        <label className="block text-sm font-medium mb-2">Product Type</label>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setProductTypeIsOpen(!productTypeIsOpen)}
+            className="w-full flex items-center justify-between px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-950 transition-all"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="flex items-center">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading Product Types...
+              </div>
+            ) : (
+              <span>
+                {selectedProductType
+                  ? productTypes?.find((c: any) => c === selectedProductType) ||
+                    "Select a Product Type"
+                  : "Select a Product Type"}
+              </span>
+            )}
+            <ChevronDown className="h-4 w-4" />
+          </button>
+
+          <input
+            type="hidden"
+            {...register("ProductType")}
+            value={selectedProductType}
+          />
+
+          {productTypeIsOpen && !isLoading && categories && (
+            <ul className="absolute z-10 w-full mt-1 border rounded bg-white dark:bg-slate-900 shadow-lg max-h-60 overflow-y-auto">
+              {productTypes?.map((product: any, index: number) => (
+                <li
+                  key={index}
+                  onClick={() => {
+                    handleProductSelect(product);
+                  }}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer"
+                >
+                  {product}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        {errors.ProductType && (
+          <p className="text-red-500 text-sm mt-1">
+            {errors.ProductType.message}
           </p>
         )}
       </div>

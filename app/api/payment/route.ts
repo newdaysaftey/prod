@@ -9,7 +9,7 @@ export const dynamic = "auto";
 
 export async function PATCH(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN])(request);
+    const authResult = await checkRole([UserRole.ADMIN], request);
 
     if (authResult instanceof Response) {
       return authResult;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -10,6 +10,9 @@ interface ImageGalleryProps {
 }
 
 export function ImageGallery({ images }: ImageGalleryProps) {
+  useEffect(() => {
+    setSelectedImage(images[0]);
+  }, [images]);
   const [selectedImage, setSelectedImage] = useState(images[0]);
   const [isZoomed, setIsZoomed] = useState(false);
 
@@ -88,7 +91,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setSelectedImage(image)}
-              className={`relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 transition-all ${
+              className={`relative w-20 h-20 rounded-lg overflow-hidden mt-2 ml-2 flex-shrink-0 transition-all ${
                 selectedImage === image
                   ? "ring-2 ring-indigo-500 opacity-100"
                   : "opacity-60 hover:opacity-100"

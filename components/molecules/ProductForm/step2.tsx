@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Plus, Save } from "lucide-react";
 import { toast } from "sonner";
@@ -8,10 +8,13 @@ import {
   ColorVariant as ColorVariantType,
   ProductFormData,
 } from "../../../lib/FE/types/product";
+import { helmetSizes, shirtPantSizes, shoeSizes } from "@/lib/enum";
+type productType = "SHIRTS_PANTS" | "HELMET" | "SHOES";
 
 interface Step2Props {
   productId: string;
   initialValues: {
+    ProductType: productType;
     Colors?: ColorVariantType[];
   };
   router: any;
@@ -24,8 +27,19 @@ export default function Step2({
   router,
   saveProduct,
 }: Step2Props) {
+  const [sizes, setSizes] = useState<string[]>([]);
+  useEffect(() => {
+    if (initialValues?.ProductType === "SHIRTS_PANTS") {
+      setSizes(shirtPantSizes);
+    } else if (initialValues?.ProductType === "SHOES") {
+      setSizes(shoeSizes);
+    } else if (initialValues?.ProductType === "HELMET") {
+      setSizes(helmetSizes);
+    }
+  }, [initialValues?.ProductType]);
   const [isPending, setIsPending] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [productType, setProductType] = useState(initialValues?.ProductType);
   const handleMultipleImageUpload = async (files: File[]): Promise<any> => {
     setUploadingImage(true);
     const imageUrls = await handleImageUpload(files);
@@ -104,11 +118,6 @@ export default function Step2({
     }
   };
 
-  // const removeColorVariant = (index: number) => {
-  //   //make the api call function here
-  //   setColorVariants((prev) => prev.filter((_, i) => i !== index));
-  // };
-
   return (
     <div className="space-y-6">
       {colorVariants.map((variant, index) => (
@@ -120,6 +129,7 @@ export default function Step2({
           }
           onRemove={() => removeColorVariant(variant.ColorId)}
           handleImageUpload={handleMultipleImageUpload}
+          SIZES={sizes}
         />
       ))}
 

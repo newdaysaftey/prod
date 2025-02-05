@@ -14,6 +14,7 @@ import type {
   UpdateUserProfile,
 } from "@/lib/FE/types/user";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/FE/hooks/useAuth";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -39,25 +40,13 @@ export default function ProfilePage() {
   });
 
   const [formData, setFormData] = useState<UserProfile | null>(null);
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("/api/auth/signout/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({}),
-      });
-
-      if (response.ok) {
-        toast.success("Logged out successfully");
-        // Redirect to login page or home page after successful logout
-        window.location.href = "/";
-      } else {
-        toast.error("Failed to logout");
-      }
+      logout();
     } catch (error) {
+      console.log(error);
       toast.error("Failed to logout");
     }
   };
@@ -213,9 +202,9 @@ export default function ProfilePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {profile.addresses
-                .filter((a: { isDeleted: any }) => !a.isDeleted)
-                .map((address: Address) => (
+              {profile?.addresses
+                ?.filter((a: { isDeleted: any }) => !a.isDeleted)
+                ?.map((address: Address) => (
                   <AddressCard
                     key={address.id}
                     address={address}

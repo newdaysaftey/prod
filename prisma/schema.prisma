@@ -53,32 +53,57 @@ model Address {
 }
 
 model User {
-  UserId       String     @id @default(uuid()) @map("_id")
-  Email        String     @unique
-  Username     String
-  FirstName    String
-  MiddleName   String?
-  LastName     String
-  Role         Role       @default(USER)
-  PasswordHash String?
-  IsActive     Boolean    @default(false)
-  IsDeleted    Boolean    @default(false)
-  CreatedAt    DateTime   @default(now())
-  UpdatedAt    DateTime   @updatedAt
-  DeletedAt    DateTime?
-  CreatedById  String?
-  ModifiedById String?
-  DeletedById  String?
-  GoogleId     String?    @unique
-  Phone        Int?
-  Gender       String?
-  CountryCode  String?
-  ImageUrl     String?
-  addresses    Address[]
-  LastLogin    DateTime?
-  Orders       Order[]
-  cartItems    CartItem[]
-  comments     Comments[]
+  UserId        String     @id @default(uuid()) @map("_id")
+  Email         String     @unique
+  Username      String?
+  FirstName     String?
+  MiddleName    String?
+  name          String?
+  image         String?
+  emailVerified String?
+  LastName      String?
+  Role          Role       @default(USER)
+  PasswordHash  String?
+  IsActive      Boolean    @default(false)
+  IsDeleted     Boolean    @default(false)
+  CreatedAt     DateTime   @default(now())
+  UpdatedAt     DateTime   @updatedAt
+  DeletedAt     DateTime?
+  CreatedById   String?
+  ModifiedById  String?
+  DeletedById   String?
+  GoogleId      String?    @unique
+  Phone         Int?
+  Gender        String?
+  CountryCode   String?
+  ImageUrl      String?
+  addresses     Address[]
+  LastLogin     DateTime?
+  Orders        Order[]
+  cartItems     CartItem[]
+  comments      Comments[]
+
+  Account Account[]
+}
+
+model Account {
+  id                       String  @id @default(uuid()) @map("_id")
+  type                     String
+  provider                 String
+  providerAccountId        String
+  token_type               String?
+  refresh_token            String? @db.String
+  access_token             String? @db.String
+  id_token                 String? @db.String
+  refresh_token_expires_in Int?
+  scope                    String?
+  session_state            String?
+  expires_at               Int?
+  user                     User?   @relation(fields: [userId], references: [UserId], onDelete: Cascade)
+  userId                   String? @db.ObjectId
+
+  @@unique([provider, providerAccountId])
+  @@map("account")
 }
 
 enum Role {
@@ -140,6 +165,7 @@ model Product {
   OrderItem     OrderItem[]
   cartItem      CartItem[]
   comments      Comments[]
+  ProductType   ProductType    @default(SHIRTS_PANTS)
 }
 
 model Comments {
@@ -215,4 +241,12 @@ enum PaymentStatus {
   PAID
   FAILED
   REFUNDED
+}
+
+enum ProductType {
+  SHIRTS_PANTS
+  HELMET
+  SHOES
+  GLOVES
+  MASK
 }

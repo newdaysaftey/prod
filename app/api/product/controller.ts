@@ -2,6 +2,7 @@ import { BaseController } from "@/app/api/controllers/base.controller";
 import { ProductService } from "./service";
 import { NextRequest } from "next/server";
 import { Size } from "@prisma/client";
+import { productType } from "@/lib/enum";
 
 interface ColorBody {
   ColorId: string;
@@ -21,6 +22,7 @@ interface ProductBody {
   CategoryId: string;
   ProductId: string;
   Colors: ColorBody[];
+  ProductType: productType;
 }
 
 export class ProductController extends BaseController {
@@ -43,6 +45,7 @@ export class ProductController extends BaseController {
         CategoryId,
         ProductId,
         Colors,
+        ProductType,
       } = body as ProductBody;
       if (step === 1) {
         const category = await this.service.createProduct({
@@ -52,6 +55,7 @@ export class ProductController extends BaseController {
           Base_price,
           CategoryId,
           ProductId,
+          ProductType,
         });
         return this.sendSuccess(
           category,
@@ -97,7 +101,6 @@ export class ProductController extends BaseController {
         search,
         tags,
       });
-      // const products = await this.service.getProduct();
       return this.sendSuccess(products, "Products fetched successfully");
     } catch (error) {
       return this.sendError(error as Error);

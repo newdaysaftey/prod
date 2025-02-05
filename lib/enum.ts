@@ -29,3 +29,24 @@ export type SizeType = {
   SKU: string;
   IsAvailable: boolean;
 };
+
+export type productType =
+  | "SHIRTS_PANTS"
+  | "HELMET"
+  | "SHOES"
+  | "MASK"
+  | "GLOVES";
+
+export const shirtPantSizes = [
+  "XS",
+  "S",
+  "M",
+  "L",
+  "XL",
+  "XXL",
+  "3XL",
+  "4XL",
+  "5XL",
+];
+export const shoeSizes = ["5", "6", "7", "8", "9", "10", "11", "12", "13"];
+export const helmetSizes = ["XS", "M", "L", "XL"];
