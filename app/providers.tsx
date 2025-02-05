@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { FAQChat } from "@/components/molecules/faq/FAQChat";
 import { useState } from "react";
 import { useEffect } from "react";
+import { SessionProvider } from "next-auth/react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -31,11 +32,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      <FAQChat />
-      <ReactQueryDevtools initialIsOpen={false} />
-      <Toaster />
-    </QueryClientProvider>
+    <SessionProvider>
+      <QueryClientProvider client={queryClient}>
+        {children}
+        <FAQChat />
+        <ReactQueryDevtools initialIsOpen={false} />
+        <Toaster />
+      </QueryClientProvider>
+    </SessionProvider>
   );
 }
