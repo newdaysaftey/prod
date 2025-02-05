@@ -11,7 +11,8 @@ export async function GET(
   { params }: { params: { orderId: string } }
 ) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
@@ -19,7 +20,7 @@ export async function GET(
       return authResult;
     }
     const response = await controller.getOrderById(
-      authResult.User.UserId,
+      authResult.User.UserId!,
       params.orderId
     );
     return response;

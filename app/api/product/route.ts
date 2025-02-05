@@ -8,7 +8,7 @@ const controller = new ProductController();
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const authResult = await checkRole([UserRole.ADMIN])(request);
+    const authResult = await checkRole([UserRole.ADMIN], request);
 
     if (authResult instanceof Response) {
       return authResult;
@@ -34,7 +34,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    // const authResult = await checkRole(
+    //   [UserRole.ADMIN, UserRole.USER],
     //   request
     // );
 
@@ -56,7 +57,7 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN])(request);
+    const authResult = await checkRole([UserRole.ADMIN], request);
 
     if (authResult instanceof Response) {
       return authResult;
@@ -76,7 +77,7 @@ export async function DELETE(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN])(request);
+    const authResult = await checkRole([UserRole.ADMIN], request);
 
     if (authResult instanceof Response) {
       return authResult;

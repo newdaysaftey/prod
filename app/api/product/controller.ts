@@ -2,6 +2,7 @@ import { BaseController } from "@/app/api/controllers/base.controller";
 import { ProductService } from "./service";
 import { NextRequest } from "next/server";
 import { Size } from "@prisma/client";
+import { productType } from "@/lib/enum";
 
 interface ColorBody {
   ColorId: string;
@@ -11,8 +12,6 @@ interface ColorBody {
   Images: string[];
   Sizes: Size[];
 }
-
-type productType = "SHIRTS_PANTS" | "HELMET" | "SHOES";
 
 interface ProductBody {
   step: number;

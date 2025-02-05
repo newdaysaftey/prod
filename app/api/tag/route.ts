@@ -9,7 +9,7 @@ const controller = new TagController();
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const authResult = await checkRole([UserRole.ADMIN])(request);
+    const authResult = await checkRole([UserRole.ADMIN], request);
 
     if (authResult instanceof Response) {
       return authResult;
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // // const authResult = await checkRole([UserRole.ADMIN])(request);
+    // // const authResult = await checkRole([UserRole.ADMIN],request);
 
     // if (authResult instanceof Response) {
     //   return authResult;
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN])(request);
+    const authResult = await checkRole([UserRole.ADMIN], request);
 
     if (authResult instanceof Response) {
       return authResult;

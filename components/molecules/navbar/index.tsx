@@ -193,6 +193,15 @@ export default function Navbar() {
                         <span>Sign in</span>
                       </Link>
                     )}
+                    {isAuthenticated && (
+                      <Link
+                        href="/profile"
+                        className="flex items-center space-x-2 rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-gray-100"
+                      >
+                        <User className="h-5 w-5" />
+                        <span>Profile</span>
+                      </Link>
+                    )}
                     <RoleBasedContent roles={["ADMIN"]}>
                       <Link
                         href={"/admin/"}

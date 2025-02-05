@@ -8,7 +8,8 @@ const controller = new CommentController();
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    return controller.createComment(authResult.User.UserId, body);
+    return controller.createComment(authResult.User.UserId!, body);
   } catch (error) {
     return NextResponse.json(
       {
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    // const authResult = await checkRole([UserRole.ADMIN, UserRole.USER],
     //   request
     // );
 
@@ -59,7 +60,8 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
@@ -72,7 +74,7 @@ export async function PUT(request: NextRequest) {
         { status: 400 }
       );
     }
-    return controller.updateComments(authResult.User.UserId, body);
+    return controller.updateComments(authResult.User.UserId!, body);
   } catch (error) {
     return NextResponse.json(
       {
@@ -87,14 +89,15 @@ export async function PUT(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
     if (authResult instanceof Response) {
       return authResult;
     }
-    return controller.deleteComment(authResult.User.UserId, request);
+    return controller.deleteComment(authResult.User.UserId!, request);
   } catch (error) {
     return NextResponse.json(
       {

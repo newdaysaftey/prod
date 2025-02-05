@@ -8,6 +8,7 @@ import {
   ColorVariant as ColorVariantType,
   ProductFormData,
 } from "../../../lib/FE/types/product";
+import { helmetSizes, shirtPantSizes, shoeSizes } from "@/lib/enum";
 type productType = "SHIRTS_PANTS" | "HELMET" | "SHOES";
 
 interface Step2Props {
@@ -28,19 +29,6 @@ export default function Step2({
 }: Step2Props) {
   const [sizes, setSizes] = useState<string[]>([]);
   useEffect(() => {
-    const shirtPantSizes = [
-      "XS",
-      "S",
-      "M",
-      "L",
-      "XL",
-      "XXL",
-      "3XL",
-      "4XL",
-      "5XL",
-    ];
-    const shoeSizes = ["8", "9", "10", "11", "12"];
-    const helmetSizes = ["M", "L", "XL"];
     if (initialValues?.ProductType === "SHIRTS_PANTS") {
       setSizes(shirtPantSizes);
     } else if (initialValues?.ProductType === "SHOES") {

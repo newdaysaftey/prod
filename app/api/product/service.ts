@@ -1,9 +1,9 @@
 //
 import { BaseService } from "@/app/api/services/base.service";
+import { productType } from "@/lib/enum";
 import prisma from "@/lib/prisma";
 import { Prisma, Size } from "@prisma/client";
 
-type productType = "SHIRTS_PANTS" | "HELMET" | "SHOES";
 interface ProductData {
   Name: string;
   Description: string;

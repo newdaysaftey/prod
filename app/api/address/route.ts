@@ -9,14 +9,15 @@ export const dynamic = "auto";
 
 export async function GET(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
     if (authResult instanceof Response) {
       return authResult;
     }
-    const response = await controller.getAddressess(authResult.User.UserId);
+    const response = await controller.getAddressess(authResult.User.UserId!);
     return response;
   } catch (error) {
     console.error("Route Error:", error);
@@ -34,7 +35,8 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
@@ -42,7 +44,7 @@ export async function PUT(request: NextRequest) {
       return authResult;
     }
     const response = await controller.updateAddress(
-      authResult.User.UserId,
+      authResult.User.UserId!,
       body
     );
     return response;
@@ -61,7 +63,8 @@ export async function PUT(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
@@ -69,7 +72,7 @@ export async function PATCH(request: NextRequest) {
       return authResult;
     }
     const response = await controller.deleteAddress(
-      authResult.User.UserId,
+      authResult.User.UserId!,
       request
     );
     return response;

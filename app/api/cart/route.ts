@@ -9,14 +9,15 @@ const controller = new CartController();
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
     if (authResult instanceof Response) {
       return authResult;
     }
-    return controller.addtoCart(authResult.User.UserId, body);
+    return controller.addtoCart(authResult.User.UserId!, body);
   } catch (error) {
     console.error("Route Error:", error);
     return NextResponse.json(
@@ -32,14 +33,15 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
     if (authResult instanceof Response) {
       return authResult;
     }
-    const response = await controller.getCart(authResult.User.UserId);
+    const response = await controller.getCart(authResult.User.UserId!);
     return response;
   } catch (error) {
     console.error("Route Error:", error);
@@ -57,14 +59,15 @@ export async function GET(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     console.log("----");
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
     if (authResult instanceof Response) {
       return authResult;
     }
-    return controller.deleteFromCart(authResult.User.UserId, request);
+    return controller.deleteFromCart(authResult.User.UserId!, request);
   } catch (error) {
     console.error("Route Error:", error);
     return NextResponse.json(
@@ -81,14 +84,15 @@ export async function DELETE(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     // const body = await request.json();
-    const authResult = await checkRole([UserRole.ADMIN, UserRole.USER])(
+    const authResult = await checkRole(
+      [UserRole.ADMIN, UserRole.USER],
       request
     );
 
     if (authResult instanceof Response) {
       return authResult;
     }
-    return controller.updateCart(authResult.User.UserId, request);
+    return controller.updateCart(authResult.User.UserId!, request);
   } catch (error) {
     console.error("Route Error:", error);
     return NextResponse.json(

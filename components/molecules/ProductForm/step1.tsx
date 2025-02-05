@@ -13,7 +13,6 @@ const Step1 = ({
   initialValues,
   setValue,
 }: any) => {
-  console.log(initialValues);
   const productTypes = ["SHIRTS_PANTS", "HELMET", "SHOES"];
   const [isOpen, setIsOpen] = useState(false);
   const [productTypeIsOpen, setProductTypeIsOpen] = useState(false);

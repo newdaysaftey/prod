@@ -2,12 +2,10 @@ import NextAuth from "next-auth";
 import { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
 export const authOptions: AuthOptions = {
-  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -23,7 +21,10 @@ export const authOptions: AuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid credentials");
         }
-
+        console.log(
+          "in here bro//////////////////////////////",
+          credentials.email
+        );
         const user = await prisma.user.findUnique({
           where: {
             Email: credentials.email,
@@ -57,35 +58,62 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user, account, trigger }) {
-      console.log(
-        token,
-        user,
-        account,
-        trigger,
-        "/////////////////////////////// from jwt"
-      );
+    async jwt({ token, user, account }) {
       if (user) {
-        token.role = user.Role;
-        token.id = user.UserId;
+        if (account?.provider === "google") {
+          console.log("im in here");
+          const dbUser = await prisma.user.findUnique({
+            where: { Email: user.email! },
+          });
+          return {
+            ...token,
+            role: dbUser?.Role || "user",
+            id: dbUser?.UserId || user.id,
+          };
+        }
+        return {
+          ...token,
+          role: user.role,
+          id: user.id,
+        };
       }
       return token;
     },
     async session({ session, token }) {
-      console.log(
-        session,
-        token,
-        "////////////////////////////// from session"
-      );
-      if (session.user) {
-        session.user.role = token.role;
-        session.user.id = token.id;
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          role: token.role,
+          id: token.id,
+        },
+      };
+    },
+    async signIn({ user }) {
+      try {
+        console.log("User user:", user);
+        const userExist = await prisma.user.findUnique({
+          where: { Email: user.email! },
+        });
+
+        if (!userExist) {
+          console.log("User not found, creating a new one.");
+          await prisma.user.create({
+            data: {
+              Email: user.email!,
+            },
+          });
+        }
+        return true;
+      } catch (error) {
+        console.error("Error in sign-in callback:", error);
+        return false;
       }
-      return session;
     },
   },
+
   pages: {
-    signIn: "/auth1/signin",
+    signIn: "/auth/signin",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

@@ -57,7 +57,7 @@ export function SignUpForm() {
     };
 
     try {
-      const response = await fetch("/api/auth1/signup", {
+      const response = await fetch("/api/user-auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -170,7 +170,7 @@ export function SignUpForm() {
         </div>
       </div>
 
-      {addresses.map((address, index) => (
+      {/* {addresses.map((address, index) => (
         <div
           key={index}
           className="space-y-4 p-4 border border-gray-200 rounded-md"
@@ -251,7 +251,7 @@ export function SignUpForm() {
             </div>
           </div>
         </div>
-      ))}
+      ))} */}
 
       <button
         type="button"
