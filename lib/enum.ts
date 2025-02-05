@@ -50,3 +50,10 @@ export const shirtPantSizes = [
 ];
 export const shoeSizes = ["5", "6", "7", "8", "9", "10", "11", "12", "13"];
 export const helmetSizes = ["XS", "M", "L", "XL"];
+export const productTypes = [
+  "SHIRTS_PANTS",
+  "HELMET",
+  "SHOES",
+  "MASK",
+  "GLOVES",
+];

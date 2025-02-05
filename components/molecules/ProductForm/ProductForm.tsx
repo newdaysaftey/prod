@@ -54,7 +54,10 @@ export function ProductForm({ initialValues }: any) {
   });
 
   const onSubmit1 = async (data: ProductFormDataStep1) => {
-    console.log(data);
+    await queryClient.invalidateQueries({
+      queryKey: ["product", data?.ProductId],
+    });
+
     mutation.mutate({
       ...data,
       step,

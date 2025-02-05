@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { fetchCategories } from "@/lib/FE/api";
+import { productTypes } from "@/lib/enum";
 
 const Step1 = ({
   register,
@@ -13,7 +14,6 @@ const Step1 = ({
   initialValues,
   setValue,
 }: any) => {
-  const productTypes = ["SHIRTS_PANTS", "HELMET", "SHOES"];
   const [isOpen, setIsOpen] = useState(false);
   const [productTypeIsOpen, setProductTypeIsOpen] = useState(false);
   const [selectedProductType, setSelectedProductType] = useState<string>(
