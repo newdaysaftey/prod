@@ -129,6 +129,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                       quantity={quantity}
                       onQuantityChange={setQuantity}
                       maxQuantity={maxQuantity}
+                      showButton={true}
                     />
                   </div>
                 )}
