@@ -48,12 +48,10 @@ const ContactForm = () => {
     setSubmitStatus(null);
 
     try {
-      const response = await fetch("http://localhost:3000/api/contactForm", {
+      const response = await fetch("/api/contactForm", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiJiYjIwYTc5Ny05MjZkLTRkMjAtOTFhZS1lNWM1NjVjM2JmMzMiLCJFbWFpbCI6Im5ld2RheXNhZmV0eUBnbWFpbC5jb20iLCJSb2xlIjoiQURNSU4iLCJpYXQiOjE3MzEwNTA5NjIsImV4cCI6MTczMTA1NDU2Mn0.E7boLNvfFKasDop44cI55quy8EnqS-BXswKZj-b7ZlU",
         },
         body: JSON.stringify(formData),
       });
