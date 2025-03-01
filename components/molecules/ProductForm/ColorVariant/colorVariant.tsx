@@ -105,7 +105,7 @@ export function ColorVariant({
         <label className="block text-sm font-medium mb-2">
           Available Sizes
         </label>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 ">
           {SIZES.map((size) => (
             <SizeSelector
               key={size}

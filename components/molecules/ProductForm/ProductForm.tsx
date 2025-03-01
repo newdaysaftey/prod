@@ -18,6 +18,9 @@ export function ProductForm({ initialValues }: any) {
   const [step, setStep] = useState(1);
   const [colorVariants, setColorVariants] = useState([0]);
   const [productId, setProductId] = useState(initialValues?.ProductId || "");
+  const [selectedProductType, setSelectedProductType] = useState<string>(
+    initialValues?.ProductType
+  );
   const {
     register,
     handleSubmit,
@@ -121,6 +124,8 @@ export function ProductForm({ initialValues }: any) {
                 onSubmit1={onSubmit1}
                 initialValues={initialValues || {}}
                 setValue={setValue}
+                selectedProductType={selectedProductType}
+                setSelectedProductType={setSelectedProductType}
               ></Step1>
             ) : (
               <Step2
@@ -128,6 +133,7 @@ export function ProductForm({ initialValues }: any) {
                 initialValues={initialValues || {}}
                 router={router}
                 saveProduct={saveProduct}
+                selectedProductType={selectedProductType}
               ></Step2>
             )}
           </AnimatePresence>

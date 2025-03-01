@@ -68,6 +68,7 @@ export function CartItemCard({
               onUpdateQuantity(item.productId, quantity)
             }
             maxQuantity={item.Size.Stock}
+            showButton={false}
           />
           <motion.button
             whileHover={{ scale: 1.1 }}

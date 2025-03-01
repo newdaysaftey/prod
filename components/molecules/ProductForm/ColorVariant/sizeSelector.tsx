@@ -23,7 +23,7 @@ export function SizeSelector({
         whileTap={{ scale: 0.95 }}
         type="button"
         onClick={() => onSizeToggle(size)}
-        className={`sm:w-12 w-12 h-12 rounded-lg font-medium transition-colors ${
+        className={`sm:w-12 w-32 p-2 h-fit rounded-lg font-medium transition-colors ${
           selectedSize && !selectedSize.isDeleted
             ? "bg-indigo-500 text-white"
             : "border border-slate-200 dark:border-slate-700 hover:border-indigo-500 dark:hover:border-indigo-500"

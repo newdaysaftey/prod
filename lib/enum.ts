@@ -31,29 +31,59 @@ export type SizeType = {
 };
 
 export type productType =
-  | "SHIRTS_PANTS"
+  | "SHIRTS"
   | "HELMET"
   | "SHOES"
   | "MASK"
-  | "GLOVES";
+  | "GLOVES"
+  | "PANTS";
 
-export const shirtPantSizes = [
-  "XS",
+export const shirtPantSizes = ["S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL"];
+export const pantSizes = [
+  "One Size Fits All",
   "S",
   "M",
   "L",
   "XL",
-  "XXL",
+  "2XL",
   "3XL",
   "4XL",
   "5XL",
 ];
-export const shoeSizes = ["5", "6", "7", "8", "9", "10", "11", "12", "13"];
-export const helmetSizes = ["XS", "M", "L", "XL"];
+export const maskSizes = ["One Size Fits All", "XS", "S", "M", "L", "XL"];
+export const shoeSizes = [
+  "5",
+  "5.5",
+  "6",
+  "6.5",
+  "7",
+  "7.5",
+  "8",
+  "8.5",
+  "9",
+  "9.5",
+  "10",
+  "10.5",
+  "11",
+  "11.5",
+  "12",
+];
+export const helmetSizes = ["One Size Fits All", "S", "M", "L", "XL"];
+export const gloveSizes = [
+  "One size Fits all",
+  "XS",
+  "S",
+  "M",
+  "S/M",
+  "L",
+  " XL",
+  " L/XL",
+];
 export const productTypes = [
-  "SHIRTS_PANTS",
+  "SHIRTS",
   "HELMET",
   "SHOES",
   "MASK",
   "GLOVES",
+  "PANTS",
 ];
