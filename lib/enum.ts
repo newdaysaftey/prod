@@ -76,8 +76,8 @@ export const gloveSizes = [
   "M",
   "S/M",
   "L",
-  " XL",
-  " L/XL",
+  "XL",
+  "L/XL",
 ];
 export const productTypes = [
   "SHIRTS",
