@@ -165,7 +165,7 @@ model Product {
   OrderItem     OrderItem[]
   cartItem      CartItem[]
   comments      Comments[]
-  ProductType   ProductType    @default(SHIRTS_PANTS)
+  ProductType   ProductType    @default(SHIRTS)
 }
 
 model Comments {
@@ -244,9 +244,10 @@ enum PaymentStatus {
 }
 
 enum ProductType {
-  SHIRTS_PANTS
+  SHIRTS
   HELMET
   SHOES
   GLOVES
   MASK
+  PANTS
 }

@@ -16,7 +16,7 @@ export const productSchemaStep1 = z.object({
       invalid_type_error: "product Type must be selected",
     })
     .optional()
-    .default("SHIRTS_PANTS"),
+    .default("SHIRTS"),
   step: z.number().optional(),
   CategoryId: z
     .string({

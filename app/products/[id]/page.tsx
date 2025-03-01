@@ -36,6 +36,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     );
 
   const product = data.data;
+  const productType = product?.ProductType || "SHIRTS";
   const selectedColor =
     product.Colors.find((c: any) => c.ColorId === selectedColorId) ||
     product.Colors[0];
@@ -116,6 +117,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                     sizes={selectedColor.Sizes}
                     selectedSize={selectedSizeId}
                     onSizeSelect={setSelectedSizeId}
+                    productType={productType}
                   />
                 </div>
 

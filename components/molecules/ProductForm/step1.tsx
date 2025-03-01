@@ -13,12 +13,11 @@ const Step1 = ({
   onSubmit1,
   initialValues,
   setValue,
+  selectedProductType,
+  setSelectedProductType,
 }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [productTypeIsOpen, setProductTypeIsOpen] = useState(false);
-  const [selectedProductType, setSelectedProductType] = useState<string>(
-    initialValues?.ProductType
-  );
 
   const [selectedCategory, setSelectedCategory] = useState<string>(
     initialValues?.Category?.CategoryId || ""

@@ -25,16 +25,17 @@ export default function Home() {
   }
 
   const tags = tagsData?.data || [];
-
+  console.log(tags);
   return (
     <section className="bg-tert w-[100%] overscroll-x-none overflow-x-hidden">
       <br />
 
-      {tags.map((tag: any) => (
-        <div key={tag.id} className="mt-20">
-          <TagSection title={tag.name} tag={tag.name} pageSize={6} />
-        </div>
-      ))}
+      {tags &&
+        tags?.map((tag: any) => (
+          <div key={tag.id} className="mt-20">
+            <TagSection title={tag.name} tag={tag.name} pageSize={6} />
+          </div>
+        ))}
 
       <section className="mt-20 w-[100%] mx-auto bg-tert">
         <DealHeading Heading="Contact Us" subHeading={""} noRadius={true} />

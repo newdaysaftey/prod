@@ -8,8 +8,16 @@ import {
   ColorVariant as ColorVariantType,
   ProductFormData,
 } from "../../../lib/FE/types/product";
-import { helmetSizes, shirtPantSizes, shoeSizes } from "@/lib/enum";
-type productType = "SHIRTS_PANTS" | "HELMET" | "SHOES";
+import {
+  gloveSizes,
+  helmetSizes,
+  maskSizes,
+  pantSizes,
+  shirtPantSizes,
+  shoeSizes,
+} from "@/lib/enum";
+import { useQueryClient } from "@tanstack/react-query";
+type productType = "SHIRTS" | "HELMET" | "SHOES";
 
 interface Step2Props {
   productId: string;
@@ -19,6 +27,7 @@ interface Step2Props {
   };
   router: any;
   saveProduct: (data: ProductFormData) => Promise<any>;
+  selectedProductType: any;
 }
 
 export default function Step2({
@@ -26,20 +35,29 @@ export default function Step2({
   initialValues,
   router,
   saveProduct,
+  selectedProductType,
 }: Step2Props) {
   const [sizes, setSizes] = useState<string[]>([]);
+  const queryClient = useQueryClient();
+
   useEffect(() => {
-    if (initialValues?.ProductType === "SHIRTS_PANTS") {
+    if (selectedProductType === "SHIRTS") {
       setSizes(shirtPantSizes);
-    } else if (initialValues?.ProductType === "SHOES") {
+    } else if (selectedProductType === "SHOES") {
       setSizes(shoeSizes);
-    } else if (initialValues?.ProductType === "HELMET") {
+    } else if (selectedProductType === "HELMET") {
       setSizes(helmetSizes);
+    } else if (selectedProductType === "PANTS") {
+      setSizes(pantSizes);
+    } else if (selectedProductType === "MASK") {
+      setSizes(maskSizes);
+    } else if (selectedProductType === "GLOVES") {
+      setSizes(gloveSizes);
     }
-  }, [initialValues?.ProductType]);
+  }, [selectedProductType]);
   const [isPending, setIsPending] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [productType, setProductType] = useState(initialValues?.ProductType);
+  const [productType, setProductType] = useState(selectedProductType);
   const handleMultipleImageUpload = async (files: File[]): Promise<any> => {
     setUploadingImage(true);
     const imageUrls = await handleImageUpload(files);
@@ -62,6 +80,9 @@ export default function Step2({
       if (!response.error) {
         toast.success("Product saved successfully");
         router.push("/admin/products");
+        await queryClient.invalidateQueries({
+          queryKey: ["product", productId],
+        });
       } else {
         toast.error("Failed to save product");
       }
