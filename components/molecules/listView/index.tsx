@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 export function ProductList() {
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(1000);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState<any>(null);
   const queryClient = useQueryClient();
@@ -43,7 +43,7 @@ export function ProductList() {
 
   useMemo(() => {
     // console.log("ehllo wold");
-    const viewData = data?.data?.data.flatMap((e: any) => e.Products);
+    const viewData = data?.data?.data?.flatMap((e: any) => e.Products);
     let x =
       viewData?.filter((category: { Name: string }) =>
         category.Name.toLowerCase().includes(searchQuery.toLowerCase())
