@@ -90,7 +90,7 @@ export class ProductController extends BaseController {
           : undefined;
 
       // Validate pagination parameters
-      if (page < 1 || limit < 1 || limit > 100) {
+      if (page < 1 || limit < 1 || limit > 1000) {
         return this.sendError("Invalid pagination parameters");
       }
 
