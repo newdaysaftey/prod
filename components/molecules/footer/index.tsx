@@ -1,170 +1,50 @@
-import React from "react";
-import { Instagram, Facebook, X, Youtube } from "lucide-react";
+import Link from 'next/link';
+import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-blue-900 text-white ">
-      <div className="max-w-7xl mx-auto px-4 py-12">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Company Info</h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  About Company
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Affiliate & Influencer Program
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Contact Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Career
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Press
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Customer Service */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Customer Service</h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Return and Refund Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Intellectual Property Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Shipping Info
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Your Records and Safety Alerts
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Report Suspicious Activity
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Help */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Help</h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Support Center & FAQ
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Safety Center
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Purchase Protection
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  How to Order
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  How to Track
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-blue-300 transition-colors">
-                  Partner with us
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Connect with Us */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Connect with Us</h3>
-            <div className="flex space-x-4">
-              <a href="#" className="hover:text-blue-300 transition-colors">
-                <Instagram className="w-6 h-6" />
-              </a>
-              <a href="#" className="hover:text-blue-300 transition-colors">
-                <Facebook className="w-6 h-6" />
-              </a>
-              <a href="#" className="hover:text-blue-300 transition-colors">
-                <X className="w-6 h-6" />
-              </a>
-              <a href="#" className="hover:text-blue-300 transition-colors">
-                <Youtube className="w-6 h-6" />
-              </a>
-              {/* <a href="#" className="hover:text-blue-300 transition-colors">
-                <Pinterest className="w-6 h-6" />
-              </a> */}
-            </div>
-          </div>
+    <footer className="bg-blue-900 text-white py-8 mdModified:py-12">
+      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 mdModified:grid-cols-4 gap-6 mdModified:gap-8">
+        {/* Company Info Section */}
+        <div className="text-center mdModified:text-left">
+          <h3 className="text-lg mdModified:text-xl font-bold mb-3 mdModified:mb-4">Company Info</h3>
+          <ul className="space-y-2">
+            <li><Link href="/about" className="hover:text-gray-300 text-sm mdModified:text-base">About Company</Link></li>
+            {/* <li><Link href="/what-we-do" className="hover:text-gray-300 text-sm mdModified:text-base">What We Do</Link></li> */}
+            <li><Link href="/affiliate-program" className="hover:text-gray-300 text-sm mdModified:text-base">Affiliate & Distributor Program</Link></li>
+            <li><Link href="/contact" className="hover:text-gray-300 text-sm mdModified:text-base">Contact Us</Link></li>
+          </ul>
         </div>
 
-        {/* Payment Methods */}
-        {/* <div className="mt-12 border-t border-blue-800 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div>
-              <h4 className="text-sm font-medium mb-2">We Accept</h4>
-              <div className="flex space-x-3">
-                {['visa', 'mastercard', 'amex', 'discover', 'paypal', 'apple-pay', 'google-pay'].map((payment) => (
-                  <div key={payment} className="w-12 h-8 bg-white rounded-md flex items-center justify-center">
-                    <img
-                      src={`https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/${payment}.svg`}
-                      alt={payment}
-                      className="h-5 w-auto opacity-80"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div> */}
+        {/* Customer Service Section */}
+        <div className="text-center mdModified:text-left">
+          <h3 className="text-lg mdModified:text-xl font-bold mb-3 mdModified:mb-4">Customer Service</h3>
+          <ul className="space-y-2">
+            <li><Link href="/return-policy" className="hover:text-gray-300 text-sm mdModified:text-base">Return & Refund Policy</Link></li>
+            <li><Link href="/shipping" className="hover:text-gray-300 text-sm mdModified:text-base">Shipping Info</Link></li>
+          </ul>
+        </div>
 
-        {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-blue-800 text-sm text-center space-y-4">
-          <p>
-            Copyright © {new Date().getFullYear()} Company Name - All rights
-            reserved
-          </p>
-          <div className="flex justify-center space-x-4">
-            <a href="#" className="hover:text-blue-300 transition-colors">
-              Terms and Conditions
-            </a>
-            <span>•</span>
-            <a href="#" className="hover:text-blue-300 transition-colors">
-              Privacy Policy
-            </a>
+        {/* Help Section */}
+        <div className="text-center mdModified:text-left">
+          <h3 className="text-lg mdModified:text-xl font-bold mb-3 mdModified:mb-4">Help</h3>
+          <ul className="space-y-2">
+            <li><Link href="/faq" className="hover:text-gray-300 text-sm mdModified:text-base">Support Center & FAQ</Link></li>
+            <li><Link href="/purchase-protection" className="hover:text-gray-300 text-sm mdModified:text-base">Purchase Protection</Link></li>
+            <li><Link href="/how-to-order" className="hover:text-gray-300 text-sm mdModified:text-base">How to Order</Link></li>
+            {/* <li><Link href="/shipping" className="hover:text-gray-300 text-sm mdModified:text-base">How to Track</Link></li> */}
+            {/* <li><Link href="/affiliate-program" className="hover:text-gray-300 text-sm mdModified:text-base">Partner with Us</Link></li> */}
+          </ul>
+        </div>
+
+        {/* Social Media Section */}
+        <div className="text-center mdModified:text-left ">
+          <h3 className="text-lg mdModified:text-xl font-bold mb-3 mdModified:mb-4">Connect with Us</h3>
+          <div className="flex justify-start md:justify-center md:gap-2 mdModified:space-x-6">
+            <span className="opacity-50 cursor-not-allowed"><Instagram size={20} className="mdModified:w-6 mdModified:h-6" /></span>
+            <span className="opacity-50 cursor-not-allowed"><Facebook size={20} className="mdModified:w-6 mdModified:h-6" /></span>
+            <span className="opacity-50 cursor-not-allowed"><Twitter size={20} className="mdModified:w-6 mdModified:h-6" /></span>
+            <span className="opacity-50 cursor-not-allowed"><Youtube size={20} className="mdModified:w-6 mdModified:h-6" /></span>
           </div>
         </div>
       </div>
