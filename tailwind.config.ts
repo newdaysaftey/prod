@@ -12,6 +12,7 @@ const config: Config = {
       screens: {
         sm: { max: "480px" },
         md: { max: "767px" },
+        mdModified:{min:"767px"}
       },
       colors: {
         background: "rgba(19, 62, 135, 1)",
