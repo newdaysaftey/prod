@@ -1,37 +1,39 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getCart, updateCartItemQuantity, removeCartItem } from '@/lib/FE/api';
-import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getCart, updateCartItemQuantity, removeCartItem } from "@/lib/FE/api";
+import { toast } from "sonner";
 
 export function useCart() {
   const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['cart'],
+    queryKey: ["cart"],
     queryFn: getCart,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 
   const updateQuantityMutation = useMutation({
     mutationFn: ({ itemId, quantity }: { itemId: string; quantity: number }) =>
       updateCartItemQuantity(itemId, quantity),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-      toast.success('Cart updated successfully');
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      toast.success("Cart updated successfully");
     },
     onError: () => {
-      toast.error('Failed to update cart');
+      toast.error("Failed to update cart");
     },
   });
 
   const removeItemMutation = useMutation({
     mutationFn: removeCartItem,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-      toast.success('Item removed from cart');
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      toast.success("Item removed from cart");
     },
     onError: () => {
-      toast.error('Failed to remove item');
+      toast.error("Failed to remove item");
     },
   });
 

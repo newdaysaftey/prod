@@ -16,6 +16,7 @@ interface OrderBody {
   billingAddressId: string;
   billingAddress?: Address;
   deliveryDate: Date;
+  paymentProof: string[];
 }
 interface updateOrderBody {
   orderId: string;

@@ -220,6 +220,7 @@ model Order {
   paymentStatus     PaymentStatus
   paymentMethod     String
   orderItems        OrderItem[]
+  paymentProof      String[]
   shippingAddress   Address       @relation("shippingAddress", fields: [shippingAddressId], references: [id])
   shippingAddressId String
   billingAddress    Address       @relation("billingAddress", fields: [billingAddressId], references: [id])

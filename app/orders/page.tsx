@@ -29,7 +29,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 min-h-[75vh]">
       <div className="flex items-center gap-3 mb-8">
         <Package2 className="h-8 w-8" />
         <h1 className="text-3xl font-bold">Your Orders</h1>

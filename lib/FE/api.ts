@@ -5,7 +5,7 @@ import { CartItem } from "./types/cart";
 import { UpdateUserProfile } from "./types/user";
 import { CreateOrder, Order, UpdatePaymentStatusResponse } from "./types/order";
 import { ApiResponse } from "@/app/api/types";
-
+import { Address } from "./types/address";
 const api = axios.create({
   baseURL: "/api/",
   headers: {
@@ -83,7 +83,7 @@ export const handleImageUpload = async (files: File[]): Promise<string[]> => {
         "Content-Type": "multipart/form-data",
       },
     });
-    console.log(response, "is it wokring?");
+
     return response?.data?.data;
   } catch (error) {
     console.error("Error uploading files:", error);
@@ -345,5 +345,9 @@ export const removeColorVariantApi = async (
       },
     }
   );
+  return response.data;
+};
+export const addAddress = async (address: Address) => {
+  const response = await api.put("/address", { addresses: [address] });
   return response.data;
 };
