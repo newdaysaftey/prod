@@ -84,6 +84,7 @@ export interface Order {
   shippingAddress: Address;
   billingAddress: Address;
   orderItems: OrderItem[];
+  paymentProof: string[];
 }
 
 export interface ApiResponse<T> {

@@ -18,6 +18,7 @@ export function CartItemCard({
   onUpdateQuantity,
   onRemove,
 }: CartItemCardProps) {
+  console.log(item);
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

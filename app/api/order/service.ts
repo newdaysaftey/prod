@@ -15,6 +15,7 @@ interface OderData {
   billingAddressId: string;
   billingAddress?: Address;
   deliveryDate: Date;
+  paymentProof: string[];
 }
 
 export class OrderService extends BaseService {
@@ -87,6 +88,7 @@ export class OrderService extends BaseService {
         serviceFee: data.serviceFee,
         tax: tax,
         deliveryDate: data.deliveryDate, // Assuming you want to store delivery date
+        paymentProof: data.paymentProof,
         orderItems: {
           create: data.items.map((item) => ({
             productId: item.productId,
@@ -109,6 +111,7 @@ export class OrderService extends BaseService {
         },
       },
     });
+
     await prisma.cartItem.deleteMany({
       where: {
         id: {

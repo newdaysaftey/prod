@@ -5,6 +5,7 @@ import { getOrderDetails } from "@/lib/FE/api";
 import { format } from "date-fns";
 import { ArrowLeft, Package2 } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function OrderDetailsPage({
   params,
@@ -15,6 +16,7 @@ export default function OrderDetailsPage({
     queryKey: ["order", params.id],
     queryFn: () => getOrderDetails(params.id),
   });
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -154,7 +156,48 @@ export default function OrderDetailsPage({
             </div>
           ))}
         </div>
+        {order.paymentProof?.length > 0 && (
+          <div className="bg-white rounded-lg shadow-md p-6 mt-8">
+            <h2 className="font-semibold text-lg mb-6">Payment Proof</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {order.paymentProof.map((imgUrl, idx) => (
+                <img
+                  key={idx}
+                  src={imgUrl}
+                  width={254}
+                  height={254}
+                  alt={`Payment Proof ${idx + 1}`}
+                  className=" h-64 object-cover rounded border cursor-pointer"
+                  onClick={() => setSelectedImage(imgUrl)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div
+            className="bg-white p-4 rounded-lg max-w-3xl w-full"
+            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+          >
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="mb-4 text-gray-500 hover:text-gray-700 float-right"
+            >
+              ✕
+            </button>
+            <img
+              src={selectedImage}
+              alt="Payment Proof Full View"
+              className="w-full h-auto max-h-[80vh] object-contain mx-auto"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
